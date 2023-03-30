@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/tim-liao/simplesend#readme",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.301.0",
+    "aws-sdk": "^2.1346.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2"
   },

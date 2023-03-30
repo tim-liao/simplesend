@@ -4,22 +4,27 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const port = process.env.PORT; /*|| 3000*/
-
+app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("hello world");
 });
+import router from "./server/route/sentmail_route.js";
+app.use("/api/1.0/", [router]);
 
 app.use((req, res, next) => {
-  const err = new Error("請洽系統管理員~~~~");
+  const err = new Error();
   err.status = 404;
+  err.stack = "404 not found";
   next(err);
 });
 
-app.use((err, req, res, next) => {
-  res.locals.error = err;
-  res.status(err.status);
-  res.render("error");
-  // res.json(err);
+app.use(function (err, req, res, next) {
+  const now = Date.now();
+  const dateString = new Date(now).toLocaleString();
+  console.error(dateString, err);
+  res.status(err.status).json({ status: err.status, message: err.stack });
 });
 
 app.listen(port, () => {
