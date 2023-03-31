@@ -1,46 +1,63 @@
-import { SES } from "@aws-sdk/client-ses";
-import { nextTick } from "process";
-import awsConfig from "../model/sentmail_model.js";
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import dotenv from "dotenv";
+import client from "../model/sentmail_model.js";
+dotenv.config();
 
 export async function sentmail(req, res) {
-  const { email, yourname, text, yourSubject } = req.body;
+  const { email, yourname, text, html, yourSubject } = req.body;
+  if (!(text || html)) {
+    const err = new Error();
+    err.stack = "your request miss content";
+    err.status = 400;
+    throw err;
+  }
+  if (!email || !yourname || !yourSubject) {
+    const err = new Error();
+    err.stack = "your request miss something";
+    err.status = 400;
+    throw err;
+  }
+  let messageBody;
+  if (text) {
+    messageBody = {
+      Text: {
+        Charset: "UTF-8",
+        Data: text,
+      },
+    };
+  } else if (html) {
+    messageBody = {
+      Html: {
+        Charset: "UTF-8",
+        Data: html,
+      },
+    };
+  }
   const params = {
     Destination: {
       ToAddresses: [email],
     },
     Message: {
-      Body: {
-        Html: {
-          Charset: "UTF-8",
-          Data: "HTML_FORMAT_BODY",
-        },
-        Text: {
-          Charset: "UTF-8",
-          Data: text,
-        },
-      },
+      Body: messageBody,
+
       Subject: {
         Charset: "UTF-8",
         Data: yourSubject,
       },
     },
-    Source: `${yourname}@simple-send.online`,
+    Source: `${yourname}${process.env.FROM_EMAIL}`,
   };
-  if (!email || !yourname || !text || !yourSubject) {
-    const err = new Error();
-    err.stack = "your request miss something";
-    err.status = 500;
-    throw err;
-  }
-  const sendPromise = new SES({ apiVersion: "2010-12-01" }).sendEmail(params);
 
-  sendPromise
-    .then(function (data) {
-      console.log("data", data.MessageId);
-    })
-    .catch(function (err) {
-      console.error("err", err, err.stack);
-    });
-  console.log(email, yourname, text, yourSubject);
+  const command = new SendEmailCommand(params);
+  client.send(command).then(
+    (data) => {
+      // process data.
+      console.log(data["$metadata"].httpStatusCode, data.MessageId);
+    },
+    (error) => {
+      // error handling.
+      console.error(error["$metadata"].httpStatusCode, error);
+    }
+  );
   res.status(200).send({ data: [] });
 }
