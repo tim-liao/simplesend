@@ -3,14 +3,27 @@ const app = express();
 import dotenv from "dotenv";
 dotenv.config();
 
-const port = process.env.PORT; /*|| 3000*/
+const port = process.env.PORT;
+/*|| 3000*/
+app.use((req, res, next) => {
+  let checkImagePath = req._parsedUrl.pathname;
+
+  if (checkImagePath == "/a.png") {
+    console.log(req.query);
+  }
+  next();
+});
+
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.get("/", (req, res) => {
   res.send("hello world");
 });
+
 import router from "./server/route/sentmail_route.js";
+app.use(express.static("public"));
 app.use("/api/1.0/", [router]);
 
 app.use((req, res, next) => {

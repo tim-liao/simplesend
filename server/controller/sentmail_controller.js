@@ -20,16 +20,20 @@ export async function sentmail(req, res) {
   let messageBody;
   if (text) {
     messageBody = {
-      Text: {
+      Html: {
         Charset: "UTF-8",
-        Data: text,
+        Data: `${text}<img src="${process.env.ADRESS}/a.png?id=465">`,
       },
+      //   Text: {
+      //     Charset: "UTF-8",
+      //     Data: text,
+      //   },
     };
   } else if (html) {
     messageBody = {
       Html: {
         Charset: "UTF-8",
-        Data: html,
+        Data: html + `<img src="${process.env.ADRESS}/a.png?id=465">`,
       },
     };
   }
