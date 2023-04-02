@@ -51,17 +51,17 @@ export async function sentmail(req, res) {
     },
     Source: `${yourname}${process.env.FROM_EMAIL}`,
   };
-
   const command = new SendEmailCommand(params);
-  client.send(command).then(
-    (data) => {
-      // process data.
-      console.log(data["$metadata"].httpStatusCode, data.MessageId);
-    },
-    (error) => {
-      // error handling.
-      console.error(error["$metadata"].httpStatusCode, error);
-    }
-  );
-  res.status(200).send({ data: [] });
+  let data;
+  try {
+    data = await client.send(command);
+  } catch (e) {
+    console.error(e["$metadata"].httpStatusCode, e);
+    throw e;
+  }
+  //   console.log(yourSubject, data.MessageId);
+  //   console.log(testaa);
+  res
+    .status(200)
+    .send({ data: [{ yourSubject: yourSubject, testaa: data.MessageId }] });
 }
