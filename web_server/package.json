@@ -1,0 +1,31 @@
+{
+  "name": "simplesend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "npx nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tim-liao/simplesend.git"
+  },
+  "keywords": [],
+  "author": "Tim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tim-liao/simplesend/issues"
+  },
+  "homepage": "https://github.com/tim-liao/simplesend#readme",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.301.0",
+    "amqplib": "^0.10.3",
+    "aws-sdk": "^2.1346.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
