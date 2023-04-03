@@ -1,4 +1,4 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { SESClient } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
 dotenv.config();
 
