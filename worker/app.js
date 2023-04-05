@@ -1,4 +1,5 @@
 import amqp from "amqplib/callback_api.js";
+import { Base64 } from "js-base64";
 import { SendEmailCommand } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
 import client from "./model/ses_config.js";
@@ -62,17 +63,17 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
           console.log(e);
         }
         console.log(autoId);
+        let base64UTF8EncodedAutoId = Base64.encode(`${autoId}`);
         let messageBody;
+        console.log(
+          `${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}`
+        );
         if (text) {
           messageBody = {
             Html: {
               Charset: "UTF-8",
-              Data: `${text}<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=465">`,
+              Data: `${text}<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}">`,
             },
-            //   Text: {
-            //     Charset: "UTF-8",
-            //     Data: text,
-            //   },
           };
         } else if (html) {
           messageBody = {
@@ -80,7 +81,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
               Charset: "UTF-8",
               Data:
                 html +
-                `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=465">`,
+                `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}">`,
             },
           };
         }

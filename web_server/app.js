@@ -5,16 +5,10 @@ dotenv.config();
 
 const port = process.env.PORT;
 /*|| 3000*/
-app.use((req, res, next) => {
-  let checkImagePath = req._parsedUrl.pathname;
 
-  if (checkImagePath == "/a.png") {
-    console.log(req.query);
-  }
-  next();
-});
+import { trackMailClick } from "./server/route/track_mail_route.js";
+app.use(trackMailClick);
 
-app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,9 +18,8 @@ app.get("/", (req, res) => {
 
 import sentmail_route from "./server/route/sentmail_route.js";
 import api_key_route from "./server/route/api_key_route.js";
-app.use(express.static("public"));
 app.use("/api/1.0/", [sentmail_route, api_key_route]);
-
+app.use(express.static("public"));
 app.use((req, res, next) => {
   const err = new Error();
   err.status = 404;
