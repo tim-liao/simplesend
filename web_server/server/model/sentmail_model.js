@@ -1,6 +1,7 @@
 import amqp from "amqplib/callback_api.js";
 import jwt from "jsonwebtoken";
 import connectionPool from "./mysql_config.js";
+import moment from "moment";
 import dotenv from "dotenv";
 dotenv.config();
 export async function putINMQ(messageInput) {
@@ -30,30 +31,30 @@ export async function vertifyAPIKEY(key) {
   return check;
 }
 
-export async function genrateAPIKEY(id) {
-  const SECRET = process.env.APP_KEY_SECRET;
-  const token = jwt.sign(
-    {
-      userId: id,
-    },
-    SECRET,
-    {
-      expiresIn: "365d",
-    }
-  );
-  return token;
-}
+// export async function genrateAPIKEY(id) {
+//   const SECRET = process.env.APP_KEY_SECRET;
+//   const token = jwt.sign(
+//     {
+//       userId: id,
+//     },
+//     SECRET,
+//     {
+//       expiresIn: "365d",
+//     }
+//   );
+//   return token;
+// }
 
-export async function updateApiKey(id, apikey) {
-  let [result] = await connectionPool.query(
-    `UPDATE api_key_list SET API_key =? WHERE user_id =?  `,
-    [apikey, id],
-    function (err) {
-      if (err) throw err;
-    }
-  );
-  return result;
-}
+// export async function updateApiKey(id, apikey) {
+//   let [result] = await connectionPool.query(
+//     `UPDATE api_key_list SET API_key =? WHERE user_id =?  `,
+//     [apikey, id],
+//     function (err) {
+//       if (err) throw err;
+//     }
+//   );
+//   return result;
+// }
 
 export async function selectApiKey(id) {
   let [result] = await connectionPool.query(
@@ -64,4 +65,25 @@ export async function selectApiKey(id) {
     }
   );
   return result;
+}
+
+export async function selectApiKeyOldList(id, time) {
+  let [result] = await connectionPool.query(
+    `SELECT old_api_key FROM  old_api_key_list WHERE user_id = ? AND time > ?`,
+    [id, time],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+export function generateTimeSevenDaysAgo() {
+  let now = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleString(
+    "en-US",
+    {
+      timeZone: "Asia/Taipei",
+    }
+  );
+  let time = moment(now, "M/D/YYYY hh:mm:ss a").format("YYYY-MM-DD HH:mm:ss");
+  return time;
 }

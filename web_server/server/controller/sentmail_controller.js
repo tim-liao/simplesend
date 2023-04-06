@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 import {
   putINMQ,
   vertifyAPIKEY,
-  genrateAPIKEY,
-  updateApiKey,
   selectApiKey,
+  selectApiKeyOldList,
+  generateTimeSevenDaysAgo,
 } from "../model/sentmail_model.js";
 dotenv.config();
 
@@ -38,9 +38,8 @@ export async function sentmail(req, res, next) {
   }
   sendemailInfor = JSON.stringify(sendemailInfor);
   putINMQ(sendemailInfor);
-  //TODO:回傳新的api key（要做一次性登入的狀況，放進排程）
-  next();
-  // res.status(200).send({ data: "successfully scheduled" });
+
+  res.status(200).send({ data: "successfully scheduled" });
 }
 
 export async function authenticationApiKey(req, res, next) {
@@ -61,7 +60,7 @@ export async function authenticationApiKey(req, res, next) {
   let apiKeyInDB;
   try {
     let aa = await selectApiKey(realUserId);
-    apiKeyInDB = aa[0].API_key;
+    apiKeyInDB = await aa[0].API_key;
   } catch (e) {
     console.log(e);
     const err = new Error("cannot get apikey from sql");
@@ -69,8 +68,21 @@ export async function authenticationApiKey(req, res, next) {
     err.status = 500;
     throw err;
   }
-
-  if (apiKeyInDB != APIKEY) {
+  let apiKeyInOldDB;
+  let timeSevenDaysAgo = generateTimeSevenDaysAgo();
+  try {
+    let aa = await selectApiKeyOldList(realUserId, timeSevenDaysAgo);
+    // console.log(aa);
+    apiKeyInOldDB = await aa[0].old_api_key;
+  } catch (e) {
+    console.log(e);
+    const err = new Error("cannot get apikey from sql");
+    err.stack = "cannot get apikey from sql";
+    err.status = 500;
+    throw err;
+  }
+  // console.log(apiKeyInOldDB);
+  if ((apiKeyInOldDB || apiKeyInDB) != APIKEY) {
     const err = new Error(
       "please sign in our page and check your newest api key"
     );
@@ -102,25 +114,25 @@ export async function authenticationApiKey(req, res, next) {
   next();
 }
 
-export async function genrateapikey(req, res) {
-  const userId = req.body.member.id;
-  let newAPIKEY;
-  try {
-    newAPIKEY = await genrateAPIKEY(userId);
-  } catch (e) {
-    const err = new Error();
-    err.stack = "cannot genrate API KEY";
-    err.status = 500;
-    throw err;
-  }
-  try {
-    await updateApiKey(userId, newAPIKEY);
-  } catch (e) {
-    console.log(e);
-    const err = new Error();
-    err.stack = "cannot udpate API KEY with user";
-    err.status = 500;
-    throw err;
-  }
-  res.status(200).send({ data: newAPIKEY });
-}
+// export async function genrateapikey(req, res) {
+//   const userId = req.body.member.id;
+//   let newAPIKEY;
+//   try {
+//     newAPIKEY = await genrateAPIKEY(userId);
+//   } catch (e) {
+//     const err = new Error();
+//     err.stack = "cannot genrate API KEY";
+//     err.status = 500;
+//     throw err;
+//   }
+//   try {
+//     await updateApiKey(userId, newAPIKEY);
+//   } catch (e) {
+//     console.log(e);
+//     const err = new Error();
+//     err.stack = "cannot udpate API KEY with user";
+//     err.status = 500;
+//     throw err;
+//   }
+//   res.status(200).send({ data: newAPIKEY });
+// }

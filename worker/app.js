@@ -52,7 +52,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
         const time = moment(now, "M/D/YYYY hh:mm:ss a").format(
           "YYYY-MM-DD HH:mm:ss"
         );
-        console.log(time);
+        // console.log(time);
         let autoId;
         try {
           autoId = await insertEmailInforDefaultStatusIsFailed(
