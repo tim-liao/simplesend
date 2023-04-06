@@ -8,6 +8,7 @@ import {
   insertFailedEmailInfor,
   updateFailedEmailStatusBeSuccess,
 } from "./model/sql_model.js";
+import moment from "moment";
 dotenv.config();
 amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
   if (error0) {
@@ -45,8 +46,13 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
         // console.log(" [x] Received %s", originalSendEmailInformation);
         const { email, yourname, text, html, yourSubject, userId } =
           originalSendEmailInformation;
-        let now = new Date();
-        let time = now.toISOString().slice(0, 19).replace("T", " ");
+        let now = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Taipei",
+        });
+        const time = moment(now, "M/D/YYYY hh:mm:ss a").format(
+          "YYYY-MM-DD HH:mm:ss"
+        );
+        console.log(time);
         let autoId;
         try {
           autoId = await insertEmailInforDefaultStatusIsFailed(

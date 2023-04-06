@@ -18,7 +18,8 @@ app.get("/", (req, res) => {
 
 import sentmail_route from "./server/route/sentmail_route.js";
 import api_key_route from "./server/route/api_key_route.js";
-app.use("/api/1.0/", [sentmail_route, api_key_route]);
+import email_history_route from "./server/route/email_history_route.js";
+app.use("/api/1.0/", [sentmail_route, api_key_route, email_history_route]);
 app.use(express.static("public"));
 app.use((req, res, next) => {
   const err = new Error();

@@ -4,7 +4,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "TZ='UTC' node app.js"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "amqplib": "^0.10.3",
     "dotenv": "^16.0.3",
     "js-base64": "^3.7.5",
+    "moment": "^2.29.4",
     "mysql2": "^3.2.0"
   }
 }
