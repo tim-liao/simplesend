@@ -140,7 +140,12 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
           } else if (count == 5 && !data) {
             // 如果已經重複４次結束都還沒有data的話，就要把錯誤訊息及錯誤狀態存到資料庫
             try {
-              await insertFailedEmailInfor(autoId, errorStatus, errorLog);
+              await insertFailedEmailInfor(
+                autoId,
+                email,
+                errorStatus,
+                errorLog
+              );
             } catch (e) {
               console.log(e);
               const err = new Error("cannot insertFailedEmailInfors in sql");

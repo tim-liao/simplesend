@@ -5,6 +5,7 @@ import {
   getUserEmailHistory,
   getSuccessRate,
   getTrackingEmailCountRate,
+  getUserSentEmailqty,
 } from "../controller/email_history_controller.js";
 router.route("/getemailhistory").post(wrapAsync(getUserEmailHistory));
 // req.body:{"userId":1,"startTime":"2023-04-04 00:00:00","endTime":"2023-04-06 13:00:00"}
@@ -20,4 +21,8 @@ router
 
 // req.body:{"userId":1}
 // res.body:{"data": "37.50%"}
+
+router.route("/getusersentemailcount").post(wrapAsync(getUserSentEmailqty));
+
+getUserSentEmailqty;
 export default router;

@@ -63,8 +63,8 @@ export async function authenticationApiKey(req, res, next) {
     apiKeyInDB = await aa[0].API_key;
   } catch (e) {
     console.log(e);
-    const err = new Error("cannot get apikey from sql");
-    err.stack = "cannot get apikey from sql";
+    const err = new Error();
+    err.stack = "you are not a member of our web site ";
     err.status = 500;
     throw err;
   }
@@ -76,13 +76,13 @@ export async function authenticationApiKey(req, res, next) {
     apiKeyInOldDB = await aa[0].old_api_key;
   } catch (e) {
     console.log(e);
-    const err = new Error("cannot get apikey from sql");
-    err.stack = "cannot get apikey from sql";
+    const err = new Error("cannot get old apikey from sql");
+    err.stack = "cannot get old apikey from sql";
     err.status = 500;
     throw err;
   }
   // console.log(apiKeyInOldDB);
-  if ((apiKeyInOldDB || apiKeyInDB) != APIKEY) {
+  if ((apiKeyInOldDB || apiKeyInDB) == APIKEY) {
     const err = new Error(
       "please sign in our page and check your newest api key"
     );

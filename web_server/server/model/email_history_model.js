@@ -54,3 +54,14 @@ export async function getOpenedEmailCount(id) {
   );
   return result;
 }
+
+export async function getUserSentEmailCount(id) {
+  let [result] = await connectionPool.query(
+    `SELECT COUNT(*) FROM send_email_list WHERE user_id = ?`,
+    [id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}

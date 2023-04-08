@@ -4,11 +4,13 @@ import {
   getUserEmailStatus,
   getUserSuccessSentEmailCount,
   getOpenedEmailCount,
+  getUserSentEmailCount,
 } from "../model/email_history_model.js";
-
 export async function getUserEmailHistory(req, res, next) {
-  const { userId, startTime, endTime } = req.body;
-  //   console.log(userId, startTime, endTime);
+  const { userId, startTime, endTime, tz } = req.body;
+  // console.log(userId, startTime, endTime);
+  // 把前端的時間搭配時區轉成台灣時區的時間
+  // output要再轉回去
   let timeCount;
   try {
     timeCount = await getEmailHistory(userId, startTime, endTime);
@@ -33,8 +35,28 @@ export async function getUserEmailHistory(req, res, next) {
       output[timeToDay] = 1;
     }
   });
-  //   console.log(output);
-  res.status(200).send({ data: output });
+  function generateDateRange(start, end) {
+    let dateArray = [];
+    let currentDate = new Date(start);
+    // console.log(currentDate);
+    while (currentDate <= new Date(end)) {
+      dateArray.push(currentDate.toISOString().slice(0, 10));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dateArray;
+  }
+  const dateRange = generateDateRange(startTime, endTime);
+  // console.log(dateRange);
+  let realOutPut = {};
+  dateRange.forEach((e) => {
+    if (output[e]) {
+      realOutPut[e] = output[e];
+    } else {
+      realOutPut[e] = 0;
+    }
+  });
+  res.status(200).send({ data: realOutPut });
 }
 
 export async function getSuccessRate(req, res, next) {
@@ -93,4 +115,20 @@ export async function getTrackingEmailCountRate(req, res, next) {
       userSuccessSentEmailCount[0]["COUNT(*)"]);
   let TrackingEmailCountRate = Number(successRate * 100).toFixed(2) + "%";
   res.status(200).send({ data: TrackingEmailCountRate });
+}
+
+export async function getUserSentEmailqty(req, res, next) {
+  const { userId } = req.body;
+  let originalCount;
+  try {
+    originalCount = await getUserSentEmailCount(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot get UserEmailStatus from sql";
+    err.status = 500;
+    throw err;
+  }
+  // console.log(originalCount);
+  let output = { count: originalCount[0]["COUNT(*)"] };
+  res.status(200).send({ data: output });
 }

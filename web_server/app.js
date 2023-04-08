@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("hello world");
+  res.redirect("/index.html");
 });
 
 import sentmail_route from "./server/route/sentmail_route.js";
