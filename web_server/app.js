@@ -2,7 +2,7 @@ import express from "express";
 const app = express();
 import dotenv from "dotenv";
 dotenv.config();
-
+process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
 /*|| 3000*/
 
@@ -32,7 +32,12 @@ app.use(function (err, req, res, next) {
   const now = Date.now();
   const dateString = new Date(now).toLocaleString();
   console.error(dateString, err);
-  res.status(err.status).json({ status: err.status, message: err.stack });
+  // res.redirect("/404.html");
+  if (err.status == 404) {
+    res.redirect("/404.html");
+  } else {
+    res.status(err.status).json({ status: err.status, message: err.stack });
+  }
 });
 
 app.listen(port, () => {

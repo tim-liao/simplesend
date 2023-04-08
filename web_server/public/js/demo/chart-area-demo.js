@@ -144,63 +144,64 @@ function submitForm(e) {
 
   if (formData.startTime > formData.endTime) {
     $("#MyModal").modal("show");
-  }
-  formData.forEach((val, key) => {
-    const parts = val.split("/");
-    const year = parts[2];
-    const month = parts[0].padStart(2, "0");
-    const day = parts[1].padStart(2, "0");
-    const convertedDate = `${year}-${month}-${day}`;
-    formData[key] = convertedDate;
-  });
-  let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  formData["tz"] = tz;
-  console.log(formData);
-  let body = {
-    userId: 1,
-    tz: formData.tz,
-    startTime: formData.startTime,
-    endTime: formData.endTime,
-  };
-  let headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-  fetch("/api/1.0/getemailhistory", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body),
-  })
-    .then((response) => response.json())
-    .then(function (json) {
-      // console.log(json);
-      let labelsArray = Object.keys(json.data);
-      let dataArray = Object.values(json.data);
-      // console.log(labelsArray, dataArray);
-      emailHistoryLineChart(labelsArray, dataArray);
+  } else {
+    formData.forEach((val, key) => {
+      const parts = val.split("/");
+      const year = parts[2];
+      const month = parts[0].padStart(2, "0");
+      const day = parts[1].padStart(2, "0");
+      const convertedDate = `${year}-${month}-${day}`;
+      formData[key] = convertedDate;
     });
+    let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    formData["tz"] = tz;
+    console.log(formData);
+    let body = {
+      userId: 1,
+      tz: formData.tz,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+    };
+    let headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+    fetch("/api/1.0/getemailhistory", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body),
+    })
+      .then((response) => response.json())
+      .then(function (json) {
+        // console.log(json);
+        let labelsArray = Object.keys(json.data);
+        let dataArray = Object.values(json.data);
+        // console.log(labelsArray, dataArray);
+        emailHistoryLineChart(labelsArray, dataArray);
+      });
+  }
 }
 
-// let body = {
-//   userId: 1,
-//   tz: "Asia/Taipei",
-//   startTime: "2023-04-04",
-//   endTime: "2023-04-07",
-// };
-// let headers = {
-//   "Content-Type": "application/json",
-//   Accept: "application/json",
-// };
-// fetch("/api/1.0/getemailhistory", {
-//   method: "POST",
-//   headers: headers,
-//   body: JSON.stringify(body),
-// })
-//   .then((response) => response.json())
-//   .then(function (json) {
-//     // console.log(json);
-//     let labelsArray = Object.keys(json.data);
-//     let dataArray = Object.values(json.data);
-//     // console.log(labelsArray, dataArray);
-//     emailHistoryLineChart(labelsArray, dataArray);
-//   });
+let chartBody = {
+  userId: 1,
+  tz: "Asia/Taipei",
+  startTime: "2023-04-03",
+  endTime: "2023-04-07",
+};
+let chartHeaders = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
+fetch("/api/1.0/getemailhistory", {
+  method: "POST",
+  headers: chartHeaders,
+  body: JSON.stringify(chartBody),
+})
+  .then((response) => response.json())
+  .then(function (json) {
+    // console.log(json);
+    let labelsArray = Object.keys(json.data);
+    let dataArray = Object.values(json.data);
+    // console.log(labelsArray, dataArray);
+    emailHistoryLineChart(labelsArray, dataArray);
+  });

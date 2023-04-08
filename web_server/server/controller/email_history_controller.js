@@ -5,6 +5,7 @@ import {
   getUserSuccessSentEmailCount,
   getOpenedEmailCount,
   getUserSentEmailCount,
+  getUserFailedEmailMessage,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { userId, startTime, endTime, tz } = req.body;
@@ -21,6 +22,7 @@ export async function getUserEmailHistory(req, res, next) {
     err.status = 500;
     throw err;
   }
+  console.log(timeCount);
   timeCount.forEach((element) => {
     element.time = turnTimeZone(element.time);
   });
@@ -131,4 +133,23 @@ export async function getUserSentEmailqty(req, res, next) {
   // console.log(originalCount);
   let output = { count: originalCount[0]["COUNT(*)"] };
   res.status(200).send({ data: output });
+}
+
+export async function getUserFailedEmailLog(req, res, next) {
+  const { userId } = req.body;
+  let originalCount;
+  try {
+    originalCount = await getUserFailedEmailMessage(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot get UserEmailStatus from sql";
+    err.status = 500;
+    throw err;
+  }
+  originalCount.forEach((element) => {
+    element.time = `${turnTimeZone(element.time)}`.slice(0, -4);
+  });
+  // console.log(originalCount);
+
+  res.status(200).send({ data: originalCount });
 }

@@ -65,3 +65,14 @@ export async function getUserSentEmailCount(id) {
   );
   return result;
 }
+
+export async function getUserFailedEmailMessage(id) {
+  let [result] = await connectionPool.query(
+    `select failed_email_list.recipient_email,send_email_list.time,send_email_list.email_subject,failed_email_list.error_status,failed_email_list.error_log from send_email_list JOIN failed_email_list on failed_email_list.send_email_list_id = send_email_list.id and  send_email_list.user_id = ?`,
+    [id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}

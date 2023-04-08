@@ -6,6 +6,7 @@ import {
   getSuccessRate,
   getTrackingEmailCountRate,
   getUserSentEmailqty,
+  getUserFailedEmailLog,
 } from "../controller/email_history_controller.js";
 router.route("/getemailhistory").post(wrapAsync(getUserEmailHistory));
 // req.body:{"userId":1,"startTime":"2023-04-04 00:00:00","endTime":"2023-04-06 13:00:00"}
@@ -23,6 +24,12 @@ router
 // res.body:{"data": "37.50%"}
 
 router.route("/getusersentemailcount").post(wrapAsync(getUserSentEmailqty));
+// req.body:{"userId":1}
+// res.body:{"data":"count": 35}
 
-getUserSentEmailqty;
+router
+  .route("/getuserfailedemailmessage")
+  .post(wrapAsync(getUserFailedEmailLog));
+// req.body:{"userId":1}
+// res.body:{{"data": [{"recipient_email": "test", "time": "2023-04-04 06:41:44","email_subject": "999999","error_status": 400, "error_log": "Email address is not verified. The following identities failed the check in region AP-NORTHEAST-1: 456@gmail.com"},...}
 export default router;
