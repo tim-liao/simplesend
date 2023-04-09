@@ -9,7 +9,49 @@ import {
   updateFailedEmailStatusBeSuccess,
 } from "./model/sql_model.js";
 import moment from "moment";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import dotenv from "dotenv";
 dotenv.config();
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: {
+    // origin: "http://localhost:3000",
+    origin: `${process.env.URL}:3000`,
+  },
+});
+
+httpServer.listen(3030);
+
+dotenv.config();
+// const getSocketServer = () => {
+//   if (!io) {
+//     throw new Error("Socket.io not initialized");
+//   }
+//   return io;
+// };
+io.on("connection", (socket) => {
+  socket.on("hello", (a) => {
+    console.log(a);
+  });
+  socket.emit("hello", "socket.io connected");
+});
+
+const updateDashboard = function () {
+  // const io = getSocketServer();
+  io.on("reconnect", (a) => {
+    console.log(a);
+    console.log("reconnect");
+  });
+  io.on("disconnect", (a) => {
+    console.log(a);
+    console.log("disconnect");
+  });
+  // io.on("connection", (socket) => {
+  console.log("connected");
+  io.emit("updateDashboard", "successfully send email");
+  // });
+};
 amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
   if (error0) {
     throw error0;
@@ -137,7 +179,9 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
               err.stack = "cannot updateFailedEmailStatusBeSuccess in sql";
               err.status = 500;
             }
+            updateDashboard();
           } else if (count == 5 && !data) {
+            updateDashboard();
             // 如果已經重複４次結束都還沒有data的話，就要把錯誤訊息及錯誤狀態存到資料庫
             try {
               await insertFailedEmailInfor(

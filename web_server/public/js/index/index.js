@@ -1,3 +1,4 @@
+import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 let trackingemailcountrate = document.getElementById("trackingemailcountrate");
 let successrate = document.getElementById("successrate");
 let successrateBar = document.getElementById("successrate-bar");
@@ -43,3 +44,15 @@ fetch("/api/1.0/getusersentemailcount", {
   .then(function (json) {
     usersentemailcount.innerHTML = `${json.data.count}件`;
   });
+
+const socket = io("https://side-project2023.online:3030");
+socket.on(`hello`, (arg) => {
+  console.log(arg);
+});
+socket.emit("hello", "live client is connected");
+socket.on(`updateDashboard`, (arg) => {
+  console.log(arg);
+});
+socket.on("disconnect", () => {
+  socket.connect();
+});

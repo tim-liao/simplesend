@@ -140,7 +140,7 @@ function submitForm(e) {
   formData.forEach((val, key) => {
     formData[key] = val;
   });
-  console.log(formData);
+  // console.log(formData);
 
   if (formData.startTime > formData.endTime) {
     $("#MyModal").modal("show");

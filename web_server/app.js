@@ -5,7 +5,15 @@ dotenv.config();
 process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
 /*|| 3000*/
-
+// import { createServer } from "http";
+// import { Server } from "socket.io";
+// const httpServer = createServer();
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: "http://localhost:3030",
+//   },
+// });
+// httpServer.listen(3030);
 import { trackMailClick } from "./server/route/track_mail_route.js";
 app.use(trackMailClick);
 
@@ -15,11 +23,16 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.redirect("/index.html");
 });
-
+import user_route from "./server/route/user_route.js";
 import sentmail_route from "./server/route/sentmail_route.js";
 import api_key_route from "./server/route/api_key_route.js";
 import email_history_route from "./server/route/email_history_route.js";
-app.use("/api/1.0/", [sentmail_route, api_key_route, email_history_route]);
+app.use("/api/1.0/", [
+  sentmail_route,
+  api_key_route,
+  email_history_route,
+  user_route,
+]);
 app.use(express.static("public"));
 app.use((req, res, next) => {
   const err = new Error();

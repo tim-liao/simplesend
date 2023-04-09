@@ -22,7 +22,7 @@ export async function getUserEmailHistory(req, res, next) {
     err.status = 500;
     throw err;
   }
-  console.log(timeCount);
+  // console.log(timeCount);
   timeCount.forEach((element) => {
     element.time = turnTimeZone(element.time);
   });

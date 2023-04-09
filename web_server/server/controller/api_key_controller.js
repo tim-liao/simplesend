@@ -27,7 +27,7 @@ export async function getapikey(req, res) {
   if (originaluserId.length == 0) {
     const err = new Error();
     err.stack = "you donot sign up our service ";
-    err.status = 500;
+    err.status = 400;
     throw err;
   }
   let userId = originaluserId[0].id;
@@ -115,7 +115,7 @@ export async function generatenewapikey(req, res) {
   if (originaluserId.length == 0) {
     const err = new Error();
     err.stack = "you donot sign up our web service ";
-    err.status = 500;
+    err.status = 400;
     throw err;
   }
   let userId = originaluserId[0].id;
@@ -137,7 +137,7 @@ export async function generatenewapikey(req, res) {
     // 檢查他七天內有沒有進行刪除
     const err = new Error();
     err.stack = "you have genarated a new api key in 7 days";
-    err.status = 500;
+    err.status = 400;
     throw err;
   }
   let selectApiKeyInDB;

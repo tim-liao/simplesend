@@ -304,21 +304,14 @@
                   </div>
 
                   <div class="text-center mt-3">
-                    <span class="bg-secondary p-1 px-4 rounded text-white"
-                      >user id :1</span
-                    >
-                    <h5 class="mt-2 mb-0">timtimtimtim</h5>
-                    <span>email:tingyilia00@gmail.com</span>
-
-                    <div class="px-4 mt-1">
-                      <p class="fonts">
-                        API KEY:57410f5re24jyutbytbjtyub410j5ytu78jb103y5ut7r7b
-                      </p>
-                    </div>
+                    <div id="userprofile"></div>
 
                     <div class="buttons">
-                      <button class="btn btn-outline-primary px-4">
-                        generate new API KEY
+                      <button
+                        class="btn btn-outline-primary px-4"
+                        id="generatenewapikey"
+                      >
+                        generate a new API KEY
                       </button>
                     </div>
                   </div>
@@ -328,12 +321,39 @@
           </div>
         </div>
         <!-- End of Main Content -->
-
+        <!-- 以下是警示視窗 -->
+        <div class="modal" id="MyModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal_title"></h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="modal_body"></div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Footer -->
         <footer class="sticky-footer bg-white">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>Copyright &copy; Your Website 2020</span>
+              <span>Copyright &copy; simple send 2023</span>
             </div>
           </div>
         </footer>
@@ -396,5 +416,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/profile/profile.js"></script>
   </body>
 </html>
