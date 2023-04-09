@@ -45,7 +45,7 @@ fetch("/api/1.0/getusersentemailcount", {
     usersentemailcount.innerHTML = `${json.data.count}件`;
   });
 
-const socket = io("https://side-project2023.online:3030");
+const socket = io("https://side-project2023.online");
 socket.on(`hello`, (arg) => {
   console.log(arg);
 });
