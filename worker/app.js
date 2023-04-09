@@ -11,7 +11,6 @@ import {
 import moment from "moment";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import dotenv from "dotenv";
 dotenv.config();
 const httpServer = createServer();
 const io = new Server(httpServer, {
