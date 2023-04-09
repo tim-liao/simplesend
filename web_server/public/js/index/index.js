@@ -26,16 +26,19 @@ let emailcountrate = function () {
     });
 };
 emailcountrate();
-fetch("/api/1.0/getsuccessrate", {
-  method: "POST",
-  headers: headers,
-  body: JSON.stringify(body),
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    successrateBar.style = `width: ${json.data}`;
-    successrate.innerHTML = `${json.data}`;
-  });
+let successratefunction = function () {
+  fetch("/api/1.0/getsuccessrate", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(body),
+  })
+    .then((response) => response.json())
+    .then(function (json) {
+      successrateBar.style = `width: ${json.data}`;
+      successrate.innerHTML = `${json.data}`;
+    });
+};
+successratefunction();
 let sentemailcount = function () {
   fetch("/api/1.0/getusersentemailcount", {
     method: "POST",
@@ -57,5 +60,6 @@ socket.on(`updateDashboard`, (arg) => {
   if ((arg = "successfully send email")) {
     sentemailcount();
     emailcountrate();
+    successratefunction();
   }
 });
