@@ -37,19 +37,8 @@ io.on("connection", (socket) => {
 });
 
 const updateDashboard = function () {
-  // const io = getSocketServer();
-  io.on("reconnect", (a) => {
-    console.log(a);
-    console.log("reconnect");
-  });
-  io.on("disconnect", (a) => {
-    console.log(a);
-    console.log("disconnect");
-  });
-  // io.on("connection", (socket) => {
   console.log("connected");
   io.emit("updateDashboard", "successfully send email");
-  // });
 };
 amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
   if (error0) {

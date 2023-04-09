@@ -13,17 +13,19 @@ let headers = {
   "Content-Type": "application/json",
   Accept: "application/json",
 };
-fetch("/api/1.0/gettrackingemailcountrate", {
-  method: "POST",
-  headers: headers,
-  body: JSON.stringify(body),
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    trackingemailcountrateBar.style = `width: ${json.data}`;
-    trackingemailcountrate.innerHTML = `${json.data}`;
-  });
-
+let emailcountrate = function () {
+  fetch("/api/1.0/gettrackingemailcountrate", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(body),
+  })
+    .then((response) => response.json())
+    .then(function (json) {
+      trackingemailcountrateBar.style = `width: ${json.data}`;
+      trackingemailcountrate.innerHTML = `${json.data}`;
+    });
+};
+emailcountrate();
 fetch("/api/1.0/getsuccessrate", {
   method: "POST",
   headers: headers,
@@ -34,25 +36,26 @@ fetch("/api/1.0/getsuccessrate", {
     successrateBar.style = `width: ${json.data}`;
     successrate.innerHTML = `${json.data}`;
   });
-
-fetch("/api/1.0/getusersentemailcount", {
-  method: "POST",
-  headers: headers,
-  body: JSON.stringify(body),
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    usersentemailcount.innerHTML = `${json.data.count}件`;
-  });
-
+let sentemailcount = function () {
+  fetch("/api/1.0/getusersentemailcount", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(body),
+  })
+    .then((response) => response.json())
+    .then(function (json) {
+      usersentemailcount.innerHTML = `${json.data.count}件`;
+    });
+};
+sentemailcount();
 const socket = io("https://side-project2023.online");
 socket.on(`hello`, (arg) => {
   console.log(arg);
 });
-socket.emit("hello", "live client is connected");
+// socket.emit("hello", "live client is connected");
 socket.on(`updateDashboard`, (arg) => {
-  console.log(arg);
-});
-socket.on("disconnect", () => {
-  socket.connect();
+  if ((arg = "successfully send email")) {
+    sentemailcount();
+    emailcountrate();
+  }
 });
