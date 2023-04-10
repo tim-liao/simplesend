@@ -5,7 +5,6 @@ import {
 import dotenv from "dotenv";
 import { Base64 } from "js-base64";
 dotenv.config();
-import geoip from "geoip-lite";
 export async function trackMail(req, res, next) {
   let checkImagePath = req._parsedUrl.pathname;
 
