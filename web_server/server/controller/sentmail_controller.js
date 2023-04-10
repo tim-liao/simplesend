@@ -31,6 +31,7 @@ export async function sentmail(req, res, next) {
   }
   //TODO:把使用者的寄件資料塞到queue裡面(還沒做會員認證)
   let sendemailInfor = { email, yourname, yourSubject, userId };
+
   if (text) {
     sendemailInfor["text"] = text;
   } else if (html) {
@@ -73,7 +74,9 @@ export async function authenticationApiKey(req, res, next) {
   try {
     let aa = await selectApiKeyOldList(realUserId, timeSevenDaysAgo);
     // console.log(aa);
-    apiKeyInOldDB = await aa[0].old_api_key;
+    if (aa[0]) {
+      apiKeyInOldDB = await aa[0].old_api_key;
+    }
   } catch (e) {
     console.log(e);
     const err = new Error("cannot get old apikey from sql");
@@ -106,6 +109,12 @@ export async function authenticationApiKey(req, res, next) {
       err.status = 403;
       throw err;
     }
+  }
+  if (realUserId != decoded["userId"]) {
+    const err = new Error("Wrong APIKEY");
+    err.stack = "Wrong APIKEY";
+    err.status = 403;
+    throw err;
   }
 
   req.body["member"] = { id: decoded["userId"] };

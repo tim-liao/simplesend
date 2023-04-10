@@ -15,7 +15,7 @@ dotenv.config();
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    // origin: "http://localhost:3000",
+    // origin: "http://localhost:3000", //我的電腦
     origin: `${process.env.URL}:3000`,
   },
 });
@@ -23,22 +23,34 @@ const io = new Server(httpServer, {
 httpServer.listen(3030);
 
 dotenv.config();
-// const getSocketServer = () => {
-//   if (!io) {
-//     throw new Error("Socket.io not initialized");
-//   }
-//   return io;
-// };
+const users = {};
 io.on("connection", (socket) => {
-  socket.on("hello", (a) => {
-    console.log(a);
+  let userId;
+  const socketId = socket.id;
+  socket.on("toserver", (id) => {
+    users[id] = socketId;
+    userId = id;
+    console.log(users);
   });
-  socket.emit("hello", "socket.io connected");
+  socket.emit("toclient", `socket.io connected`);
+  socket.on("disconnect", () => {
+    const userId = Object.keys(users).find((key) => users[key] === socketId);
+    if (userId) {
+      // delete users[userId];
+      console.log(new Date(Date.now()), users);
+    }
+  });
 });
 
-const updateDashboard = function () {
-  console.log("connected");
-  io.emit("updateDashboard", "successfully send email");
+const updateDashboard = function (userId) {
+  const socketId = users[userId];
+  if (socketId) {
+    console.log("connected");
+    io.to(socketId).emit(
+      "updateDashboard",
+      `successfully send email:userId = ${userId}`
+    );
+  }
 };
 amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
   if (error0) {
@@ -76,6 +88,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
         // console.log(" [x] Received %s", originalSendEmailInformation);
         const { email, yourname, text, html, yourSubject, userId } =
           originalSendEmailInformation;
+        console.log(email, yourname, text, html, yourSubject, userId);
         let now = new Date().toLocaleString("en-US", {
           timeZone: "Asia/Taipei",
         });
@@ -167,9 +180,9 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
               err.stack = "cannot updateFailedEmailStatusBeSuccess in sql";
               err.status = 500;
             }
-            updateDashboard();
+            updateDashboard(userId);
           } else if (count == 5 && !data) {
-            updateDashboard();
+            updateDashboard(userId);
             // 如果已經重複４次結束都還沒有data的話，就要把錯誤訊息及錯誤狀態存到資料庫
             try {
               await insertFailedEmailInfor(

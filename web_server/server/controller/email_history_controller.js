@@ -81,8 +81,15 @@ export async function getSuccessRate(req, res, next) {
       statusCount[status] = 1;
     }
   });
-  //   console.log(statusCount);
+
+  if (!statusCount["1"]) {
+    statusCount["1"] = 0;
+  }
+  if (!statusCount["0"]) {
+    statusCount["0"] = 0;
+  }
   let successRate = statusCount["1"] / (statusCount["1"] + statusCount["0"]);
+
   let successPercent = Number(successRate * 100).toFixed(2) + "%";
   res.status(200).send({ data: successPercent });
 }

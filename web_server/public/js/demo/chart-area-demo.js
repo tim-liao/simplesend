@@ -182,6 +182,8 @@ function submitForm(e) {
   }
 }
 
+// const paramsId = new URLSearchParams(document.location.search);
+// const id = paramsId.get("id");
 let chartBody = {
   userId: 1,
   tz: "Asia/Taipei",
