@@ -10,12 +10,13 @@ export async function trackMail(req, res, next) {
 
   if (checkImagePath == process.env.TRACKING_PIXEL_PATH) {
     // TODO:檢查發現進來的路徑是照片，那就可以查看是不是確實是我寄出的信件，是我寄出的信件就可以解雜湊emailId後存東西到資料庫說有被開信
-    console.log(req.headers);
-    let ip =
-      req.ip ||
-      req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      req.connection.socket.remoteAddress;
+    // console.log(req.headers);
+    // let ip =
+    //   req.ip ||
+    //   req.connection.remoteAddress ||
+    //   req.socket.remoteAddress ||
+    //   req.connection.socket.remoteAddress;
+    let ip = req.headers["x-real-ip"] || req.headers["x-forwarded-for"];
     console.log(
       "user-agent:",
       req.headers["user-agent"],
