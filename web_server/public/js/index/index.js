@@ -62,8 +62,8 @@ let sentemailcount = function () {
     });
 };
 sentemailcount();
-const socket = io("https://side-project2023.online");
-// const socket = io("ws://localhost:3030"); // 我的電腦
+// const socket = io("https://side-project2023.online");
+const socket = io("ws://localhost:3030"); // 我的電腦
 socket.on(`toclient`, (arg) => {
   console.log(arg);
 });

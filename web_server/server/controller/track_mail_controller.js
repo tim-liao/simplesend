@@ -4,6 +4,8 @@ import {
 } from "../model/track_mail_model.js";
 import dotenv from "dotenv";
 import { Base64 } from "js-base64";
+import useragent from "useragent";
+import geoip from "geoip-lite";
 dotenv.config();
 export async function trackMail(req, res, next) {
   let checkImagePath = req._parsedUrl.pathname;
@@ -25,7 +27,10 @@ export async function trackMail(req, res, next) {
       "ip:",
       ip
     );
-    // console.log(req);
+    let geo = geoip.lookup(ip);
+    console.log("import geoip is", geo);
+    let agent = useragent.parse(req.headers["user-agent"]);
+    console.log("import agent is", agent);
     const { id } = req.query;
     if (id) {
       let decodedEmailId = Base64.decode(id);

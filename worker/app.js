@@ -15,8 +15,8 @@ dotenv.config();
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    // origin: "http://localhost:3000", //我的電腦
-    origin: `${process.env.URL}:3000`,
+    origin: "http://localhost:3000", //我的電腦
+    // origin: `${process.env.URL}:3000`,
   },
 });
 
