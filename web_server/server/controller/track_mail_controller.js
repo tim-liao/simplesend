@@ -10,6 +10,15 @@ dotenv.config();
 export async function trackMail(req, res, next) {
   let checkImagePath = req._parsedUrl.pathname;
   let referer = req.headers["referer"];
+  let ip = req.headers["x-real-ip"] || req.headers["x-forwarded-for"];
+  console.log(
+    "user-agent:",
+    req.headers["user-agent"],
+    "referrer:",
+    req.headers.referer,
+    "ip:",
+    ip
+  );
   console.log("import referer is", referer);
   let geo = geoip.lookup(ip);
   console.log("import geoip is", geo);
