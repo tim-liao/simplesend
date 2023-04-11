@@ -9,7 +9,10 @@ import geoip from "geoip-lite";
 dotenv.config();
 export async function trackMail(req, res, next) {
   let checkImagePath = req._parsedUrl.pathname;
-
+  let referer = req.headers["referer"];
+  let origin = req.headers["origin"];
+  console.log(referer);
+  console.log(origin);
   if (checkImagePath == process.env.TRACKING_PIXEL_PATH) {
     // TODO:檢查發現進來的路徑是照片，那就可以查看是不是確實是我寄出的信件，是我寄出的信件就可以解雜湊emailId後存東西到資料庫說有被開信
     // console.log(req.headers);
