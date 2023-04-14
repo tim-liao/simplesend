@@ -68,6 +68,7 @@ export async function trackMail(req, res, next) {
     const { link } = req.query;
     if (link) {
       let originalLinkWithSendEmailId = vertifyLink(link);
+      console.log(originalLinkWithSendEmailId);
       let sendEmailId = originalLinkWithSendEmailId.sendEmailId;
       let originalLink = originalLinkWithSendEmailId.originalHref;
 
