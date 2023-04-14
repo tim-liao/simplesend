@@ -21,7 +21,7 @@ export function transformToTrackedHTML(html, sendEmailId) {
       );
 
       const newHref =
-        `${process.env.ADRESS}/${process.env.TRACKING_LINK_PATH}?link=` + token;
+        `${process.env.ADRESS}${process.env.TRACKING_LINK_PATH}?link=` + token;
       $(this).attr("href", newHref);
     }
   });

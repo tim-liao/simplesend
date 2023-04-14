@@ -36,6 +36,9 @@ export async function trackMail(req, res, next) {
       }
       let publicIp = ip;
       let refererUrl = req.headers.referer;
+      if (refererUrl == null) {
+        refererUrl = "undefined";
+      }
       let triggerDt = generateTimeNow();
       try {
         await addTrackingMessage(
