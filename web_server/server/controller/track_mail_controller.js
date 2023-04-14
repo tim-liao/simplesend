@@ -84,6 +84,10 @@ export async function trackMail(req, res, next) {
       }
       let publicIp = ip;
       let refererUrl = req.headers.referer;
+
+      if (refererUrl == null) {
+        refererUrl = "undefined";
+      }
       let triggerDt = generateTimeNow();
       try {
         await addTrackingMessage(
@@ -104,6 +108,7 @@ export async function trackMail(req, res, next) {
         throw err;
       }
       // 重新導向到原本得網站
+      console.log(originalLink);
       res.redirect(originalLink);
     }
   } else {
