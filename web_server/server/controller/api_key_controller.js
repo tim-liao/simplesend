@@ -3,17 +3,19 @@ import {
   getIDByEmail,
   insertApiKey,
   selectApiKey,
-  updateApiKey,
   vertifyAPIKEY,
-  insertApiKeytoOldList,
-  selectApiKeyOldList,
   generateTimeNow,
-  generateTimeSevenDaysAgo,
+  generateTimeSevenDaysLater,
+  generateTime365DaysLater,
+  updateApiKeyexpiredTimeAndStatus,
+  getAllActiveApiKey,
+  turnTimeZone,
 } from "../model/api_key_model.js";
 
-export async function getapikey(req, res) {
+export async function getnewestapikey(req, res) {
   let { email } = req.body;
   let originaluserId;
+  let dayNow = generateTimeNow();
   //   console.log(email);
   try {
     originaluserId = await getIDByEmail(email);
@@ -34,7 +36,7 @@ export async function getapikey(req, res) {
 
   let selectApiKeyInDB;
   try {
-    selectApiKeyInDB = await selectApiKey(userId);
+    selectApiKeyInDB = await selectApiKey(userId, 1, dayNow);
   } catch (e) {
     const err = new Error();
     err.stack = "cannot selectApiKey from sql";
@@ -51,9 +53,13 @@ export async function getapikey(req, res) {
       err.status = 500;
       throw err;
     }
+    let status = 1;
+
+    let expiredTime = generateTime365DaysLater();
     try {
-      await insertApiKey(userId, apiKey);
+      await insertApiKey(userId, apiKey, status, dayNow, expiredTime);
     } catch (e) {
+      console.log(e);
       const err = new Error();
       err.stack = "cannot insert API KEY with user";
       err.status = 500;
@@ -62,7 +68,7 @@ export async function getapikey(req, res) {
   } else {
     //TODO:檢查是否過期，過期再生成新的，沒有過期就不生成新的，直接傳舊的給他
 
-    let apiKeyInDB = selectApiKeyInDB[0].API_key;
+    let apiKeyInDB = selectApiKeyInDB[0].api_key;
     let decoded;
     try {
       decoded = await vertifyAPIKEY(apiKeyInDB);
@@ -81,11 +87,14 @@ export async function getapikey(req, res) {
           err.status = 500;
           throw err;
         }
+        let status = 1;
+        let startTime = generateTimeNow();
+        let expiredTime = generateTime365DaysLater();
         try {
-          await updateApiKey(userId, apiKey);
+          await insertApiKey(userId, apiKey, status, startTime, expiredTime);
         } catch (e) {
           const err = new Error();
-          err.stack = "cannot udpate API KEY with user";
+          err.stack = "cannot insert API KEY with user";
           err.status = 500;
           throw err;
         }
@@ -119,63 +128,112 @@ export async function generatenewapikey(req, res) {
     throw err;
   }
   let userId = originaluserId[0].id;
-  let selectApiKeyFromOldList;
+  let selectApiKeyList;
   let timeNow = generateTimeNow();
-  let timeSevenDaysAgo = generateTimeSevenDaysAgo();
+
   try {
-    selectApiKeyFromOldList = await selectApiKeyOldList(
-      userId,
-      timeSevenDaysAgo
-    );
+    selectApiKeyList = await getAllActiveApiKey(userId, timeNow);
   } catch (e) {
     const err = new Error();
     err.stack = "cannot selectApiKeyFromOldList";
     err.status = 500;
     throw err;
   }
-  if (selectApiKeyFromOldList.length > 0) {
+  if (selectApiKeyList.length > 1) {
     // 檢查他七天內有沒有進行刪除
+    // 有效的key超過１把，就代表七天內有做過了
     const err = new Error();
     err.stack = "you have genarated a new api key in 7 days";
     err.status = 400;
     throw err;
+  } else if (selectApiKeyList.length == 0) {
+    const err = new Error();
+    err.stack = "you have to  get api key first";
+    err.status = 400;
+    throw err;
+  } else if (selectApiKeyList.length == 1) {
+    let timeSevenDaysLater = generateTimeSevenDaysLater();
+    let apiKey = selectApiKeyList[0].api_key;
+    // 把舊的apikey過期時間改掉
+    try {
+      await updateApiKeyexpiredTimeAndStatus(
+        userId,
+        apiKey,
+        timeSevenDaysLater,
+        0
+      );
+    } catch (e) {
+      console.log(e);
+      const err = new Error();
+      err.stack = "cannot  updateApiKeyexpiredTime in sql";
+      err.status = 500;
+      throw err;
+    }
+    // 生成新的api key放到資料庫
+    let newApiKey;
+    try {
+      newApiKey = await genrateAPIKEY(userId);
+    } catch (e) {
+      const err = new Error();
+      err.stack = "cannot genrate API KEY";
+      err.status = 500;
+      throw err;
+    }
+    let status = 1;
+    let startTime = generateTimeNow();
+    let expiredTime = generateTime365DaysLater();
+    try {
+      await insertApiKey(userId, newApiKey, status, startTime, expiredTime);
+    } catch (e) {
+      const err = new Error();
+      err.stack = "cannot insert API KEY with user";
+      err.status = 500;
+      throw err;
+    }
+    return res.status(200).send({ data: newApiKey });
   }
-  let selectApiKeyInDB;
+}
+
+export async function getAllActiveApiKeyWithExpiredTime(req, res) {
+  let { email } = req.body;
+  let originaluserId;
 
   try {
-    selectApiKeyInDB = await selectApiKey(userId);
+    originaluserId = await getIDByEmail(email);
   } catch (e) {
     const err = new Error();
-    err.stack = "cannot selectApiKey from sql";
+    err.stack = "cannot get id from sql";
     err.status = 500;
     throw err;
   }
-  let apiKeyInDB = selectApiKeyInDB[0].API_key;
+
+  if (originaluserId.length == 0) {
+    const err = new Error();
+    err.stack = "you donot sign up our web service ";
+    err.status = 400;
+    throw err;
+  }
+  let userId = originaluserId[0].id;
+  let timeNow = generateTimeNow();
+  let originalData;
   try {
-    await insertApiKeytoOldList(userId, apiKeyInDB, timeNow);
+    originalData = await getAllActiveApiKey(userId, timeNow);
   } catch (e) {
-    console.log(e);
     const err = new Error();
-    err.stack = "cannot insertApiKeytoOldList";
+    err.stack = "cannot getAllActiveApiKeyData from sql ";
     err.status = 500;
     throw err;
   }
-  let apiKey;
-  try {
-    apiKey = await genrateAPIKEY(userId);
-  } catch (e) {
+  // console.log(originalData);
+  if (originalData.length == 0) {
     const err = new Error();
-    err.stack = "cannot genrate API KEY";
-    err.status = 500;
+    err.stack = "you have to  get api key first";
+    err.status = 400;
     throw err;
   }
-  try {
-    await updateApiKey(userId, apiKey);
-  } catch (e) {
-    const err = new Error();
-    err.stack = "cannot udpate API KEY with user";
-    err.status = 500;
-    throw err;
-  }
-  res.status(200).send({ data: apiKey });
+  originalData.forEach((e) => {
+    e.expired_time = turnTimeZone(e.expired_time);
+  });
+
+  res.status(200).send({ data: originalData });
 }

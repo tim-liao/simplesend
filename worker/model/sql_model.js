@@ -41,3 +41,82 @@ export async function updateFailedEmailStatusBeSuccess(id) {
   );
   return result;
 }
+// //////////////////
+
+export async function selectAllSendEmailInformation(id) {
+  let [result] = await connectionPool.query(
+    `SELECT name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click FROM  send_email_list WHERE id = ?`,
+    [id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function updateSendEmailRequestStatusAndTriggerTime(
+  firstTriggerDt,
+  status,
+  id
+) {
+  let [result] = await connectionPool.query(
+    `UPDATE send_email_list SET first_trigger_dt = ? , send_status = ?  WHERE id =  ?  `,
+    [firstTriggerDt, status, id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function updateSendEmailRequestStatus(status, id) {
+  let [result] = await connectionPool.query(
+    `UPDATE send_email_list SET send_status = ?  WHERE id =  ?  `,
+    [status, id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function insertDefaultSendEmailLog(
+  sendEmailListId,
+  sendCount,
+  triggerDT,
+  sendResponseDT,
+  SendStatusCode,
+  SendMessage
+) {
+  let [result] = await connectionPool.query(
+    `INSERT INTO send_email_log_list (send_email_list_id,send_count,trigger_dt,send_response_dt,send_status_code,send_message) VALUES (?,?,?,?,?,?)`,
+    [
+      sendEmailListId,
+      sendCount,
+      triggerDT,
+      sendResponseDT,
+      SendStatusCode,
+      SendMessage,
+    ],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result.insertId;
+}
+
+export async function updateSendEmailLog(
+  id,
+  sendResponseDT,
+  SendStatusCode,
+  SendMessage
+) {
+  let [result] = await connectionPool.query(
+    `UPDATE  send_email_log_list SET send_response_dt = ? ,send_status_code = ? , send_message = ?  WHERE id =  ?  `,
+    [sendResponseDT, SendStatusCode, SendMessage, id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result.insertId;
+}

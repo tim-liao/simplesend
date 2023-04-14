@@ -36,10 +36,10 @@ export async function getIDByEmail(email) {
   return result;
 }
 
-export async function insertApiKey(id, apikey) {
+export async function insertApiKey(id, apikey, status, startTime, expiredTime) {
   let [result] = await connectionPool.query(
-    `INSERT INTO api_key_list (user_id, API_key) VALUES (?,?)`,
-    [id, apikey],
+    `INSERT INTO api_key_list (user_id,api_key,status,start_time,expired_time) VALUES (?,?,?,?,?)`,
+    [id, apikey, status, startTime, expiredTime],
     function (err) {
       if (err) throw err;
     }
@@ -47,10 +47,21 @@ export async function insertApiKey(id, apikey) {
   return result;
 }
 
-export async function selectApiKey(id) {
+export function generateTime365DaysLater() {
+  let now = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleString(
+    "en-US",
+    {
+      timeZone: "Asia/Taipei",
+    }
+  );
+  let time = moment(now, "M/D/YYYY hh:mm:ss a").format("YYYY-MM-DD HH:mm:ss");
+  return time;
+}
+
+export async function selectApiKey(id, status, timeNow) {
   let [result] = await connectionPool.query(
-    `SELECT API_key FROM  api_key_list WHERE user_id = ?`,
-    [id],
+    `SELECT api_key FROM  api_key_list WHERE user_id = ? AND status = ? AND expired_time > ?`,
+    [id, status, timeNow],
     function (err) {
       if (err) throw err;
     }
@@ -87,8 +98,8 @@ export function generateTimeNow() {
   let time = moment(now, "M/D/YYYY hh:mm:ss a").format("YYYY-MM-DD HH:mm:ss");
   return time;
 }
-export function generateTimeSevenDaysAgo() {
-  let now = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleString(
+export function generateTimeSevenDaysLater() {
+  let now = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleString(
     "en-US",
     {
       timeZone: "Asia/Taipei",
@@ -98,13 +109,41 @@ export function generateTimeSevenDaysAgo() {
   return time;
 }
 
-export async function selectApiKeyOldList(id, time) {
+export async function updateApiKeyexpiredTimeAndStatus(
+  id,
+  apikey,
+  expiredTime,
+  status
+) {
   let [result] = await connectionPool.query(
-    `SELECT old_api_key FROM  old_api_key_list WHERE user_id = ? AND time > ?`,
-    [id, time],
+    `UPDATE api_key_list SET expired_time = ? , status = ?  WHERE API_key = ? AND user_id = ?  `,
+    [expiredTime, status, apikey, id],
     function (err) {
       if (err) throw err;
     }
   );
   return result;
+}
+
+export async function getAllActiveApiKey(id, timeNow) {
+  let [result] = await connectionPool.query(
+    `SELECT api_key,expired_time FROM  api_key_list WHERE user_id = ?  AND expired_time > ?`,
+    [id, timeNow],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export function turnTimeZone(time) {
+  //   console.log(123, time);
+
+  const date = new Date(`${time}`);
+  const tzOffset = +480;
+  const taiwanDate = new Date(date.getTime() + tzOffset * 60 * 1000);
+  //   console.log(date);
+  let output = taiwanDate.toISOString().replace("T", " ").replace("Z", "");
+
+  return output;
 }

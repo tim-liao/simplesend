@@ -5,40 +5,152 @@ import {
   selectApiKey,
   selectApiKeyOldList,
   generateTimeSevenDaysAgo,
+  generateTimeNow,
+  getAllActiveApiKey,
+  createEmailRequest,
 } from "../model/sentmail_model.js";
 dotenv.config();
 
 export async function sentmail(req, res, next) {
-  const { email, yourname, text, html, yourSubject } = req.body;
+  const {
+    nameFrom,
+    emailTo,
+    emailBcc,
+    emailCc,
+    emailReplyTo,
+    emailSubject,
+    emailBodyType,
+    emailBodyContent,
+    trackingOpen,
+    trackingClick,
+  } = req.body;
   const userId = req.body.member.id;
-  if (!(text || html)) {
+  if (!nameFrom) {
     const err = new Error();
-    err.stack = "your request miss content";
+    err.stack = "your request miss nameFrom";
     err.status = 400;
     throw err;
   }
-  if (text && html) {
+  if (!emailTo) {
     const err = new Error();
-    err.stack = "your request cannot contain both text and html";
+    err.stack = "your request miss emailTo";
     err.status = 400;
     throw err;
   }
-  if (!email || !yourname || !yourSubject) {
+  if (!emailSubject) {
     const err = new Error();
-    err.stack = "your request miss something";
+    err.stack = "your request miss emailSubject";
     err.status = 400;
     throw err;
   }
-  //TODO:把使用者的寄件資料塞到queue裡面(還沒做會員認證)
-  let sendemailInfor = { email, yourname, yourSubject, userId };
+  if (!emailBodyType) {
+    const err = new Error();
+    err.stack = "your request miss emailBodyType";
+    err.status = 400;
+    throw err;
+  }
+  if (!emailBodyContent) {
+    const err = new Error();
+    err.stack = "your request miss emailBodyContent";
+    err.status = 400;
+    throw err;
+  }
+  if (!trackingOpen) {
+    const err = new Error();
+    err.stack = "your request miss trackingOpen";
+    err.status = 400;
+    throw err;
+  }
+  if (!trackingClick) {
+    const err = new Error();
+    err.stack = "your request miss trackingClick";
+    err.status = 400;
+    throw err;
+  }
+  if (emailBodyType != "text" && emailBodyType != "html") {
+    const err = new Error();
+    err.stack = "emailBodyType should type in text or html";
+    err.status = 400;
+    throw err;
+  }
+  if (emailBodyType == "text" && trackingClick == "yes") {
+    const err = new Error();
+    err.stack = "text type cannot be tracked click";
+    err.status = 400;
+    throw err;
+  }
+  if (trackingOpen != "yes" && trackingOpen != "no") {
+    const err = new Error();
+    err.stack = "trackingOpen should type in yes or no";
+    err.status = 400;
+    throw err;
+  }
+  if (trackingClick != "yes" && trackingClick != "no") {
+    const err = new Error();
+    err.stack = "trackingClick should type in yes or no";
+    err.status = 400;
+    throw err;
+  }
+  let trackingClickToNumber;
+  if (trackingClick == "yes") {
+    trackingClickToNumber = 1;
+  } else if (trackingClick == "no") {
+    trackingClickToNumber = 0;
+  }
 
-  if (text) {
-    sendemailInfor["text"] = text;
-  } else if (html) {
-    sendemailInfor["html"] = html;
+  let trackingOpenToNumber;
+  if (trackingOpen == "yes") {
+    trackingOpenToNumber = 1;
+  } else if (trackingOpen == "no") {
+    trackingOpenToNumber = 0;
   }
-  sendemailInfor = JSON.stringify(sendemailInfor);
-  putINMQ(sendemailInfor);
+
+  // TODO:先把使用者的東西塞進資料庫
+  // TODO:再把資料庫回傳的ID存到queue裡面
+  // TODO:後續worker拿出來時會把東西從資料庫撈出來寄送
+  if (!emailBcc) {
+    emailBcc = "undfined";
+  }
+  if (!emailCc) {
+    emailCc = "undfined";
+  }
+  if (!emailReplyTo) {
+    emailReplyTo = "undfined";
+  }
+  let createTime = generateTimeNow();
+  let sendStatus = "created";
+  let firstTriggerTime = generateTimeNow();
+
+  let originalRequestId;
+  try {
+    originalRequestId = await createEmailRequest(
+      userId,
+      nameFrom,
+      emailTo,
+      emailBcc,
+      emailCc,
+      emailReplyTo,
+      emailSubject,
+      emailBodyType,
+      emailBodyContent,
+      trackingOpenToNumber,
+      trackingClickToNumber,
+      createTime,
+      sendStatus,
+      firstTriggerTime
+    );
+  } catch (e) {
+    console.log(e);
+    const err = new Error();
+    err.stack = "cannot insert createEmailRequest in sql";
+    err.status = 500;
+    throw err;
+  }
+  // console.log(originalRequestId);
+  let requestId = `${originalRequestId.insertId}`;
+  console.log(requestId);
+  // 把requestId塞到queue裡面，之後從queue拿出來會再呼叫
+  putINMQ(requestId);
 
   res.status(200).send({ data: "successfully scheduled" });
 }
@@ -58,10 +170,11 @@ export async function authenticationApiKey(req, res, next) {
     err.stack = "No APIKEY";
     throw err;
   }
-  let apiKeyInDB;
+  //  檢查apikey有沒有在全部的可用得apikey中對上
+  let timeNow = generateTimeNow();
+  let allActiveApiKey;
   try {
-    let aa = await selectApiKey(realUserId);
-    apiKeyInDB = await aa[0].API_key;
+    allActiveApiKey = await getAllActiveApiKey(realUserId, timeNow);
   } catch (e) {
     console.log(e);
     const err = new Error();
@@ -69,31 +182,19 @@ export async function authenticationApiKey(req, res, next) {
     err.status = 500;
     throw err;
   }
-  let apiKeyInOldDB;
-  let timeSevenDaysAgo = generateTimeSevenDaysAgo();
-  try {
-    let aa = await selectApiKeyOldList(realUserId, timeSevenDaysAgo);
-    // console.log(aa);
-    if (aa[0]) {
-      apiKeyInOldDB = await aa[0].old_api_key;
+  for (let i = 0; i < allActiveApiKey.length; i++) {
+    if (allActiveApiKey[i].api_key == APIKEY) {
+      break;
+    } else if (
+      allActiveApiKey[i].api_key != APIKEY &&
+      i == allActiveApiKey.length - 1
+    ) {
+      const err = new Error();
+      err.stack = "not active api key";
+      err.status = 400;
+      throw err;
     }
-  } catch (e) {
-    console.log(e);
-    const err = new Error("cannot get old apikey from sql");
-    err.stack = "cannot get old apikey from sql";
-    err.status = 500;
-    throw err;
   }
-  // console.log(apiKeyInOldDB);
-  if ((apiKeyInOldDB || apiKeyInDB) == APIKEY) {
-    const err = new Error(
-      "please sign in our page and check your newest api key"
-    );
-    err.stack = "please sign in our page and check your newest api key";
-    err.status = 400;
-    throw err;
-  }
-
   let decoded;
   try {
     decoded = await vertifyAPIKEY(APIKEY);
