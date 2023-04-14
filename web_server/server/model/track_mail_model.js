@@ -30,10 +30,10 @@ export async function addTrackingMessage(
   return result;
 }
 
-export async function checkTrackingMessage(id) {
+export async function checkTrackingMessage(id, type) {
   let [result] = await connectionPool.query(
-    `SELECT id from tracking_email_list where send_email_list_id = ? `,
-    [id],
+    `SELECT id from tracking_email_list where send_email_list_id = ? AND tracking_type = ? `,
+    [id, type],
     function (err) {
       if (err) throw err;
     }

@@ -1,6 +1,7 @@
 import {
   generateTimeNow,
   addTrackingMessage,
+  checkTrackingMessage,
   vertifyLink,
 } from "../model/track_mail_model.js";
 import dotenv from "dotenv";
@@ -19,44 +20,57 @@ export async function trackMail(req, res, next) {
     const { id } = req.query;
     if (id) {
       let decodedSendEmailId = Base64.decode(id);
-      // TODO:這邊id是sendEmailId
+      // 這邊id是sendEmailId
       // 把東西解析後存到資料庫
-      const recipientBrowser = agent.family;
-      const trackingType = "pixel";
-      const recipientCountry = geo.country;
-      const allSource = agent.source;
-      let recipientPlatform;
-      let startIndex = allSource.indexOf("(") + 1;
-      let endIndex = allSource.indexOf(";", startIndex);
-      let result = allSource.substring(startIndex, endIndex);
-      if (result) {
-        recipientPlatform = result;
-      } else {
-        recipientPlatform = allSource;
-      }
-      let publicIp = ip;
-      let refererUrl = req.headers.referer;
-      if (refererUrl == null) {
-        refererUrl = "undefined";
-      }
-      let triggerDt = generateTimeNow();
+      // 先檢查tracktype是pixel以及sendemailId有沒紀錄過，若有的話就不紀錄，若沒有則紀錄
+      let checkTracking;
       try {
-        await addTrackingMessage(
-          decodedSendEmailId,
-          trackingType,
-          recipientCountry,
-          recipientBrowser,
-          recipientPlatform,
-          publicIp,
-          refererUrl,
-          triggerDt
-        );
+        checkTracking = await checkTrackingMessage(id, "pixel");
       } catch (e) {
         console.log(e);
         const err = new Error();
-        err.stack = "cannot addTrackingMessage in sql";
+        err.stack = "cannot checkTrackingMessage in sql";
         err.status = 500;
         throw err;
+      }
+      if (checkTracking.length == 0) {
+        const recipientBrowser = agent.family;
+        const trackingType = "pixel";
+        const recipientCountry = geo.country;
+        const allSource = agent.source;
+        let recipientPlatform;
+        let startIndex = allSource.indexOf("(") + 1;
+        let endIndex = allSource.indexOf(";", startIndex);
+        let result = allSource.substring(startIndex, endIndex);
+        if (result) {
+          recipientPlatform = result;
+        } else {
+          recipientPlatform = allSource;
+        }
+        let publicIp = ip;
+        let refererUrl = req.headers.referer;
+        if (refererUrl == null) {
+          refererUrl = "undefined";
+        }
+        let triggerDt = generateTimeNow();
+        try {
+          await addTrackingMessage(
+            decodedSendEmailId,
+            trackingType,
+            recipientCountry,
+            recipientBrowser,
+            recipientPlatform,
+            publicIp,
+            refererUrl,
+            triggerDt
+          );
+        } catch (e) {
+          console.log(e);
+          const err = new Error();
+          err.stack = "cannot addTrackingMessage in sql";
+          err.status = 500;
+          throw err;
+        }
       }
     }
     next();
@@ -67,8 +81,17 @@ export async function trackMail(req, res, next) {
     let agent = useragent.parse(req.headers["user-agent"]);
     const { link } = req.query;
     if (link) {
-      let originalLinkWithSendEmailId = vertifyLink(link);
-      console.log(originalLinkWithSendEmailId);
+      let originalLinkWithSendEmailId;
+      try {
+        originalLinkWithSendEmailId = await vertifyLink(link);
+      } catch (e) {
+        console.log(e);
+        const err = new Error();
+        err.stack = "cannot vertifyLink";
+        err.status = 500;
+        throw err;
+      }
+
       let sendEmailId = originalLinkWithSendEmailId.sendEmailId;
       let originalLink = originalLinkWithSendEmailId.originalHref;
 
@@ -112,7 +135,6 @@ export async function trackMail(req, res, next) {
         throw err;
       }
       // 重新導向到原本得網站
-      console.log(originalLink);
       res.redirect(originalLink);
     }
   } else {
