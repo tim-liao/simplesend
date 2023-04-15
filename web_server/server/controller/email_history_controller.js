@@ -5,7 +5,6 @@ import {
   getUserSuccessSentEmailCount,
   getOpenedEmailCount,
   getUserSentEmailCount,
-  getUserFailedEmailMessage,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { userId, startTime, endTime, tz } = req.body;
