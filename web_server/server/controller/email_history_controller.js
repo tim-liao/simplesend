@@ -72,23 +72,18 @@ export async function getSuccessRate(req, res, next) {
     err.status = 500;
     throw err;
   }
-  let statusCount = {};
+  let statusCount = { success: 0, other: 0 };
   eachStatus.forEach((e) => {
-    let status = e.status;
-    if (statusCount[status]) {
-      statusCount[status]++;
+    let status = e.send_status;
+    if (status == "success") {
+      statusCount.success++;
     } else {
-      statusCount[status] = 1;
+      statusCount.other++;
     }
   });
 
-  if (!statusCount["1"]) {
-    statusCount["1"] = 0;
-  }
-  if (!statusCount["0"]) {
-    statusCount["0"] = 0;
-  }
-  let successRate = statusCount["1"] / (statusCount["1"] + statusCount["0"]);
+  let successRate =
+    statusCount.success / (statusCount.success + statusCount.other);
 
   let successPercent = Number(successRate * 100).toFixed(2) + "%";
   res.status(200).send({ data: successPercent });
@@ -142,11 +137,11 @@ export async function getUserSentEmailqty(req, res, next) {
   res.status(200).send({ data: output });
 }
 
-export async function getUserFailedEmailLog(req, res, next) {
+export async function getUserSendEmailLog(req, res, next) {
   const { userId } = req.body;
   let originalCount;
   try {
-    originalCount = await getUserFailedEmailMessage(userId);
+    originalCount = await getUserSendEmailMessage(userId);
   } catch (e) {
     const err = new Error();
     err.stack = "cannot get UserEmailStatus from sql";

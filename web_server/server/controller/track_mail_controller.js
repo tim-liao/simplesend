@@ -25,7 +25,7 @@ export async function trackMail(req, res, next) {
       // 先檢查tracktype是pixel以及sendemailId有沒紀錄過，若有的話就不紀錄，若沒有則紀錄
       let checkTracking;
       try {
-        checkTracking = await checkTrackingMessage(id, "pixel");
+        checkTracking = await checkTrackingMessage(decodedSendEmailId, "pixel");
       } catch (e) {
         console.log(e);
         const err = new Error();
