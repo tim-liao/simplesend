@@ -5,6 +5,7 @@ import {
   getUserSuccessSentEmailCount,
   getOpenedEmailCount,
   getUserSentEmailCount,
+  getUserTrackingClickInformation,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { userId, startTime, endTime, tz } = req.body;
@@ -88,7 +89,7 @@ export async function getSuccessRate(req, res, next) {
   res.status(200).send({ data: successPercent });
 }
 
-export async function getTrackingEmailCountRate(req, res, next) {
+export async function getTrackingOpenEmailCountRate(req, res, next) {
   const { userId } = req.body;
   // 拿到寄件者全部成功的寄信數量
   let userSuccessSentEmailCount;
@@ -101,7 +102,7 @@ export async function getTrackingEmailCountRate(req, res, next) {
     err.status = 500;
     throw err;
   }
-  //   拿到寄件者寄出信件的開信數量
+  //   拿到寄件者寄出信件的已開信數量
   try {
     openedEmailCount = await getOpenedEmailCount(userId);
   } catch (e) {
@@ -153,4 +154,44 @@ export async function getUserSendEmailLog(req, res, next) {
   // console.log(originalCount);
 
   res.status(200).send({ data: originalCount });
+}
+
+export async function getTrackingClickEmailInfor(req, res, next) {
+  const { userId } = req.body;
+  //  TODO:用使用者id去撈使用者emailid，在用emailid去撈使用者的counrty,browser,platform
+  let originalInfor;
+  try {
+    originalInfor = await getUserTrackingClickInformation(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot get UserTrackingClickInformation from sql";
+    err.status = 500;
+    throw err;
+  }
+  let coutryCount = {};
+  let browserCount = {};
+  let platformCount = {};
+
+  originalInfor.forEach((e) => {
+    let country = e.recipient_country;
+    let browser = e.recipient_browser;
+    let platform = e.recipient_platform;
+    if (coutryCount[country]) {
+      coutryCount[country]++;
+    } else {
+      coutryCount[country] = 1;
+    }
+    if (browserCount[browser]) {
+      browserCount[browser]++;
+    } else {
+      browserCount[browser] = 1;
+    }
+    if (platformCount[platform]) {
+      platformCount[platform]++;
+    } else {
+      platformCount[platform] = 1;
+    }
+  });
+  let data = { coutryCount, browserCount, platformCount };
+  res.status(200).send({ data });
 }

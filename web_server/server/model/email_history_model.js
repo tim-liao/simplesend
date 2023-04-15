@@ -76,3 +76,14 @@ export async function getUserSendEmailMessage(id) {
   );
   return result;
 }
+
+export async function getUserTrackingClickInformation(id) {
+  let [result] = await connectionPool.query(
+    `select t.recipient_country,t.recipient_browser,t.recipient_platform from send_email_list as s join tracking_email_list as t on s.id = t.send_email_list_id where s.user_id =? and t.tracking_type = 'link'`,
+    [id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
