@@ -10,7 +10,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>SIMPLE SEND</title>
 
     <!-- Custom fonts for this template-->
     <link
@@ -76,7 +76,7 @@
         <li class="nav-item">
           <a class="nav-link" href="tables.html">
             <i class="fas fa-fw fa-table"></i>
-            <span>寄件失敗頁面</span></a
+            <span>email log</span></a
           >
         </li>
         <li class="nav-item">
@@ -238,7 +238,7 @@
                               class="h5 mb-0 mr-3 font-weight-bold text-gray-800"
                               id="successrate"
                             >
-                              50%
+                              0%
                             </div>
                           </div>
                           <div class="col">
@@ -273,13 +273,13 @@
                         <div
                           class="text-l font-weight-bold text-success text-uppercase mb-1"
                         >
-                          本月已使用寄件數量
+                          累積使用寄件數量
                         </div>
                         <div
                           class="h5 mb-0 font-weight-bold text-gray-800"
                           id="usersentemailcount"
                         >
-                          78
+                          0
                         </div>
                       </div>
                       <div class="col-auto">
@@ -307,7 +307,7 @@
                               class="h5 mb-0 mr-3 font-weight-bold text-gray-800"
                               id="trackingemailcountrate"
                             >
-                              50%
+                              0%
                             </div>
                           </div>
                           <div class="col">
@@ -328,6 +328,57 @@
                       <div class="col-auto">
                         <i class="fas fa-dove fa-2x text-gray-300"></i>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Donut Chart -->
+              <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      連結追蹤國家佔比
+                    </h6>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-pie pt-4">
+                      <canvas id="countryPieChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Donut Chart -->
+              <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      連結追蹤瀏覽器佔比
+                    </h6>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-pie pt-4">
+                      <canvas id="browserPieChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Donut Chart -->
+              <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      使用設備佔比
+                    </h6>
+                  </div>
+                  <!-- Card Body -->
+                  <div class="card-body">
+                    <div class="chart-pie pt-4">
+                      <canvas id="platformPieChart"></canvas>
                     </div>
                   </div>
                 </div>
@@ -558,7 +609,7 @@
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
+    <script src="js/index/chart-area.js"></script>
     <!-- <script src="js/demo/chart-pie-demo.js"></script> -->
     <!-- 選擇日期 -->
 
@@ -567,5 +618,6 @@
       $(".datepicker").datepicker();
     </script>
     <script type="module" src="js/index/index.js"></script>
+    <script src="js/index/chart-pie.js"></script>
   </body>
 </html>

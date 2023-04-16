@@ -22,7 +22,7 @@ let headers = {
   Accept: "application/json",
 };
 let emailcountrate = function () {
-  fetch("/api/1.0/gettrackingemailcountrate", {
+  fetch("/api/1.0/gettrackingopenemailcountrate", {
     method: "POST",
     headers: headers,
     body: JSON.stringify(body),

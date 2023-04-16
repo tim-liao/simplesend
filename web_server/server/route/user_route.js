@@ -8,7 +8,6 @@ router.route("/getuserprofile").post(wrapAsync(getUserProfile));
 // res.body:{"data":{
 //     "id": 1,
 //     "name": "aaa",
-//     "email": "aaa@gmail.com",
-//     "API_key": "fsfdalkfhvndsauflkjvhncalkuierhcmtflhsdkjr"
+//     "email": "aaa@gmail.com"
 // }}
 export default router;

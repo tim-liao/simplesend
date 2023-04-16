@@ -44,7 +44,8 @@ app.use((req, res, next) => {
 app.use(function (err, req, res, next) {
   const now = Date.now();
   const dateString = new Date(now).toLocaleString();
-  console.error(dateString, err);
+  let path = req._parsedUrl.pathname;
+  console.error(path, dateString, err);
   // res.redirect("/404.html");
   if (err.status == 404) {
     res.redirect("/404.html");

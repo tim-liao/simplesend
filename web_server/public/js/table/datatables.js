@@ -8,7 +8,7 @@ let headers = {
   "Content-Type": "application/json",
   Accept: "application/json",
 };
-fetch("/api/1.0/getuserfailedemailmessage", {
+fetch("/api/1.0/getUserSendEmailMessage", {
   method: "POST",
   headers: headers,
   body: JSON.stringify(body),
@@ -32,31 +32,52 @@ fetch("/api/1.0/getuserfailedemailmessage", {
         >
           <thead>
             <tr>
-              <th>Recipient Email</th>
-              <th>Time</th>
-              <th>Email Subject</th>
-              <th>Error Status</th>
-              <th>Error Log</th>
+            <th>name_from</th>
+            <th>email_to</th>
+            <th>email_bcc</th>
+            <th>email_cc</th>
+            <th>email_reply_to</th>
+            <th>email_subject</th>
+            <th>email_body_type</th>
+            <th>tracking_open</th>
+            <th>tracking_click</th>
+            <th>send_status</th>
+            <th>send_message</th>
+            <th>created_dt</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-            <th>Recipient Email</th>
-            <th>Time</th>
-            <th>Email Subject</th>
-            <th>Error Status</th>
-            <th>Error Log</th>
+            <th>name_from</th>
+            <th>email_to</th>
+            <th>email_bcc</th>
+            <th>email_cc</th>
+            <th>email_reply_to</th>
+            <th>email_subject</th>
+            <th>email_body_type</th>
+            <th>tracking_open</th>
+            <th>tracking_click</th>
+            <th>send_status</th>
+            <th>send_message</th>
+            <th>created_dt</th>
             </tr>
           </tfoot>
           <tbody >`;
     allMessage.forEach((e) => {
       HTML += `
     <tr>
-    <td>${e.recipient_email}</td>
-    <td>${e.time}</td>
+    <td>${e.name_from}</td>
+    <td>${e.email_to}</td>
+    <td>${e.email_bcc}</td>
+    <td>${e.email_cc}</td>
+    <td>${e.email_reply_to}</td>
     <td>${e.email_subject}</td>
-    <td>${e.error_status}</td>
-    <td>${e.error_log}</td>
+    <td>${e.email_body_type}</td>
+    <td>${e.tracking_open}</td>
+    <td>${e.tracking_click}</td>
+    <td>${e.send_status}</td>
+    <td>${e.send_message}</td>
+    <td>${e.created_dt}</td>
   </tr>`;
     });
     HTML += `</tbody>

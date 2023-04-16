@@ -37,6 +37,21 @@ router
   .post(wrapAsync(getTrackingClickEmailInfor));
 
 // req.body:{"userId":1}
-// res.body:{"data": "37.50%"}
+// res.body:{
+//     "data": {
+//       "coutry": {
+//           "TW": 16
+//       },
+//       "browser": {
+//           "Chrome": 11,
+//           "Mobile Safari": 5
+//       },
+//       "platform": {
+//           "Macintosh": 6,
+//           "Windows NT 10.0": 5,
+//           "iPhone": 5
+//       }
+//   }
+// }
 
 export default router;

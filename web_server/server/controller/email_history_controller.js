@@ -6,6 +6,7 @@ import {
   getOpenedEmailCount,
   getUserSentEmailCount,
   getUserTrackingClickInformation,
+  getUserSendEmailMessage,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { userId, startTime, endTime, tz } = req.body;
@@ -24,12 +25,12 @@ export async function getUserEmailHistory(req, res, next) {
   }
   // console.log(timeCount);
   timeCount.forEach((element) => {
-    element.time = turnTimeZone(element.time);
+    element.created_dt = turnTimeZone(element.created_dt);
   });
   //   console.log(timeCount);
   let output = {};
   timeCount.forEach((e) => {
-    let timeToDay = e.time.slice(0, 10);
+    let timeToDay = e.created_dt.slice(0, 10);
     // console.log(timeToDay);
     if (output[timeToDay]) {
       output[timeToDay]++;
@@ -128,7 +129,7 @@ export async function getUserSentEmailqty(req, res, next) {
     originalCount = await getUserSentEmailCount(userId);
   } catch (e) {
     const err = new Error();
-    err.stack = "cannot get UserEmailStatus from sql";
+    err.stack = "cannot get UserSentEmailCount from sql";
     err.status = 500;
     throw err;
   }
@@ -143,13 +144,14 @@ export async function getUserSendEmailLog(req, res, next) {
   try {
     originalCount = await getUserSendEmailMessage(userId);
   } catch (e) {
+    console.log(e);
     const err = new Error();
-    err.stack = "cannot get UserEmailStatus from sql";
+    err.stack = "cannot get UserSendEmailMessage from sql";
     err.status = 500;
     throw err;
   }
   originalCount.forEach((element) => {
-    element.time = `${turnTimeZone(element.time)}`.slice(0, -4);
+    element.created_dt = `${turnTimeZone(element.created_dt)}`.slice(0, -4);
   });
   // console.log(originalCount);
 
@@ -168,30 +170,30 @@ export async function getTrackingClickEmailInfor(req, res, next) {
     err.status = 500;
     throw err;
   }
-  let coutryCount = {};
-  let browserCount = {};
-  let platformCount = {};
+  let country = {};
+  let browser = {};
+  let platform = {};
 
   originalInfor.forEach((e) => {
-    let country = e.recipient_country;
-    let browser = e.recipient_browser;
-    let platform = e.recipient_platform;
-    if (coutryCount[country]) {
-      coutryCount[country]++;
+    let orignailCountry = e.recipient_country;
+    let originalBrowser = e.recipient_browser;
+    let originalPlatform = e.recipient_platform;
+    if (country[orignailCountry]) {
+      country[orignailCountry]++;
     } else {
-      coutryCount[country] = 1;
+      country[orignailCountry] = 1;
     }
-    if (browserCount[browser]) {
-      browserCount[browser]++;
+    if (browser[originalBrowser]) {
+      browser[originalBrowser]++;
     } else {
-      browserCount[browser] = 1;
+      browser[originalBrowser] = 1;
     }
-    if (platformCount[platform]) {
-      platformCount[platform]++;
+    if (platform[originalPlatform]) {
+      platform[originalPlatform]++;
     } else {
-      platformCount[platform] = 1;
+      platform[originalPlatform] = 1;
     }
   });
-  let data = { coutryCount, browserCount, platformCount };
+  let data = { country, browser, platform };
   res.status(200).send({ data });
 }

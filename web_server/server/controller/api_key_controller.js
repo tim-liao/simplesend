@@ -13,27 +13,13 @@ import {
 } from "../model/api_key_model.js";
 
 export async function getnewestapikey(req, res) {
-  let { email } = req.body;
-  let originaluserId;
-  let dayNow = generateTimeNow();
-  //   console.log(email);
-  try {
-    originaluserId = await getIDByEmail(email);
-  } catch (e) {
+  const { userId } = req.body;
+  if (!userId) {
     const err = new Error();
-    err.stack = "cannot get id from sql";
-    err.status = 500;
-    throw err;
-  }
-
-  if (originaluserId.length == 0) {
-    const err = new Error();
-    err.stack = "you donot sign up our service ";
+    err.stack = "please send user id";
     err.status = 400;
     throw err;
   }
-  let userId = originaluserId[0].id;
-
   let selectApiKeyInDB;
   try {
     selectApiKeyInDB = await selectApiKey(userId, 1, dayNow);
@@ -109,25 +95,13 @@ export async function getnewestapikey(req, res) {
 }
 
 export async function generatenewapikey(req, res) {
-  let { email } = req.body;
-  let originaluserId;
-  //   console.log(email);
-  try {
-    originaluserId = await getIDByEmail(email);
-  } catch (e) {
+  const { userId } = req.body;
+  if (!userId) {
     const err = new Error();
-    err.stack = "cannot get id from sql";
-    err.status = 500;
-    throw err;
-  }
-
-  if (originaluserId.length == 0) {
-    const err = new Error();
-    err.stack = "you donot sign up our web service ";
+    err.stack = "please send user id";
     err.status = 400;
     throw err;
   }
-  let userId = originaluserId[0].id;
   let selectApiKeyList;
   let timeNow = generateTimeNow();
 
@@ -195,25 +169,13 @@ export async function generatenewapikey(req, res) {
 }
 
 export async function getAllActiveApiKeyWithExpiredTime(req, res) {
-  let { email } = req.body;
-  let originaluserId;
-
-  try {
-    originaluserId = await getIDByEmail(email);
-  } catch (e) {
+  const { userId } = req.body;
+  if (!userId) {
     const err = new Error();
-    err.stack = "cannot get id from sql";
-    err.status = 500;
-    throw err;
-  }
-
-  if (originaluserId.length == 0) {
-    const err = new Error();
-    err.stack = "you donot sign up our web service ";
+    err.stack = "please send user id";
     err.status = 400;
     throw err;
   }
-  let userId = originaluserId[0].id;
   let timeNow = generateTimeNow();
   let originalData;
   try {

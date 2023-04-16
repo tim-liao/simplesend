@@ -34,7 +34,7 @@ export async function selectPasswordByEmail(email) {
 
 export async function selectUserProfile(id) {
   let [result] = await connectionPool.query(
-    `select user.id,user.name,user.email,api_key_list.API_key from user JOIN api_key_list on user.id = api_key_list.user_id AND user.id = ? `,
+    `select id,name,email from user WHERE id = ? `,
     [id],
     function (err) {
       if (err) throw err;
