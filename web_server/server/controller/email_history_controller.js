@@ -9,7 +9,8 @@ import {
   getUserSendEmailMessage,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
-  const { userId, startTime, endTime, tz } = req.body;
+  const { startTime, endTime, tz } = req.body;
+  const { userId, email } = req.body.member;
   // console.log(userId, startTime, endTime);
   // 把前端的時間搭配時區轉成台灣時區的時間
   // output要再轉回去
@@ -59,11 +60,12 @@ export async function getUserEmailHistory(req, res, next) {
       realOutPut[e] = 0;
     }
   });
+
   res.status(200).send({ data: realOutPut });
 }
 
 export async function getSuccessRate(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   let eachStatus;
   try {
     eachStatus = await getUserEmailStatus(userId);
@@ -83,15 +85,18 @@ export async function getSuccessRate(req, res, next) {
     }
   });
 
-  let successRate =
-    statusCount.success / (statusCount.success + statusCount.other);
+  let allCount = statusCount.success + statusCount.other;
+  let successRate = statusCount.success / allCount;
 
   let successPercent = Number(successRate * 100).toFixed(2) + "%";
+  if (allCount == 0) {
+    successPercent = "0%";
+  }
   res.status(200).send({ data: successPercent });
 }
 
 export async function getTrackingOpenEmailCountRate(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   // 拿到寄件者全部成功的寄信數量
   let userSuccessSentEmailCount;
   let openedEmailCount;
@@ -112,18 +117,19 @@ export async function getTrackingOpenEmailCountRate(req, res, next) {
     err.status = 500;
     throw err;
   }
-  //   console.log(userSuccessSentEmailCount);
-  //   console.log(openedEmailCount);
-  let successRate =
-    openedEmailCount[0]["COUNT(*)"] /
-    (openedEmailCount[0]["COUNT(*)"] +
-      userSuccessSentEmailCount[0]["COUNT(*)"]);
+  let allCount =
+    openedEmailCount[0]["COUNT(*)"] + userSuccessSentEmailCount[0]["COUNT(*)"];
+  let successRate = openedEmailCount[0]["COUNT(*)"] / allCount;
+
   let TrackingEmailCountRate = Number(successRate * 100).toFixed(2) + "%";
+  if (allCount == 0) {
+    TrackingEmailCountRate = "0%";
+  }
   res.status(200).send({ data: TrackingEmailCountRate });
 }
 
 export async function getUserSentEmailqty(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   let originalCount;
   try {
     originalCount = await getUserSentEmailCount(userId);
@@ -139,7 +145,7 @@ export async function getUserSentEmailqty(req, res, next) {
 }
 
 export async function getUserSendEmailLog(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   let originalCount;
   try {
     originalCount = await getUserSendEmailMessage(userId);
@@ -159,7 +165,7 @@ export async function getUserSendEmailLog(req, res, next) {
 }
 
 export async function getTrackingClickEmailInfor(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   //  TODO:用使用者id去撈使用者emailid，在用emailid去撈使用者的counrty,browser,platform
   let originalInfor;
   try {

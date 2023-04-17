@@ -19,7 +19,7 @@ app.use(trackMailClick);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.redirect("/index.html");
 });
@@ -33,7 +33,7 @@ app.use("/api/1.0/", [
   email_history_route,
   user_route,
 ]);
-app.use(express.static("public"));
+
 app.use((req, res, next) => {
   const err = new Error();
   err.status = 404;

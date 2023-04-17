@@ -30,7 +30,6 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 /////////目前寫死，但要想方法讓使用者在前端可以做選擇要選擇哪個時段的
 // TODO:這邊之後會需要拿取前端儲存的使用者access token放到header裡面然後丟給後端判斷是誰
-
 const emailHistoryLineChart = function (labelsArray, dataArray) {
   document.getElementById("chart-area").innerHTML =
     '<canvas id="myAreaChart"></canvas>';
@@ -132,6 +131,13 @@ const emailHistoryLineChart = function (labelsArray, dataArray) {
     },
   });
 };
+let token = localStorage.getItem("userToken");
+let aaheaders = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  Authorization: `Bearer ${token}`,
+};
+
 const form = document.getElementById("form");
 form.addEventListener("submit", submitForm);
 function submitForm(e) {
@@ -157,18 +163,14 @@ function submitForm(e) {
     formData["tz"] = tz;
     console.log(formData);
     let body = {
-      userId: 1,
       tz: formData.tz,
       startTime: formData.startTime,
       endTime: formData.endTime,
     };
-    let headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    };
+
     fetch("/api/1.0/getemailhistory", {
       method: "POST",
-      headers: headers,
+      headers: aaheaders,
       body: JSON.stringify(body),
     })
       .then((response) => response.json())
@@ -185,23 +187,23 @@ function submitForm(e) {
 // const paramsId = new URLSearchParams(document.location.search);
 // const id = paramsId.get("id");
 let chartBody = {
-  userId: 1,
   tz: "Asia/Taipei",
-  startTime: "2023-04-11",
-  endTime: "2023-04-15",
+  startTime: "2023-04-12",
+  endTime: "2023-04-19",
 };
 let chartHeaders = {
   "Content-Type": "application/json",
   Accept: "application/json",
+  Authorization: `Bearer ${token}`,
 };
 fetch("/api/1.0/getemailhistory", {
   method: "POST",
-  headers: chartHeaders,
+  headers: aaheaders,
   body: JSON.stringify(chartBody),
 })
   .then((response) => response.json())
   .then(function (json) {
-    // console.log(json);
+    console.log(json);
     let labelsArray = Object.keys(json.data);
     let dataArray = Object.values(json.data);
     // console.log(labelsArray, dataArray);

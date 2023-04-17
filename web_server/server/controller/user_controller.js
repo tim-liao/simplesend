@@ -9,10 +9,16 @@ import {
   selectAllUserDomainNameINfor,
   selectDomainName,
   updateUserDNSStatus,
+  checkUserEmailUsedOrNot,
+  createPasswordHashed,
+  createNewUserInfor,
+  genrateUserAccessToken,
+  getPasswordAndUserIdWithNameByEmail,
+  checkPassword,
 } from "../model/user_model.js";
 
 export async function getUserProfile(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   let userProfile;
   try {
     userProfile = await selectUserProfile(userId);
@@ -27,7 +33,9 @@ export async function getUserProfile(req, res, next) {
 }
 
 export async function userGetStringToStoreInDnsSetting(req, res, next) {
-  const { userId, domainName } = req.body;
+  const { domainName } = req.body;
+  const { userId, email } = req.body.member;
+
   //檢查對應的使用者是否有對應的domainName在資料庫
   if (!userId) {
     const err = new Error();
@@ -107,7 +115,8 @@ export async function userGetStringToStoreInDnsSetting(req, res, next) {
 }
 
 export async function verifyUserDomainName(req, res, next) {
-  const { userId, domainName } = req.body;
+  const { domainName } = req.body;
+  const { userId, email } = req.body.member;
   // 檢查對應的使用者是否有對應的domainName的string在資料庫
   let getUserDomainName;
   try {
@@ -205,7 +214,7 @@ export async function verifyUserDomainName(req, res, next) {
 }
 
 export async function getAllUserDomainNameINfor(req, res, next) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   // 撈出所有該使用者驗證通過的domainname並回傳
   // 都沒有的話就告訴他沒有任何東西
   let originalData;
@@ -220,14 +229,15 @@ export async function getAllUserDomainNameINfor(req, res, next) {
   if (originalData.length == 0) {
     return res
       .status(200)
-      .send({ data: "you donot have any verify domain name" });
+      .send({ status: 200, message: "you donot have submitted domain name" });
   } else {
     return res.status(200).send({ data: originalData });
   }
 }
 
 export async function deleteUserDomainName(req, res, next) {
-  const { userId, domainName } = req.body;
+  const { domainName } = req.body;
+  const { userId, email } = req.body.member;
   //檢查對應的使用者是否有對應的domainName在資料庫
   if (!userId) {
     const err = new Error();
@@ -278,4 +288,206 @@ export async function deleteUserDomainName(req, res, next) {
   }
 
   res.status(200).send({ data: "successfully deleted" });
+}
+
+export async function userSignUp(req, res, next) {
+  const { email, password, name } = req.body;
+  if (!email || !password || !name) {
+    const err = new Error();
+    err.stack = "your requst lose email , password or name";
+    err.status = 400;
+    throw err;
+  }
+  let checkClientDataKeys = Object.keys(req.body);
+  for (let i = 0; i < checkClientDataKeys.length; i++) {
+    let checkKey = checkClientDataKeys[i];
+    if (
+      !(checkKey == "email" || checkKey == "password" || checkKey == "name")
+    ) {
+      const err = new Error();
+      err.stack = "your requst cannot include other thing";
+      err.status = 400;
+      throw err;
+    }
+  }
+  if (email.length > 100) {
+    const err = new Error();
+    err.stack = "your email address length should smaller than 100";
+    err.status = 400;
+    throw err;
+  }
+  let checkDotCom = "";
+  for (let i = email.length - 1; i > email.length - 5; i--) {
+    checkDotCom = email[i] + checkDotCom;
+  }
+
+  if (checkDotCom != ".com") {
+    const err = new Error();
+    err.stack = "your email address donot have .com";
+    err.status = 400;
+    throw err;
+  }
+  for (let i = 0; i < email.length; i++) {
+    if (email[i] == "@") {
+      break;
+    } else if (i == email.length - 1 && email[i] != "@") {
+      const err = new Error();
+      err.stack = "your email address donot have @";
+      err.status = 400;
+      throw err;
+    }
+  }
+  // 檢查email有沒有被註冊過
+  let checkDBId;
+  try {
+    checkDBId = await checkUserEmailUsedOrNot(email);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot checkUserEmailUsedOrNot from sql";
+    err.status = 500;
+    throw err;
+  }
+  if (checkDBId.length != 0) {
+    const err = new Error();
+    err.stack = "Email Already Exists";
+    err.status = 400;
+    throw err;
+  }
+  // 若是沒註冊過，就可以來把用戶的資料整理後放到資料庫
+  // 加密使用者的密碼
+  let passwordHashed;
+  try {
+    passwordHashed = await createPasswordHashed(password, 10);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot createPasswordHashed ";
+    err.status = 500;
+    throw err;
+  }
+
+  // 把使用者資料加到資料庫，並且拿回使用者ID
+  let originalUserId;
+  try {
+    originalUserId = await createNewUserInfor(name, email, passwordHashed);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot createNewUserInfor from sql";
+    err.status = 500;
+    throw err;
+  }
+  let userId = originalUserId.insertId;
+  // 一般註冊完成就會想要直接登入，所以這邊就是直接給他登入
+  // 登入的方式是給他一組3600秒的jwttoken，讓他存在本地
+  // 裡面會帶userid,useremail
+  let accessToken;
+  try {
+    accessToken = await genrateUserAccessToken(userId, email, 3600);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot genrateUserAccessToken";
+    err.status = 500;
+    throw err;
+  }
+  const data = { access_token: accessToken, acces_expired: 3600 };
+  const user = { id: userId, name, email };
+  // 使用者在註冊成功時會自動產生一組api key
+
+  res.status(200).send({ data, user });
+}
+
+export async function userSignIn(req, res, next) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    const err = new Error();
+    err.stack = "your requst lose email or password ";
+    err.status = 400;
+    throw err;
+  }
+  let checkClientDataKeys = Object.keys(req.body);
+  for (let i = 0; i < checkClientDataKeys.length; i++) {
+    let checkKey = checkClientDataKeys[i];
+    if (!(checkKey == "email" || checkKey == "password")) {
+      const err = new Error();
+      err.stack = "your requst cannot include other thing";
+      err.status = 400;
+      throw err;
+    }
+  }
+  if (email.length > 100) {
+    const err = new Error();
+    err.stack = "your email address length should smaller than 100";
+    err.status = 400;
+    throw err;
+  }
+  let checkDotCom = "";
+  for (let i = email.length - 1; i > email.length - 5; i--) {
+    checkDotCom = email[i] + checkDotCom;
+  }
+
+  if (checkDotCom != ".com") {
+    const err = new Error();
+    err.stack = "your email address donot have .com";
+    err.status = 400;
+    throw err;
+  }
+  for (let i = 0; i < email.length; i++) {
+    if (email[i] == "@") {
+      break;
+    } else if (i == email.length - 1 && email[i] != "@") {
+      const err = new Error();
+      err.stack = "your email address donot have @";
+      err.status = 400;
+      throw err;
+    }
+  }
+  // 直接用email撈看看有沒有這個hashedpassword，沒有的話就代表沒有註冊過
+  let originalPasswordAndUserIdWithNameInDB;
+  try {
+    originalPasswordAndUserIdWithNameInDB =
+      await getPasswordAndUserIdWithNameByEmail(email);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot checkUserEmailUsedOrNot from sql";
+    err.status = 500;
+    throw err;
+  }
+  if (originalPasswordAndUserIdWithNameInDB.length == 0) {
+    const err = new Error();
+    err.stack = "this email donot sign up our web site";
+    err.status = 400;
+    throw err;
+  }
+  let hashedPasswordInDB = originalPasswordAndUserIdWithNameInDB[0].password;
+  let sameWordOrNot;
+  try {
+    sameWordOrNot = await checkPassword(password, hashedPasswordInDB);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot checkPassword by bcrypt";
+    err.status = 500;
+    throw err;
+  }
+  if (sameWordOrNot == true) {
+    // 如果是對的，就撈userId, email然後包在accesstoken裡面給他
+    let userId = originalPasswordAndUserIdWithNameInDB[0].id;
+    let userName = originalPasswordAndUserIdWithNameInDB[0].name;
+    let accessToken;
+    try {
+      accessToken = await genrateUserAccessToken(userId, email, 3600);
+    } catch (e) {
+      const err = new Error();
+      err.stack = "cannot genrateUserAccessToken by jwt";
+      err.status = 500;
+      throw err;
+    }
+    const data = { access_token: accessToken, acces_expired: 3600 };
+    const user = { id: userId, name: userName, email };
+
+    res.status(200).send({ data, user });
+  } else {
+    const err = new Error();
+    err.stack = "your password is not correct";
+    err.status = 400;
+    throw err;
+  }
 }

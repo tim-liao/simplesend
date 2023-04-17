@@ -13,17 +13,19 @@ import {
 } from "../model/api_key_model.js";
 
 export async function getnewestapikey(req, res) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";
     err.status = 400;
     throw err;
   }
+  let dayNow = generateTimeNow();
   let selectApiKeyInDB;
   try {
     selectApiKeyInDB = await selectApiKey(userId, 1, dayNow);
   } catch (e) {
+    console.log(e);
     const err = new Error();
     err.stack = "cannot selectApiKey from sql";
     err.status = 500;
@@ -95,7 +97,7 @@ export async function getnewestapikey(req, res) {
 }
 
 export async function generatenewapikey(req, res) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";
@@ -169,7 +171,7 @@ export async function generatenewapikey(req, res) {
 }
 
 export async function getAllActiveApiKeyWithExpiredTime(req, res) {
-  const { userId } = req.body;
+  const { userId, email } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";

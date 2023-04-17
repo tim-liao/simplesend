@@ -8,23 +8,17 @@ const countryChart = document.getElementById("countryPieChart");
 const browserChart = document.getElementById("browserPieChart");
 const platformChart = document.getElementById("platformPieChart");
 
-const paramsId = new URLSearchParams(document.location.search);
-const userId = paramsId.get("id");
-if (!userId) {
-  window.location.replace(`login.html`);
+let userToken = localStorage.getItem("userToken");
+if (!userToken) {
+  window.location.replace(`sign_in.html`);
 }
-let body = {
-  userId: userId,
-};
-let headers = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
-};
+
+let userHeaders = { Authorization: `Bearer ${userToken}` };
+
 let gettrackingclickemailinfor = function () {
   fetch("/api/1.0/gettrackingclickemailinfor", {
     method: "POST",
-    headers: headers,
-    body: JSON.stringify(body),
+    headers: userHeaders,
   })
     .then((response) => response.json())
     .then(function (json) {
@@ -142,6 +136,15 @@ let makeChart = function (a, chart) {
     countArray.push(obj[1]);
     backgroundColorArray.push(colorArray.pop());
   });
+  if (labesArray.length == 0) {
+    labesArray.push("you have nothing to display");
+  }
+  if (countArray.length == 0) {
+    countArray.push(1);
+  }
+  if (backgroundColorArray.length == 0) {
+    backgroundColorArray.push(colorArray.pop());
+  }
   return new Chart(chart, {
     type: "doughnut",
     data: {
@@ -175,3 +178,8 @@ let makeChart = function (a, chart) {
   });
 };
 gettrackingclickemailinfor();
+document.getElementById("logout").addEventListener("click", () => {
+  localStorage.removeItem("userToken");
+
+  return window.location.replace(`sign_in.html`);
+});

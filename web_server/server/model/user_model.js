@@ -1,7 +1,11 @@
 import connectionPool from "./mysql_config.js";
 import crypto from "crypto";
 import moment from "moment";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import dns from "dns";
+dotenv.config();
 export async function addUser(name, email, hashword) {
   let [result] = await connectionPool.query(
     `INSERT INTO user (name, email, hashword) VALUES (?,?,?)`,
@@ -141,5 +145,63 @@ export async function updateUserDNSStatus(verifyStatus, userId, domainName) {
       if (err) throw err;
     }
   );
+  return result;
+}
+
+export async function checkUserEmailUsedOrNot(email) {
+  let [result] = await connectionPool.query(
+    `select  id from user where email = ? `,
+    [email],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function createPasswordHashed(passWord, saltRounds) {
+  let result = await bcrypt.hash(passWord, saltRounds);
+  return result;
+}
+
+export async function createNewUserInfor(name, email, password) {
+  let [result] = await connectionPool.query(
+    `INSERT INTO user (name,email,password) VALUES (?,?,?) `,
+    [name, email, password],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function genrateUserAccessToken(userid, useremail, expiredTime) {
+  const SECRET = process.env.ACCESS_TOKEN_SECRET;
+  const token = jwt.sign(
+    {
+      userid: userid,
+      useremail: useremail,
+    },
+    SECRET,
+    {
+      expiresIn: expiredTime,
+    }
+  );
+  return token;
+}
+
+export async function getPasswordAndUserIdWithNameByEmail(email) {
+  let [result] = await connectionPool.query(
+    `select  password,id,name from user where email = ? `,
+    [email],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function checkPassword(passWord, hashedPassword) {
+  let result = await bcrypt.compare(passWord, hashedPassword);
   return result;
 }
