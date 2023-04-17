@@ -9,10 +9,12 @@ import {
   updateSendEmailRequestStatus,
   insertDefaultSendEmailLog,
   updateSendEmailLog,
+  selectUserSettingString,
 } from "./model/sql_model.js";
 import { generateTimeNow } from "./model/time_model.js";
 import { transformToTrackedHTML } from "./model/transform_html_model.js";
 import moment from "moment";
+import { getTxtDNSSetting } from "./model/dns_model.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
 dotenv.config();
@@ -77,7 +79,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
       async function (msg) {
         let sendEmailId = msg.content.toString();
         // console.log(originalSendEmailInformation);
-        // TODO:把東西從資料庫拿出來
+        // 把東西從資料庫拿出來
         let allSendEmailInformation;
         try {
           allSendEmailInformation = await selectAllSendEmailInformation(
@@ -89,7 +91,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
           err.status = 500;
           console.log(e);
         }
-        // TODO:把first_trigger_dt改成現在，並把狀態改成triggered
+        // 把first_trigger_dt改成現在，並把狀態改成triggered
         try {
           let triggerTime = generateTimeNow();
           await updateSendEmailRequestStatusAndTriggerTime(
@@ -103,8 +105,9 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
           err.status = 500;
           console.log(e);
         }
-        //TODO:把東西寄出去
-        console.log(allSendEmailInformation);
+        //把東西寄出去
+        // console.log(allSendEmailInformation);
+        const userId = allSendEmailInformation[0].user_id;
         const nameFrom = allSendEmailInformation[0].name_from;
         const emailTo = allSendEmailInformation[0].email_to;
         const emailBcc = allSendEmailInformation[0].email_bcc;
@@ -115,7 +118,91 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
         const emailBodyContent = allSendEmailInformation[0].email_body_content;
         const trackingOpen = allSendEmailInformation[0].tracking_open;
         const trackingClick = allSendEmailInformation[0].tracking_click;
-        // TODO:檢查emailBcc,emailCc,emailReplyTo是不是undfined，是得話就把這幾個欄位改成空值array
+        // TODO:認真檢查nameFrom是不是使用者可用：web server接收時只有驗證一下下（因為不要讓負載都在web server上，同時不會讓使用者等太久），所以這邊要認真驗證，比照檢查是否可用時驗證20次，20次都通過才放行，不然的話就要存成失敗。
+        // 找對應到的userId,string,domainname出來
+        let settingString;
+        let originalsSettingString;
+        try {
+          originalsSettingString = await selectUserSettingString(
+            userId,
+            nameFrom
+          );
+        } catch (e) {
+          console.error(e);
+        }
+        settingString = originalsSettingString[0].setting_string;
+        // 並且用dns跑20次
+        let txtDNSSetting = [];
+        let verifyTime = 20;
+        for (let i = 0; i < verifyTime; i++) {
+          let originalTxtDNSSetting;
+          try {
+            originalTxtDNSSetting = await getTxtDNSSetting(nameFrom);
+          } catch (e) {
+            console.error(e);
+          }
+          txtDNSSetting.push(originalTxtDNSSetting[0][0]);
+        }
+        let sendEmailOrNot = 0;
+        // 用一個變數來控制究竟要不要觸發寄件function
+        if (txtDNSSetting.length == verifyTime) {
+          for (let i = 0; i < verifyTime; i++) {
+            if (txtDNSSetting[i] != settingString) {
+              // 因為我驗證多次，只要有一次不符合我的字串，就儲存failed及現在時間到我的資料庫，並回傳失敗給他
+              // 如果有問題，把send_email_list的send_status改成failed
+              try {
+                await updateSendEmailRequestStatus("failed", sendEmailId);
+              } catch (e) {
+                console.error(e);
+              }
+              // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
+              let timeNow = generateTimeNow();
+              try {
+                await insertDefaultSendEmailLog(
+                  sendEmailId,
+                  0,
+                  timeNow,
+                  timeNow,
+                  400,
+                  "your domain name is not verified"
+                );
+              } catch (e) {
+                console.error(e);
+              }
+            } else if (
+              i == verifyTime - 1 &&
+              txtDNSSetting[i] == settingString
+            ) {
+              // 如果沒問題就放行
+              sendEmailOrNot = 1;
+            }
+          }
+        } else {
+          // 長度不足代表有至少一次回圈失敗，有失敗代表還沒有真的更新完成
+          // 如果有問題，把send_email_list的send_status改成failed
+          try {
+            await updateSendEmailRequestStatus("failed", sendEmailId);
+          } catch (e) {
+            console.error(e);
+          }
+          // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
+          let timeNow = generateTimeNow();
+          try {
+            await insertDefaultSendEmailLog(
+              sendEmailId,
+              0,
+              timeNow,
+              timeNow,
+              400,
+              "your domain name is not verified"
+            );
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        /////////
+        // 檢查emailBcc,emailCc,emailReplyTo是不是undfined，是得話就把這幾個欄位改成空值array
         let eamilBccArray = [];
         let emailCcArray = [];
         let emailReplyToArray = [];
@@ -129,7 +216,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
         if (emailReplyTo != "undfined") {
           emailReplyToArray.push(emailReplyTo);
         }
-        // TODO:trackingOpen以及trackingClick對應後有四種狀況，來決定要不要塞入
+        // trackingOpen以及trackingClick對應後有四種狀況，來決定要不要塞入
         let messageBody;
         if (trackingOpen == 1 && trackingClick == 1) {
           if (emailBodyType == "html") {
@@ -174,7 +261,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
               sendEmailId
             );
             // 並分類在html
-            console.log("HTMLData", HTMLData);
+            // console.log("HTMLData", HTMLData);
             messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
           } else if (emailBodyType == "text") {
             const err = new Error("text type cannot be tracked click");
@@ -194,7 +281,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
             };
           }
         }
-        // TODO:把資料準備好做成params
+        // 把資料準備好做成params
         const params = {
           Destination: {
             CcAddresses: emailCcArray,
@@ -212,28 +299,27 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
           Source: `${nameFrom}${process.env.FROM_EMAIL}`,
           ReplyToAddresses: emailReplyToArray,
         };
-        // TODO:如果東西整理好準備要寄送時就把資料庫得狀態改成pending
-        console.log(messageBody);
-        console.log(params);
+        // 如果東西整理好準備要寄送時就把資料庫得狀態改成pending
+        // console.log(messageBody);
+        // console.log(params);
         try {
           await updateSendEmailRequestStatus("pending", sendEmailId);
         } catch (e) {
-          const err = new Error("cannot updateSendEmailRequestStatus in sql");
-          err.stack = "cannot updateSendEmailRequestStatus in sql";
-          err.status = 500;
-          console.log(e);
+          console.error(e);
         }
         const command = new SendEmailCommand(params);
         let data;
-        let count = 0;
+        let count = 1;
+        // 04/16變更：原本資料庫裡面count＝０是指第一次寄件就成功，但為了因應認證donmain name，可能在真正寄件前就擋下來，所以把count=0讓給真正沒有寄件的狀況
         let failedSendStatusCode;
         let failedSendMessage;
-        async function myFunction() {
+        async function sendEmailToSES() {
+          // 這個function是寄送郵件
           let sendEmailLogId;
           let triggerTimeNow = generateTimeNow();
           let responseDT;
           try {
-            // TODO:新增email log資料並說明trigger_dt以及同一個sendemailid的寄件次數
+            // 新增email log資料並說明trigger_dt以及同一個sendemailid的寄件次數
             sendEmailLogId = await insertDefaultSendEmailLog(
               sendEmailId,
               count,
@@ -243,10 +329,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
               "default"
             );
           } catch (e) {
-            const err = new Error("cannot insertDefaultSendEmailLog in sql");
-            err.stack = "cannot insertDefaultSendEmailLog in sql";
-            err.status = 500;
-            console.log(e);
+            console.error(e);
           }
 
           try {
@@ -259,7 +342,7 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
             responseDT = generateTimeNow();
           }
           count++;
-          // TODO:寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
+          // 寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
           if (data && data["$metadata"].httpStatusCode == 200) {
             try {
               await updateSendEmailLog(
@@ -269,24 +352,16 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
                 "successfully send email"
               );
             } catch (e) {
-              const err = new Error("cannot updateSendEmailLog in sql");
-              err.stack = "cannot updateSendEmailLog in sql";
-              err.status = 500;
-              console.log(err);
+              console.error(e);
             }
             try {
               await updateSendEmailRequestStatus("success", sendEmailId);
             } catch (e) {
-              const err = new Error(
-                "cannot updateSendEmailRequestStatus to success in sql"
-              );
-              err.stack =
-                "cannot updateSendEmailRequestStatus to success in sql";
-              err.status = 500;
-              console.log(err);
+              console.error(e);
             }
-          } else if (!data && count < 5) {
-            // TODO:寄件失敗但在補寄過程時，不需要變更資料庫寄件狀態，但要紀錄email log，並紀錄回傳時間到資料庫
+            updateDashboard(userId);
+          } else if (!data && count < 6) {
+            // 寄件失敗但在補寄過程時，不需要變更資料庫寄件狀態，但要紀錄email log，並紀錄回傳時間到資料庫
             setTimeout(myFunction, count * 2000);
             try {
               await updateSendEmailLog(
@@ -296,14 +371,10 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
                 failedSendMessage
               );
             } catch (e) {
-              console.log(e);
-              const err = new Error("cannot updateSendEmailLog in sql");
-              err.stack = "cannot updateSendEmailLog in sql";
-              err.status = 500;
-              console.log(err);
+              console.error(e);
             }
-          } else if (!data && count == 5) {
-            // TODO:若是自動補寄完仍然失敗，變更資料庫寄件狀態為failed，並紀錄email log，並紀錄回傳時間到資料庫
+          } else if (!data && count == 6) {
+            // 若是自動補寄完仍然失敗，變更資料庫寄件狀態為failed，並紀錄email log，並紀錄回傳時間到資料庫
             try {
               await updateSendEmailLog(
                 sendEmailLogId,
@@ -312,199 +383,21 @@ amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
                 failedSendMessage
               );
             } catch (e) {
-              const err = new Error("cannot updateSendEmailLog in sql");
-              err.stack = "cannot updateSendEmailLog in sql";
-              err.status = 500;
-              console.log(err);
+              console.error(e);
             }
             try {
               await updateSendEmailRequestStatus("failed", sendEmailId);
             } catch (e) {
-              const err = new Error(
-                "cannot updateSendEmailRequestStatus to success in sql"
-              );
-              err.stack =
-                "cannot updateSendEmailRequestStatus to success in sql";
-              err.status = 500;
-              console.log(err);
+              console.error(e);
             }
+            updateDashboard(userId);
           }
-          // if (!data && count < 5) {
-          // } else if (data && data["$metadata"].httpStatusCode == 200) {
-          //   // 有data且status為200代表寄件成功，可以直接更新寄件狀態到資料庫
-          //   // console.log(data);
-          //   try {
-          //     await updateFailedEmailStatusBeSuccess(autoId);
-          //   } catch (e) {
-          //     const err = new Error(
-          //       "cannot updateFailedEmailStatusBeSuccess in sql"
-          //     );
-          //     err.stack = "cannot updateFailedEmailStatusBeSuccess in sql";
-          //     err.status = 500;
-          //   }
-          //   updateDashboard(userId);
-          // } else if (count == 5 && !data) {
-          //   updateDashboard(userId);
-          //   // 如果已經重複４次結束都還沒有data的話，就要把錯誤訊息及錯誤狀態存到資料庫
-          //   try {
-          //     await insertFailedEmailInfor(
-          //       autoId,
-          //       email,
-          //       errorStatus,
-          //       errorLog
-          //     );
-          //   } catch (e) {
-          //     console.log(e);
-          //     const err = new Error("cannot insertFailedEmailInfors in sql");
-          //     err.stack = "cannot insertFailedEmailInfors in sql";
-          //     err.status = 500;
-          //   }
-          // } else if (data && data["$metadata"].httpStatusCode != 200) {
-          //   // 有data但status不是200感覺怪怪的，還沒有碰過這個狀況，但如果碰到的話就把他歸類在error裡面
-          //   let message =
-          //     data.message || "send successfully but something worong from SES";
-          //   try {
-          //     await insertFailedEmailInfor(
-          //       autoId,
-          //       data["$metadata"].httpStatusCode,
-          //       message
-          //     );
-          //   } catch (e) {
-          //     const err = new Error("cannot insertFailedEmailInfors in sql");
-          //     err.stack = "cannot insertFailedEmailInfors in sql";
-          //     err.status = 500;
-          //   }
-          // }
         }
 
-        // let now = new Date().toLocaleString("en-US", {
-        //   timeZone: "Asia/Taipei",
-        // });
-        // const time = moment(now, "M/D/YYYY hh:mm:ss a").format(
-        //   "YYYY-MM-DD HH:mm:ss"
-        // );
-        // // console.log(time);
-        // let autoId;
-        // try {
-        //   autoId = await insertEmailInforDefaultStatusIsFailed(
-        //     userId,
-        //     yourSubject,
-        //     time
-        //   );
-        // } catch (e) {
-        //   const err = new Error(
-        //     "cannot insertEmailInforDefalutStatusIsFailed in sql"
-        //   );
-        //   err.stack = "cannot insertEmailInforDefalutStatusIsFailed in sql";
-        //   err.status = 500;
-        //   console.log(e);
-        // }
-        // console.log(autoId);
-        // let base64UTF8EncodedAutoId = Base64.encode(`${autoId}`);
-        // // let messageBody;
-        // console.log(
-        //   `${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}`
-        // );
-        // if (text) {
-        //   messageBody = {
-        //     Html: {
-        //       Charset: "UTF-8",
-        //       Data: `${text}<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}">`,
-        //     },
-        //   };
-        // } else if (html) {
-        //   messageBody = {
-        //     Html: {
-        //       Charset: "UTF-8",
-        //       Data:
-        //         html +
-        //         `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedAutoId}">`,
-        //     },
-        //   };
-        // }
-        // const params = {
-        //   Destination: {
-        //     ToAddresses: [email],
-        //   },
-        //   Message: {
-        //     Body: messageBody,
-
-        //     Subject: {
-        //       Charset: "UTF-8",
-        //       Data: yourSubject,
-        //     },
-        //   },
-        //   Source: `${yourname}${process.env.FROM_EMAIL}`,
-        // };
-        // const command = new SendEmailCommand(params);
-        //TODO:把回傳的資料（錯誤訊息,成功訊息）放到資料庫
-        // TODO:失敗補寄會直接在這裡做回圈，經過五次寄件失敗就會記錄到errlog資料庫裡面
-        // let data;
-        // let count = 0;
-        // let errorStatus;
-        // let errorLog;
-        // async function myFunction() {
-        //   try {
-        //     data = await client.send(command);
-        //   } catch (e) {
-        //     errorStatus = e["$metadata"].httpStatusCode;
-        //     errorLog = e.message;
-        //     console.error(e["$metadata"].httpStatusCode, e.message);
-        //   }
-
-        //   count++;
-        //   console.log(count);
-        //   if (!data && count < 5) {
-        //     setTimeout(myFunction, count * 2000);
-        //   } else if (data && data["$metadata"].httpStatusCode == 200) {
-        //     // 有data且status為200代表寄件成功，可以直接更新寄件狀態到資料庫
-        //     // console.log(data);
-        //     try {
-        //       await updateFailedEmailStatusBeSuccess(autoId);
-        //     } catch (e) {
-        //       const err = new Error(
-        //         "cannot updateFailedEmailStatusBeSuccess in sql"
-        //       );
-        //       err.stack = "cannot updateFailedEmailStatusBeSuccess in sql";
-        //       err.status = 500;
-        //     }
-        //     updateDashboard(userId);
-        //   } else if (count == 5 && !data) {
-        //     updateDashboard(userId);
-        //     // 如果已經重複４次結束都還沒有data的話，就要把錯誤訊息及錯誤狀態存到資料庫
-        //     try {
-        //       await insertFailedEmailInfor(
-        //         autoId,
-        //         email,
-        //         errorStatus,
-        //         errorLog
-        //       );
-        //     } catch (e) {
-        //       console.log(e);
-        //       const err = new Error("cannot insertFailedEmailInfors in sql");
-        //       err.stack = "cannot insertFailedEmailInfors in sql";
-        //       err.status = 500;
-        //     }
-        //   } else if (data && data["$metadata"].httpStatusCode != 200) {
-        //     // 有data但status不是200感覺怪怪的，還沒有碰過這個狀況，但如果碰到的話就把他歸類在error裡面
-        //     let message =
-        //       data.message || "send successfully but something worong from SES";
-        //     try {
-        //       await insertFailedEmailInfor(
-        //         autoId,
-        //         data["$metadata"].httpStatusCode,
-        //         message
-        //       );
-        //     } catch (e) {
-        //       const err = new Error("cannot insertFailedEmailInfors in sql");
-        //       err.stack = "cannot insertFailedEmailInfors in sql";
-        //       err.status = 500;
-        //     }
-        //   }
-        // }
-
         // 在第一次調用時，第一次0秒後執行
-        setTimeout(myFunction, 0);
+        if (sendEmailOrNot == 1) {
+          setTimeout(sendEmailToSES, 0);
+        }
       },
       {
         noAck: true,

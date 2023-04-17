@@ -196,7 +196,7 @@
           <!-- /.container-fluid -->
           <div class="container mt-5">
             <div class="row d-flex justify-content-center">
-              <div class="col-md-7">
+              <div class="col-md-12">
                 <div class="card p-5 py-10">
                   <div class="text-center">
                     <img
@@ -217,6 +217,46 @@
                         generate a new API KEY
                       </button>
                     </div>
+                    <hr />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="container mt-5">
+            <div class="row d-flex justify-content-center">
+              <div class="col-md-12">
+                <div class="card p-5 py-10">
+                  <div class="text-center">
+                    <span class="bg-secondary p-3 px-4 rounded text-white"
+                      >YOUR DOMAIN NAME AND STATUS</span
+                    >
+                  </div>
+
+                  <div class="text-center mt-3">
+                    <hr />
+                    <div class="input-group mb-3">
+                      <input
+                        id="newdomainName"
+                        type="text"
+                        class="form-control"
+                        placeholder="submit domain name which you want to add in ...."
+                        aria-label="submit domain name which you want to add in ..."
+                        aria-describedby="basic-addon2"
+                        value="simple-send.online"
+                      />
+                      <div class="input-group-append">
+                        <button
+                          id="submitDomainName"
+                          class="btn btn-outline-primary px-4"
+                          type="button"
+                        >
+                          SUBMIT
+                        </button>
+                      </div>
+                    </div>
+                    <hr />
+                    <div id="allDomainName"></div>
                   </div>
                 </div>
               </div>

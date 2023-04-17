@@ -8,6 +8,7 @@ import {
   generateTimeNow,
   getAllActiveApiKey,
   createEmailRequest,
+  selectVerifiedUserDomainName,
 } from "../model/sentmail_model.js";
 dotenv.config();
 
@@ -31,6 +32,23 @@ export async function sentmail(req, res, next) {
     err.status = 400;
     throw err;
   }
+  // 新增驗證nameFrom是否在資料庫中的domainname並且是成功的狀態
+  let checkDomainName;
+  try {
+    checkDomainName = await selectVerifiedUserDomainName(userId, nameFrom);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot selectUserDomainName from sql";
+    err.status = 500;
+    throw err;
+  }
+  if (checkDomainName.length == 0) {
+    const err = new Error();
+    err.stack = "you can just use the verified domain name as nameFrom";
+    err.status = 400;
+    throw err;
+  }
+
   if (!emailTo) {
     const err = new Error();
     err.stack = "your request miss emailTo";

@@ -45,7 +45,7 @@ export async function updateFailedEmailStatusBeSuccess(id) {
 
 export async function selectAllSendEmailInformation(id) {
   let [result] = await connectionPool.query(
-    `SELECT name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click FROM  send_email_list WHERE id = ?`,
+    `SELECT user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click FROM  send_email_list WHERE id = ?`,
     [id],
     function (err) {
       if (err) throw err;
@@ -69,10 +69,10 @@ export async function updateSendEmailRequestStatusAndTriggerTime(
   return result;
 }
 
-export async function updateSendEmailRequestStatus(status, id) {
+export async function updateSendEmailRequestStatus(status, sendEmailId) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_list SET send_status = ?  WHERE id =  ?  `,
-    [status, id],
+    [status, sendEmailId],
     function (err) {
       if (err) throw err;
     }
@@ -119,4 +119,15 @@ export async function updateSendEmailLog(
     }
   );
   return result.insertId;
+}
+
+export async function selectUserSettingString(id, domainName) {
+  let [result] = await connectionPool.query(
+    `select setting_string from user_name_from_list WHERE user_id = ? AND domain_name = ? `,
+    [id, domainName],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
 }

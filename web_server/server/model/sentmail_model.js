@@ -148,3 +148,14 @@ export async function getAllActiveApiKey(id, timeNow) {
   );
   return result;
 }
+
+export async function selectVerifiedUserDomainName(userId, domainName) {
+  let [result] = await connectionPool.query(
+    `select user_id from user_name_from_list WHERE user_id = ?  AND  domain_name = ? AND verify_status = 'success' `,
+    [userId, domainName],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
