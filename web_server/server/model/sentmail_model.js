@@ -1,6 +1,9 @@
 import amqp from "amqplib/callback_api.js";
 import jwt from "jsonwebtoken";
 import connectionPool from "./mysql_config.js";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3 from "./s3_config.js";
 import moment from "moment";
 import dotenv from "dotenv";
 dotenv.config();
@@ -19,10 +22,11 @@ export async function createEmailRequest(
   trackingClick,
   createDT,
   sendStatus,
-  firstTiggerDT
+  firstTiggerDT,
+  attachment
 ) {
   let [result] = await connectionPool.query(
-    `Insert into  send_email_list (user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,created_dt,send_status,first_trigger_dt) VALUES  (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    `Insert into  send_email_list (user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,created_dt,send_status,first_trigger_dt,attachment) VALUES  (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       userId,
       nameFrom,
@@ -38,6 +42,7 @@ export async function createEmailRequest(
       createDT,
       sendStatus,
       firstTiggerDT,
+      attachment,
     ],
     function (err) {
       if (err) throw err;
@@ -153,6 +158,88 @@ export async function selectVerifiedUserDomainName(userId, domainName) {
   let [result] = await connectionPool.query(
     `select user_id from user_name_from_list WHERE user_id = ?  AND  domain_name = ? AND verify_status = 'success' `,
     [userId, domainName],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function createEmailAttachmentRequest(
+  send_email_list_id,
+  original_name,
+  transform_name,
+  data_type,
+  upload_status,
+  data_length,
+  created_dt,
+  upload_dt,
+  statusCode,
+  statusMessage
+) {
+  let [result] = await connectionPool.query(
+    `Insert into send_email_attachment_list (send_email_list_id,original_name,transform_name,data_type,upload_status,data_length,created_dt,upload_dt,upload_status_code,upload_status_message) VALUES  (?,?,?,?,?,?,?,?,?,?)`,
+    [
+      send_email_list_id,
+      original_name,
+      transform_name,
+      data_type,
+      upload_status,
+      data_length,
+      created_dt,
+      upload_dt,
+      statusCode,
+      statusMessage,
+    ],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function getPresignedUrlFromS3(transformNameWithPath) {
+  const putcommand = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: transformNameWithPath,
+  });
+  const url = await getSignedUrl(s3, putcommand, { expiresIn: 60 * 60 });
+
+  return url;
+}
+
+export async function updateEmailAttachmentRequest(status, id) {
+  let [result] = await connectionPool.query(
+    `UPDATE send_email_attachment_list SET upload_status = ? WHERE id =? `,
+    [status, id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function updateEmailAttachmentRequestAfterResponseFromrawmailUploadToS3(
+  status,
+  statusCode,
+  message,
+  uploadDT,
+  id
+) {
+  let [result] = await connectionPool.query(
+    `UPDATE send_email_attachment_list SET upload_status = ?,upload_status_code=?,upload_message=?,upload_dt=? WHERE id =? `,
+    [status, statusCode, message, uploadDT, id],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
+
+export async function selectAttachmentSendEmailId(id) {
+  let [result] = await connectionPool.query(
+    `select send_email_list_id from send_email_attachment_list WHERE id = ? `,
+    [id],
     function (err) {
       if (err) throw err;
     }

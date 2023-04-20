@@ -4,6 +4,8 @@ import { wrapAsync } from "../../util/util.js";
 import {
   sentmail,
   authenticationApiKey,
+  sentrawmail,
+  responseFromrawmailUploadToS3,
 } from "../controller/sentmail_controller.js";
 router
   .route("/sentmail")
@@ -23,4 +25,14 @@ router
 //   trackingClick:** (yes no)
 // }
 // 並且query帶著?APIKEY=**，即可進行寄件
+router
+  .route("/sentrawmail")
+  .post(wrapAsync(authenticationApiKey), wrapAsync(sentrawmail));
+// 和上面只差在有附件，還有寄件方式不一樣
+router
+  .route("/sentrawmail")
+  .post(
+    wrapAsync(authenticationApiKey),
+    wrapAsync(responseFromrawmailUploadToS3)
+  );
 export default router;

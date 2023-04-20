@@ -62,7 +62,7 @@ if (!token) {
   socket.on(`toclient`, (arg) => {
     console.log(arg);
   });
-  socket.emit("toserver", `${userId}`);
+  socket.emit("toserver", `${1}`);
   // socket.emit("hello", "live client is connected");
   socket.on(`updateDashboard`, (arg) => {
     if ((arg = "successfully send email")) {
