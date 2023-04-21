@@ -30,7 +30,7 @@ router
   .post(wrapAsync(authenticationApiKey), wrapAsync(sentrawmail));
 // 和上面只差在有附件，還有寄件方式不一樣
 router
-  .route("/sentrawmail")
+  .route("/responseFromrawmailUploadToS3")
   .post(
     wrapAsync(authenticationApiKey),
     wrapAsync(responseFromrawmailUploadToS3)

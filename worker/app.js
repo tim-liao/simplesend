@@ -1,6 +1,6 @@
 import amqp from "amqplib/callback_api.js";
 import { Base64 } from "js-base64";
-import { SendEmailCommand } from "@aws-sdk/client-ses";
+import { SendEmailCommand, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
 import client from "./model/ses_config.js";
 import {
@@ -10,6 +10,7 @@ import {
   insertDefaultSendEmailLog,
   updateSendEmailLog,
   selectUserSettingString,
+  selectAttchmentInfor,
 } from "./model/sql_model.js";
 import { generateTimeNow } from "./model/time_model.js";
 import { transformToTrackedHTML } from "./model/transform_html_model.js";
@@ -18,6 +19,9 @@ import { getTxtDNSSetting } from "./model/dns_model.js";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { getMessage } from "./model/rabbitmq_model.js";
+import path from "path";
+import fs from "fs";
+import { downloadFile, deleteFile } from "./model/delete_and_download_model.js";
 dotenv.config();
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -172,108 +176,277 @@ const aa = async function (sendEmailId) {
   }
 
   /////////
-  // 檢查emailBcc,emailCc,emailReplyTo是不是undfined，是得話就把這幾個欄位改成空值array
-  let eamilBccArray = [];
-  let emailCcArray = [];
-  let emailReplyToArray = [];
+  let transformName;
+  // 原本的檔案路徑只存在下面這個else if block裡面，但因為刪除檔案也需要這個路徑，所以會需要把檔案路徑寫在外面
+  let params;
+  if (attachment == 0) {
+    // trackingOpen以及trackingClick對應後有四種狀況，來決定要不要塞入
+    let messageBody;
+    if (trackingOpen == 1 && trackingClick == 1) {
+      if (emailBodyType == "html") {
+        // 遍歷全部得html尋找href，把他替換成tracking link
+        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        // 最後塞tracking pixel到html尾端
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        HTMLData += `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
+        messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+      } else if (emailBodyType == "text") {
+        const err = new Error("text type cannot be tracked click");
+        err.stack = "text type cannot be tracked click";
+        err.status = 500;
+        console.error(err);
+      }
+    } else if (trackingOpen == 1 && trackingClick == 0) {
+      if (emailBodyType == "html") {
+        // 塞tracking pixel到html尾端
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        let HTMLData =
+          emailBodyContent +
+          `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
 
-  if (emailBcc != "undfined") {
-    eamilBccArray.push(emailBcc);
-  }
-  if (emailCc != "undfined") {
-    emailCcArray.push(emailCc);
-  }
-  if (emailReplyTo != "undfined") {
-    emailReplyToArray.push(emailReplyTo);
-  }
-  // trackingOpen以及trackingClick對應後有四種狀況，來決定要不要塞入
-  let messageBody;
-  if (trackingOpen == 1 && trackingClick == 1) {
-    if (emailBodyType == "html") {
-      // 遍歷全部得html尋找href，把他替換成tracking link
-      let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
-      // 最後塞tracking pixel到html尾端
-      let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
-      HTMLData += `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
-      // 並分類在html
-      messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
-    } else if (emailBodyType == "text") {
-      const err = new Error("text type cannot be tracked click");
-      err.stack = "text type cannot be tracked click";
-      err.status = 500;
-      console.error(err);
-    }
-  } else if (trackingOpen == 1 && trackingClick == 0) {
-    if (emailBodyType == "html") {
-      // 塞tracking pixel到html尾端
-      let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
-      let HTMLData =
-        emailBodyContent +
-        `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
-      // 並分類在html
-      messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
-    } else if (emailBodyType == "text") {
-      // 塞tracking pixel到文字後面
-      let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
-      let HTMLData =
-        emailBodyContent +
-        `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
-      // 並分類在html
-      messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
-    }
-  } else if (trackingOpen == 0 && trackingClick == 1) {
-    if (emailBodyType == "html") {
-      // 遍歷全部得html尋找href，把他替換成tracking link
-      let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
-      // 並分類在html
-      // console.log("HTMLData", HTMLData);
-      messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
-    } else if (emailBodyType == "text") {
-      const err = new Error("text type cannot be tracked click");
-      err.stack = "text type cannot be tracked click";
-      err.status = 500;
-      console.error(err);
-    }
-  } else if (trackingOpen == 0 && trackingClick == 0) {
-    if (emailBodyType == "html") {
-      // 直接輸出並分類在html
-      messageBody = {
-        Html: { Charset: "UTF-8", Data: emailBodyContent },
-      };
-    } else if (emailBodyType == "text") {
-      // 直接輸出並分類在text
-      messageBody = {
-        Text: { Charset: "UTF-8", Data: emailBodyContent },
-      };
-    }
-  }
-  // 把資料準備好做成params
-  const params = {
-    Destination: {
-      CcAddresses: emailCcArray,
-      ToAddresses: [emailTo],
-      BccAddresses: eamilBccArray,
-    },
-    Message: {
-      Body: messageBody,
+        messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+      } else if (emailBodyType == "text") {
+        // 塞tracking pixel到文字後面
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        let HTMLData =
+          emailBodyContent +
+          `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
 
-      Subject: {
-        Charset: "UTF-8",
-        Data: emailSubject,
+        messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+      }
+    } else if (trackingOpen == 0 && trackingClick == 1) {
+      if (emailBodyType == "html") {
+        // 遍歷全部得html尋找href，把他替換成tracking link
+        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        // 並分類在html
+        // console.log("HTMLData", HTMLData);
+
+        messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+      } else if (emailBodyType == "text") {
+        const err = new Error("text type cannot be tracked click");
+        err.stack = "text type cannot be tracked click";
+        err.status = 500;
+        console.error(err);
+      }
+    } else if (trackingOpen == 0 && trackingClick == 0) {
+      if (emailBodyType == "html") {
+        // 直接輸出並分類在html
+
+        messageBody = {
+          Html: { Charset: "UTF-8", Data: emailBodyContent },
+        };
+      } else if (emailBodyType == "text") {
+        // 直接輸出並分類在text
+
+        messageBody = {
+          Text: { Charset: "UTF-8", Data: emailBodyContent },
+        };
+      }
+    }
+    // 把資料準備好做成params
+    // 檢查emailBcc,emailCc,emailReplyTo是不是undfined，是得話就把這幾個欄位改成空值array
+    let eamilBccArray = [];
+    let emailCcArray = [];
+    let emailReplyToArray = [];
+
+    if (emailBcc != "undfined") {
+      eamilBccArray.push(emailBcc);
+    }
+    if (emailCc != "undfined") {
+      emailCcArray.push(emailCc);
+    }
+    if (emailReplyTo != "undfined") {
+      emailReplyToArray.push(emailReplyTo);
+    }
+    params = {
+      Destination: {
+        CcAddresses: emailCcArray,
+        ToAddresses: [emailTo],
+        BccAddresses: eamilBccArray,
       },
-    },
-    Source: `${nameFrom}${process.env.FROM_EMAIL}`,
-    ReplyToAddresses: emailReplyToArray,
-  };
+      Message: {
+        Body: messageBody,
+
+        Subject: {
+          Charset: "UTF-8",
+          Data: emailSubject,
+        },
+      },
+      Source: `${nameFrom}${process.env.FROM_EMAIL}`,
+      ReplyToAddresses: emailReplyToArray,
+    };
+    // console.log(messageBody);
+  } else if (attachment == 1) {
+    let originalAttachmentInfor;
+    try {
+      originalAttachmentInfor = await selectAttchmentInfor(sendEmailId);
+    } catch (e) {
+      console.log(e);
+    }
+    let originalName = originalAttachmentInfor[0].original_name;
+    let transformNameWithPath = originalAttachmentInfor[0].transform_name;
+    let dataType = originalAttachmentInfor[0].data_type;
+    transformName = path.basename(transformNameWithPath);
+
+    // 下載附件（下載到指定資料夾）
+    // console.log(
+    //   "url :",
+    //   `${process.env.S3_ATTACHMENT_URL}${transformNameWithPath}`
+    // );
+    try {
+      await downloadFile(
+        `${process.env.S3_ATTACHMENT_URL}${transformNameWithPath}`,
+        `./downloads/${transformName}`
+      );
+    } catch (e) {
+      console.log(e);
+    } finally {
+      // console.log("下載完畢");
+    }
+
+    // 下載好後整理資料
+    let emailData = [];
+    emailData.push(`TO: ${emailTo}`);
+    if (emailBcc != "undfined") {
+      emailData.push(`Bcc: ${emailBcc}`);
+    }
+    if (emailCc != "undfined") {
+      emailData.push(`Cc: ${emailCc}`);
+    }
+    if (emailReplyTo != "undfined") {
+      emailData.push(`Reply-To: ${emailReplyTo}`);
+    }
+    emailData.push(`Subject: ${emailSubject}`);
+    emailData.push('Content-Type: multipart/mixed; boundary="mixed-boundary"');
+    emailData.push("");
+    emailData.push("--mixed-boundary");
+    emailData.push(
+      'Content-Type: multipart/alternative; boundary="alternative-boundary"'
+    );
+    emailData.push("");
+    emailData.push("--alternative-boundary");
+
+    // 寫邏輯塞tracking（text,html）
+    if (trackingOpen == 1 && trackingClick == 1) {
+      if (emailBodyType == "html") {
+        // 遍歷全部得html尋找href，把他替換成tracking link
+        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        // 最後塞tracking pixel到html尾端
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        HTMLData += `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
+        // messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+        emailData.push('Content-Type: text/html; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(HTMLData);
+      } else if (emailBodyType == "text") {
+        const err = new Error("text type cannot be tracked click");
+        err.stack = "text type cannot be tracked click";
+        err.status = 500;
+        console.error(err);
+      }
+    } else if (trackingOpen == 1 && trackingClick == 0) {
+      if (emailBodyType == "html") {
+        // 塞tracking pixel到html尾端
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        let HTMLData =
+          emailBodyContent +
+          `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
+
+        // messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+        emailData.push('Content-Type: text/html; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(HTMLData);
+      } else if (emailBodyType == "text") {
+        // 塞tracking pixel到文字後面
+        let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
+        let HTMLData =
+          emailBodyContent +
+          `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
+        // 並分類在html
+
+        // messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+        emailData.push('Content-Type: text/html; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(HTMLData);
+      }
+    } else if (trackingOpen == 0 && trackingClick == 1) {
+      if (emailBodyType == "html") {
+        // 遍歷全部得html尋找href，把他替換成tracking link
+        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        // 並分類在html
+        // console.log("HTMLData", HTMLData);
+
+        // messageBody = { Html: { Charset: "UTF-8", Data: HTMLData } };
+        emailData.push('Content-Type: text/html; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(HTMLData);
+      } else if (emailBodyType == "text") {
+        const err = new Error("text type cannot be tracked click");
+        err.stack = "text type cannot be tracked click";
+        err.status = 500;
+        console.error(err);
+      }
+    } else if (trackingOpen == 0 && trackingClick == 0) {
+      if (emailBodyType == "html") {
+        // 直接輸出並分類在html
+
+        // messageBody = {
+        //   Html: { Charset: "UTF-8", Data: emailBodyContent },
+        // };
+        emailData.push('Content-Type: text/html; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(emailBodyContent);
+      } else if (emailBodyType == "text") {
+        // 直接輸出並分類在text
+
+        // messageBody = {
+        //   Text: { Charset: "UTF-8", Data: emailBodyContent },
+        // };
+        emailData.push('Content-Type: text/plain; charset="UTF-8"');
+        emailData.push("");
+        emailData.push(emailBodyContent);
+      }
+    }
+    emailData.push(`--mixed-boundary
+Content-Disposition: attachment; filename="${originalName}"
+Content-Type: ${dataType}
+Content-Transfer-Encoding: base64
+`);
+    const attachmentData = fs.readFileSync(`./downloads/${transformName}`); // 讀取附件檔案
+    const attachmentContent = attachmentData.toString("base64");
+    emailData.push(attachmentContent);
+    emailData.push("");
+    emailData.push("--mixed-boundary--");
+    let realEmailData = emailData.join("\n");
+    // console.log(realEmailData);
+    params = {
+      RawMessage: {
+        Data: Buffer.from(`${realEmailData}`),
+      },
+      Source: `${nameFrom}${process.env.FROM_EMAIL}`,
+    };
+  }
+
   // 如果東西整理好準備要寄送時就把資料庫得狀態改成pending
-  // console.log(messageBody);
+
   // console.log(params);
   try {
     await updateSendEmailRequestStatus("pending", sendEmailId);
   } catch (e) {
     console.error(e);
   }
-  const command = new SendEmailCommand(params);
+
+  let command;
+  if (attachment == 1) {
+    command = new SendRawEmailCommand(params);
+  } else if (attachment == 0) {
+    command = new SendEmailCommand(params);
+  }
   let data;
   let count = 1;
   // 04/16變更：原本資料庫裡面count＝０是指第一次寄件就成功，但為了因應認證donmain name，可能在真正寄件前就擋下來，所以把count=0讓給真正沒有寄件的狀況
@@ -326,9 +499,19 @@ const aa = async function (sendEmailId) {
         console.error(e);
       }
       updateDashboard(userId);
+      if (attachment == 1) {
+        // 刪除該物件
+        try {
+          await deleteFile(`./downloads/${transformName}`);
+        } catch (e) {
+          console.log(e);
+        } finally {
+          // console.log("刪除完畢");
+        }
+      }
     } else if (!data && count < 6) {
       // 寄件失敗但在補寄過程時，不需要變更資料庫寄件狀態，但要紀錄email log，並紀錄回傳時間到資料庫
-      setTimeout(myFunction, count * 2000);
+      setTimeout(sendEmailToSES, count * 2000);
       try {
         await updateSendEmailLog(
           sendEmailLogId,
@@ -357,6 +540,16 @@ const aa = async function (sendEmailId) {
         console.error(e);
       }
       updateDashboard(userId);
+      if (attachment == 1) {
+        // 刪除該物件
+        try {
+          await deleteFile(`./downloads/${transformName}`);
+        } catch (e) {
+          console.log(e);
+        } finally {
+          // console.log("刪除完畢");
+        }
+      }
     }
   }
 

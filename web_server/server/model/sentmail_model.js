@@ -227,7 +227,7 @@ export async function updateEmailAttachmentRequestAfterResponseFromrawmailUpload
   id
 ) {
   let [result] = await connectionPool.query(
-    `UPDATE send_email_attachment_list SET upload_status = ?,upload_status_code=?,upload_message=?,upload_dt=? WHERE id =? `,
+    `UPDATE send_email_attachment_list SET upload_status = ?,upload_status_code=?,upload_status_message=?,upload_dt=? WHERE id =? `,
     [status, statusCode, message, uploadDT, id],
     function (err) {
       if (err) throw err;
@@ -244,5 +244,17 @@ export async function selectAttachmentSendEmailId(id) {
       if (err) throw err;
     }
   );
+  return result;
+}
+
+export function generateRandomString(length) {
+  let result = "";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
   return result;
 }

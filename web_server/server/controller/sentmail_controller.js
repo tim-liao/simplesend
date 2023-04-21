@@ -14,6 +14,7 @@ import {
   updateEmailAttachmentRequest,
   updateEmailAttachmentRequestAfterResponseFromrawmailUploadToS3,
   selectAttachmentSendEmailId,
+  generateRandomString,
 } from "../model/sentmail_model.js";
 dotenv.config();
 
@@ -428,11 +429,11 @@ export async function sentrawmail(req, res, next) {
   // TODO:先把使用者的東西塞進資料庫
   // 除了原本之前一樣的資料，還要儲存附件的資料到資料庫（創建時間、原始檔名、檔案大小、檔案格式、上傳狀態='created'）
   //獲取副檔名，然後檔名用隨機dateNow存（不需要在意時區，我只是要不隨機而已），生成新的檔名
-  let transFormNameWithPath = `${userId}${Date.now(
+  let transFormNameWithPath = `${userId}/${Date.now(
     new Date()
-  )}.${attachmentDataName.split(".").pop()}`;
+  )}_${generateRandomString(6)}.${attachmentDataName.split(".").pop()}`;
   let originalAttachmentId;
-
+  // console.log("transFormNameWithPath : ", transFormNameWithPath);
   try {
     originalAttachmentId = await createEmailAttachmentRequest(
       emailRequestId,
@@ -526,7 +527,7 @@ export async function responseFromrawmailUploadToS3(req, res, next) {
       err.status = 500;
       throw err;
     }
-    let sendEmailId = originalSendEmailId[0].send_email_list_id;
+    let sendEmailId = `${originalSendEmailId[0].send_email_list_id}`;
     putINMQ(sendEmailId);
     res.status(200).send({ data: "successfully scheduled" });
   } else {

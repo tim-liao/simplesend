@@ -131,3 +131,14 @@ export async function selectUserSettingString(id, domainName) {
   );
   return result;
 }
+
+export async function selectAttchmentInfor(sendEmailId) {
+  let [result] = await connectionPool.query(
+    `select original_name,transform_name,data_type from send_email_attachment_list WHERE send_email_list_id =?`,
+    [sendEmailId],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}
