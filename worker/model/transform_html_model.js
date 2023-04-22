@@ -2,12 +2,12 @@ import * as cheerio from "cheerio";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
-export function transformToTrackedHTML(html, sendEmailId) {
+export function transformToTrackedHTML(html, sendEmailId, trackingLink) {
   //
   const $ = cheerio.load(html);
   $("a").each(function (i, elem) {
     const href = $(this).attr("href");
-    if (href) {
+    if (href == trackingLink) {
       const SECRET = process.env.TRACK_LINK_SECRET;
       const token = jwt.sign(
         {

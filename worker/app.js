@@ -96,6 +96,7 @@ const aa = async function (sendEmailId) {
   const emailBodyContent = allSendEmailInformation[0].email_body_content;
   const trackingOpen = allSendEmailInformation[0].tracking_open;
   const trackingClick = allSendEmailInformation[0].tracking_click;
+  const trackingLink = allSendEmailInformation[0].tracking_link;
   // 0420新增：新增欄位可以寄件
   const attachment = allSendEmailInformation[0].attachment;
   //認真檢查nameFrom是不是使用者可用：web server接收時只有驗證一下下（因為不要讓負載都在web server上，同時不會讓使用者等太久），所以這邊要認真驗證，比照檢查是否可用時驗證20次，20次都通過才放行，不然的話就要存成失敗。
@@ -185,7 +186,11 @@ const aa = async function (sendEmailId) {
     if (trackingOpen == 1 && trackingClick == 1) {
       if (emailBodyType == "html") {
         // 遍歷全部得html尋找href，把他替換成tracking link
-        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        let HTMLData = transformToTrackedHTML(
+          emailBodyContent,
+          sendEmailId,
+          trackingLink
+        );
         // 最後塞tracking pixel到html尾端
         let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
         HTMLData += `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
@@ -220,7 +225,11 @@ const aa = async function (sendEmailId) {
     } else if (trackingOpen == 0 && trackingClick == 1) {
       if (emailBodyType == "html") {
         // 遍歷全部得html尋找href，把他替換成tracking link
-        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        let HTMLData = transformToTrackedHTML(
+          emailBodyContent,
+          sendEmailId,
+          trackingLink
+        );
         // 並分類在html
         // console.log("HTMLData", HTMLData);
 
@@ -310,13 +319,13 @@ const aa = async function (sendEmailId) {
     // 下載好後整理資料
     let emailData = [];
     emailData.push(`TO: ${emailTo}`);
-    if (emailBcc != "undfined") {
+    if (emailBcc != "undefined") {
       emailData.push(`Bcc: ${emailBcc}`);
     }
-    if (emailCc != "undfined") {
+    if (emailCc != "undefined") {
       emailData.push(`Cc: ${emailCc}`);
     }
-    if (emailReplyTo != "undfined") {
+    if (emailReplyTo != "undefined") {
       emailData.push(`Reply-To: ${emailReplyTo}`);
     }
     emailData.push(`Subject: ${emailSubject}`);
@@ -333,7 +342,11 @@ const aa = async function (sendEmailId) {
     if (trackingOpen == 1 && trackingClick == 1) {
       if (emailBodyType == "html") {
         // 遍歷全部得html尋找href，把他替換成tracking link
-        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        let HTMLData = transformToTrackedHTML(
+          emailBodyContent,
+          sendEmailId,
+          trackingLink
+        );
         // 最後塞tracking pixel到html尾端
         let base64UTF8EncodedSendEmailId = Base64.encode(`${sendEmailId}`);
         HTMLData += `<img src="${process.env.ADRESS}${process.env.TRACKING_PIXEL_PATH}?id=${base64UTF8EncodedSendEmailId}">`;
@@ -377,7 +390,11 @@ const aa = async function (sendEmailId) {
     } else if (trackingOpen == 0 && trackingClick == 1) {
       if (emailBodyType == "html") {
         // 遍歷全部得html尋找href，把他替換成tracking link
-        let HTMLData = transformToTrackedHTML(emailBodyContent, sendEmailId);
+        let HTMLData = transformToTrackedHTML(
+          emailBodyContent,
+          sendEmailId,
+          trackingLink
+        );
         // 並分類在html
         // console.log("HTMLData", HTMLData);
 
@@ -501,6 +518,7 @@ Content-Transfer-Encoding: base64
       updateDashboard(userId);
       if (attachment == 1) {
         // 刪除該物件
+        // console.log("成功");
         try {
           await deleteFile(`./downloads/${transformName}`);
         } catch (e) {
@@ -542,6 +560,7 @@ Content-Transfer-Encoding: base64
       updateDashboard(userId);
       if (attachment == 1) {
         // 刪除該物件
+        // console.log("失敗");
         try {
           await deleteFile(`./downloads/${transformName}`);
         } catch (e) {

@@ -15,6 +15,7 @@ import {
   updateEmailAttachmentRequestAfterResponseFromrawmailUploadToS3,
   selectAttachmentSendEmailId,
   generateRandomString,
+  checkHTMLIsIncludeTrackingLinkOrNot,
 } from "../model/sentmail_model.js";
 dotenv.config();
 
@@ -28,6 +29,7 @@ export async function sentmail(req, res, next) {
     emailSubject,
     emailBodyType,
     emailBodyContent,
+    trackingLink,
     trackingOpen,
     trackingClick,
   } = req.body;
@@ -128,18 +130,45 @@ export async function sentmail(req, res, next) {
   } else if (trackingOpen == "no") {
     trackingOpenToNumber = 0;
   }
-
+  if (trackingClick == "yes") {
+    if (trackingLink == undefined) {
+      const err = new Error();
+      err.stack = "your want tracking click but miss trackingLink";
+      err.status = 400;
+      throw err;
+    } else {
+      let trackingLinkCount = checkHTMLIsIncludeTrackingLinkOrNot(
+        trackingLink,
+        emailBodyContent
+      );
+      // 檢查該連結是否超過一個
+      // 檢查是否有該連結
+      if (trackingLinkCount == 0) {
+        const err = new Error();
+        err.stack =
+          "your do not include trackingLink you provide in html content";
+        err.status = 400;
+        throw err;
+      } else if (trackingLinkCount > 1) {
+        const err = new Error();
+        err.stack = "your html content is included more than one trackingLink";
+        err.status = 400;
+        throw err;
+      }
+    }
+  }
   // TODO:先把使用者的東西塞進資料庫
   // TODO:再把資料庫回傳的ID存到queue裡面
   // TODO:後續worker拿出來時會把東西從資料庫撈出來寄送
-  if (!emailBcc) {
-    emailBcc = "undfined";
+  if (emailBcc == undefined) {
+    emailBcc = "undefined";
   }
-  if (!emailCc) {
-    emailCc = "undfined";
+  if (emailCc == undefined) {
+    emailCc = "undefined";
   }
-  if (!emailReplyTo) {
-    emailReplyTo = "undfined";
+
+  if (emailReplyTo == undefined) {
+    emailReplyTo = "undefined";
   }
   let createTime = generateTimeNow();
   let sendStatus = "created";
@@ -162,7 +191,8 @@ export async function sentmail(req, res, next) {
       createTime,
       sendStatus,
       firstTriggerTime,
-      0
+      0,
+      trackingLink
     );
   } catch (e) {
     console.log(e);
@@ -255,7 +285,7 @@ export async function sentrawmail(req, res, next) {
   // 這個方法為了要可以寄送附件，須以原始email開始設計
   // 詳細原理待查
 
-  const {
+  let {
     nameFrom,
     emailTo,
     emailBcc,
@@ -266,6 +296,7 @@ export async function sentrawmail(req, res, next) {
     emailBodyContent,
     trackingOpen,
     trackingClick,
+    trackingLink,
     attachmentDataType,
     attachmentDataLength,
     attachmentDataName,
@@ -283,9 +314,16 @@ export async function sentrawmail(req, res, next) {
     err.status = 400;
     throw err;
   }
+
   if (!attachmentDataLength) {
     const err = new Error();
     err.stack = "your request miss attachmentDataLength";
+    err.status = 400;
+    throw err;
+  }
+  if (attachmentDataLength >= 10485760) {
+    const err = new Error();
+    err.stack = "cannot upload bigger than 10MB";
     err.status = 400;
     throw err;
   }
@@ -372,6 +410,33 @@ export async function sentrawmail(req, res, next) {
     err.status = 400;
     throw err;
   }
+  if (trackingClick == "yes") {
+    if (trackingLink == undefined) {
+      const err = new Error();
+      err.stack = "your want tracking click but miss trackingLink";
+      err.status = 400;
+      throw err;
+    } else {
+      let trackingLinkCount = checkHTMLIsIncludeTrackingLinkOrNot(
+        trackingLink,
+        emailBodyContent
+      );
+      // 檢查該連結是否超過一個
+      // 檢查是否有該連結
+      if (trackingLinkCount == 0) {
+        const err = new Error();
+        err.stack =
+          "your do not include trackingLink you provide in html content";
+        err.status = 400;
+        throw err;
+      } else if (trackingLinkCount > 1) {
+        const err = new Error();
+        err.stack = "your html content is included more than one trackingLink";
+        err.status = 400;
+        throw err;
+      }
+    }
+  }
   let trackingClickToNumber;
   if (trackingClick == "yes") {
     trackingClickToNumber = 1;
@@ -386,15 +451,17 @@ export async function sentrawmail(req, res, next) {
     trackingOpenToNumber = 0;
   }
 
-  if (!emailBcc) {
-    emailBcc = "undfined";
+  if (emailBcc == undefined) {
+    emailBcc = "undefined";
   }
-  if (!emailCc) {
-    emailCc = "undfined";
+  if (emailCc == undefined) {
+    emailCc = "undefined";
   }
-  if (!emailReplyTo) {
-    emailReplyTo = "undfined";
+
+  if (emailReplyTo == undefined) {
+    emailReplyTo = "undefined";
   }
+
   let createTime = generateTimeNow();
   let sendStatus = "created";
   let firstTriggerTime = generateTimeNow();
@@ -416,7 +483,8 @@ export async function sentrawmail(req, res, next) {
       createTime,
       sendStatus,
       firstTriggerTime,
-      1
+      1,
+      trackingLink
     );
   } catch (e) {
     console.log(e);

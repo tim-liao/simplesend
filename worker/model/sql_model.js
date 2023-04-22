@@ -45,7 +45,7 @@ export async function updateFailedEmailStatusBeSuccess(id) {
 
 export async function selectAllSendEmailInformation(id) {
   let [result] = await connectionPool.query(
-    `SELECT user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,attachment FROM  send_email_list WHERE id = ?`,
+    `SELECT user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,attachment,tracking_link FROM  send_email_list WHERE id = ?`,
     [id],
     function (err) {
       if (err) throw err;

@@ -5,6 +5,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "./s3_config.js";
 import moment from "moment";
+import * as cheerio from "cheerio";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -23,10 +24,11 @@ export async function createEmailRequest(
   createDT,
   sendStatus,
   firstTiggerDT,
-  attachment
+  attachment,
+  trackingLink
 ) {
   let [result] = await connectionPool.query(
-    `Insert into  send_email_list (user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,created_dt,send_status,first_trigger_dt,attachment) VALUES  (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    `Insert into  send_email_list (user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,created_dt,send_status,first_trigger_dt,attachment,tracking_link) VALUES  (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       userId,
       nameFrom,
@@ -43,6 +45,7 @@ export async function createEmailRequest(
       sendStatus,
       firstTiggerDT,
       attachment,
+      trackingLink,
     ],
     function (err) {
       if (err) throw err;
@@ -257,4 +260,18 @@ export function generateRandomString(length) {
   }
 
   return result;
+}
+
+export function checkHTMLIsIncludeTrackingLinkOrNot(link, html) {
+  let checkCount = 0;
+  const $ = cheerio.load(html);
+  $("a").each(function (i, elem) {
+    const href = $(this).attr("href");
+    if (href) {
+      if (href == link) {
+        checkCount++;
+      }
+    }
+  });
+  return checkCount;
 }
