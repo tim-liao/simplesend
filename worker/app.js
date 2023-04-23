@@ -497,6 +497,7 @@ Content-Transfer-Encoding: base64
     } finally {
       responseDT = generateTimeNow();
     }
+    console.log(data);
     count++;
     // 寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
     if (data && data["$metadata"].httpStatusCode == 200) {
