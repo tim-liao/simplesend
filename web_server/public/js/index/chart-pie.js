@@ -171,9 +171,40 @@ let makeChart = function (a, chart) {
         caretPadding: 10,
       },
       legend: {
-        display: false,
+        display: true,
+        position: "right",
+        labels: {
+          fontColor: "#333",
+          fontSize: 14,
+          boxWidth: 20,
+          padding: 10,
+          generateLabels: function (chart) {
+            var data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map(function (label, index) {
+                var value = data.datasets[0].data[index];
+                return {
+                  text: label + ": " + value,
+                  fillStyle: data.datasets[0].backgroundColor[index],
+                  hidden:
+                    isNaN(data.datasets[0].data[index]) ||
+                    chart.getDatasetMeta(0).data[index].hidden,
+                  index: index,
+                };
+              });
+            }
+            return [];
+          },
+        },
       },
       cutoutPercentage: 80,
+      // callbacks: {
+      //   label: function (tooltipItem, data) {
+      //     var label = data.labels[tooltipItem.index];
+      //     var value = data.datasets[0].data[tooltipItem.index];
+      //     return label + ": " + value;
+      //   },
+      // },
     },
   });
 };

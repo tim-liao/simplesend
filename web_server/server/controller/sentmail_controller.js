@@ -170,6 +170,9 @@ export async function sentmail(req, res, next) {
   if (emailReplyTo == undefined) {
     emailReplyTo = "undefined";
   }
+  if (trackingLink == undefined) {
+    trackingLink = "undefined";
+  }
   let createTime = generateTimeNow();
   let sendStatus = "created";
   let firstTriggerTime = generateTimeNow();

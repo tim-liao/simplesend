@@ -68,7 +68,7 @@ export async function getUserSentEmailCount(id) {
 
 export async function getUserSendEmailMessage(id) {
   let [result] = await connectionPool.query(
-    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id where s.user_id = ?`,
+    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt,s.tracking_link,s.attachment  from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id where s.user_id = ?`,
     [id],
     function (err) {
       if (err) throw err;

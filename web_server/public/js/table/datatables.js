@@ -61,6 +61,8 @@ fetch("/api/1.0/getUserSendEmailMessage", {
             <th>send_status</th>
             <th>send_message</th>
             <th>created_dt</th>
+            <th>tracking_link</th>
+            <th>attachment</th>
             </tr>
           </thead>
           <tfoot>
@@ -77,6 +79,8 @@ fetch("/api/1.0/getUserSendEmailMessage", {
             <th>send_status</th>
             <th>send_message</th>
             <th>created_dt</th>
+            <th>tracking_link</th>
+            <th>attachment</th>
             </tr>
           </tfoot>
           <tbody >`;
@@ -95,6 +99,8 @@ fetch("/api/1.0/getUserSendEmailMessage", {
     <td>${e.send_status}</td>
     <td>${e.send_message}</td>
     <td>${e.created_dt}</td>
+    <td>${e.tracking_link}</td>
+    <td>${e.attachment}</td>
   </tr>`;
     });
     HTML += `</tbody>
