@@ -27,11 +27,13 @@ import user_route from "./server/route/user_route.js";
 import sentmail_route from "./server/route/sentmail_route.js";
 import api_key_route from "./server/route/api_key_route.js";
 import email_history_route from "./server/route/email_history_route.js";
+import sns_route from "./server/route/sns_route.js";
 app.use("/api/1.0/", [
   sentmail_route,
   api_key_route,
   email_history_route,
   user_route,
+  sns_route,
 ]);
 
 app.use((req, res, next) => {
