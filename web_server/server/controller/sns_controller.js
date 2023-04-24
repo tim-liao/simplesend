@@ -6,7 +6,7 @@ import {
 export async function sns(req, res, next) {
   //   const data = req.body;
 
-  let responsefromSNS = JSON.parse(req.body).Message;
+  let responsefromSNS = JSON.parse(req.body);
 
   let responseMessage = responsefromSNS.Message;
   let responsefromSNSType = responsefromSNS.Type;
