@@ -6,9 +6,9 @@ import {
 export async function sns(req, res, next) {
   //   const data = req.body;
 
-  let responsefromSNS = req.body;
-  console.log(JSON.parse(responsefromSNS).Message);
-  let responseMessage = JSON.parse(responsefromSNS.Message);
+  let responsefromSNS = JSON.parse(req.body).Message;
+
+  let responseMessage = responsefromSNS.Message;
   let responsefromSNSType = responsefromSNS.Type;
   if (responsefromSNSType != "Notification") {
     console.log(responsefromSNS);
