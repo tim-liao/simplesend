@@ -15,6 +15,7 @@ import {
   genrateUserAccessToken,
   getPasswordAndUserIdWithNameByEmail,
   checkPassword,
+  getUserNameById,
 } from "../model/user_model.js";
 
 export async function getUserProfile(req, res, next) {
@@ -490,4 +491,20 @@ export async function userSignIn(req, res, next) {
     err.status = 400;
     throw err;
   }
+}
+
+export async function getUserName(req, res, next) {
+  const { userId, email } = req.body.member;
+
+  let originalUserName;
+  try {
+    originalUserName = await getUserNameById(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot getUserNameById from sql";
+    err.status = 500;
+    throw err;
+  }
+  let userName = originalUserName[0].name;
+  res.status(200).send({ data: { userName } });
 }

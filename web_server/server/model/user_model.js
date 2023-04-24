@@ -205,3 +205,14 @@ export async function checkPassword(passWord, hashedPassword) {
   let result = await bcrypt.compare(passWord, hashedPassword);
   return result;
 }
+
+export async function getUserNameById(userId) {
+  let [result] = await connectionPool.query(
+    `select  name from user where id = ? `,
+    [userId],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}

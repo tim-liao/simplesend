@@ -8,6 +8,7 @@ import {
   getAllUserDomainNameINfor,
   deleteUserDomainName,
   userSignUp,
+  getUserName,
   userSignIn,
 } from "../controller/user_controller.js";
 
@@ -75,5 +76,9 @@ router.route("/userSignIn").post(wrapAsync(userSignIn));
 //       "email": "4564564@gmail.com"
 //   }
 // }
+
+router
+  .route("/getusername")
+  .post(wrapAsync(authentication), wrapAsync(getUserName));
 
 export default router;
