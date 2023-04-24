@@ -261,13 +261,13 @@ const aa = async function (sendEmailId) {
     let emailCcArray = [];
     let emailReplyToArray = [];
 
-    if (emailBcc != "undfined") {
+    if (emailBcc != "undefined") {
       eamilBccArray.push(emailBcc);
     }
-    if (emailCc != "undfined") {
+    if (emailCc != "undefined") {
       emailCcArray.push(emailCc);
     }
-    if (emailReplyTo != "undfined") {
+    if (emailReplyTo != "undefined") {
       emailReplyToArray.push(emailReplyTo);
     }
     params = {
