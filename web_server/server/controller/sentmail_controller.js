@@ -20,7 +20,7 @@ import {
 dotenv.config();
 
 export async function sentmail(req, res, next) {
-  const {
+  let {
     nameFrom,
     emailTo,
     emailBcc,
