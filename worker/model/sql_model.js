@@ -86,10 +86,11 @@ export async function insertDefaultSendEmailLog(
   triggerDT,
   sendResponseDT,
   SendStatusCode,
-  SendMessage
+  SendMessage,
+  messageId
 ) {
   let [result] = await connectionPool.query(
-    `INSERT INTO send_email_log_list (send_email_list_id,send_count,trigger_dt,send_response_dt,send_status_code,send_message) VALUES (?,?,?,?,?,?)`,
+    `INSERT INTO send_email_log_list (send_email_list_id,send_count,trigger_dt,send_response_dt,send_status_code,send_message,send_response_message_id) VALUES (?,?,?,?,?,?,?)`,
     [
       sendEmailListId,
       sendCount,
@@ -97,6 +98,7 @@ export async function insertDefaultSendEmailLog(
       sendResponseDT,
       SendStatusCode,
       SendMessage,
+      messageId,
     ],
     function (err) {
       if (err) throw err;
@@ -109,11 +111,12 @@ export async function updateSendEmailLog(
   id,
   sendResponseDT,
   SendStatusCode,
-  SendMessage
+  SendMessage,
+  messageId
 ) {
   let [result] = await connectionPool.query(
-    `UPDATE  send_email_log_list SET send_response_dt = ? ,send_status_code = ? , send_message = ?  WHERE id =  ?  `,
-    [sendResponseDT, SendStatusCode, SendMessage, id],
+    `UPDATE  send_email_log_list SET send_response_dt = ? ,send_status_code = ? , send_message = ?, send_response_message_id = ?  WHERE id =  ?  `,
+    [sendResponseDT, SendStatusCode, SendMessage, messageId, id],
     function (err) {
       if (err) throw err;
     }

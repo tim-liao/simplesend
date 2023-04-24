@@ -469,6 +469,7 @@ Content-Transfer-Encoding: base64
   // 04/16變更：原本資料庫裡面count＝０是指第一次寄件就成功，但為了因應認證donmain name，可能在真正寄件前就擋下來，所以把count=0讓給真正沒有寄件的狀況
   let failedSendStatusCode;
   let failedSendMessage;
+  let messageId;
   async function sendEmailToSES() {
     // 這個function是寄送郵件
     let sendEmailLogId;
@@ -482,6 +483,7 @@ Content-Transfer-Encoding: base64
         triggerTimeNow,
         triggerTimeNow,
         0,
+        "default",
         "default"
       );
     } catch (e) {
@@ -493,20 +495,23 @@ Content-Transfer-Encoding: base64
     } catch (e) {
       failedSendStatusCode = e["$metadata"].httpStatusCode;
       failedSendMessage = e.message;
+      messageId = e.MessageId;
       // console.error(e["$metadata"].httpStatusCode, e.message);
     } finally {
       responseDT = generateTimeNow();
     }
-    console.log(data);
+
     count++;
     // 寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
     if (data && data["$metadata"].httpStatusCode == 200) {
+      messageId = data.MessageId;
       try {
         await updateSendEmailLog(
           sendEmailLogId,
           responseDT,
           200,
-          "successfully send email"
+          "successfully send email",
+          messageId
         );
       } catch (e) {
         console.error(e);
@@ -536,7 +541,8 @@ Content-Transfer-Encoding: base64
           sendEmailLogId,
           responseDT,
           failedSendStatusCode,
-          failedSendMessage
+          failedSendMessage,
+          messageId
         );
       } catch (e) {
         console.error(e);
@@ -548,7 +554,8 @@ Content-Transfer-Encoding: base64
           sendEmailLogId,
           responseDT,
           failedSendStatusCode,
-          failedSendMessage
+          failedSendMessage,
+          messageId
         );
       } catch (e) {
         console.error(e);
