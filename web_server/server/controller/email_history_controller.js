@@ -7,6 +7,7 @@ import {
   getUserSentEmailCount,
   getUserTrackingClickInformation,
   getUserSendEmailMessage,
+  getUserEmailSendActionFromSNS,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { startTime, endTime, tz } = req.body;
@@ -202,4 +203,35 @@ export async function getTrackingClickEmailInfor(req, res, next) {
   });
   let data = { country, browser, platform };
   res.status(200).send({ data });
+}
+
+export async function getSuccessDeliveryRate(req, res, next) {
+  const { userId, email } = req.body.member;
+  let eachStatus;
+  try {
+    eachStatus = await getUserEmailSendActionFromSNS(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot get UserEmailSendActionFromSNS from sql";
+    err.status = 500;
+    throw err;
+  }
+  let statusCount = { success: 0, other: 0 };
+  eachStatus.forEach((e) => {
+    let status = e.action;
+    if (status == "success") {
+      statusCount.success++;
+    } else {
+      statusCount.other++;
+    }
+  });
+
+  let allCount = statusCount.success + statusCount.other;
+  let successRate = statusCount.success / allCount;
+
+  let successPercent = Number(successRate * 100).toFixed(2) + "%";
+  if (allCount == 0) {
+    successPercent = "0%";
+  }
+  res.status(200).send({ data: successPercent });
 }

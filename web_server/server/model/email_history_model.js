@@ -87,3 +87,14 @@ export async function getUserTrackingClickInformation(id) {
   );
   return result;
 }
+
+export async function getUserEmailSendActionFromSNS(userId) {
+  let [result] = await connectionPool.query(
+    `select action from delivery_status_from_mail_server_list as d join send_email_log_list as l on d.send_email_log_send_response_message_id =l.send_response_message_id join send_email_list as e on e.id = l.send_email_list_id where e.user_id = ?`,
+    [userId],
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  return result;
+}

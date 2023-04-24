@@ -2,6 +2,8 @@ import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 let trackingemailcountrate = document.getElementById("trackingemailcountrate");
 let successrate = document.getElementById("successrate");
 let successrateBar = document.getElementById("successrate-bar");
+let ssuccessdelivery = document.getElementById("successdelivery");
+let successdeliveryBar = document.getElementById("successdelivery-bar");
 let trackingemailcountrateBar = document.getElementById(
   "trackingemailcountrate-bar"
 );
@@ -39,12 +41,27 @@ if (!token) {
     })
       .then((response) => response.json())
       .then(function (json) {
-        console.log(json);
+        // console.log(json);
         successrateBar.style = `width: ${json.data}`;
         successrate.innerHTML = `${json.data}`;
       });
   };
   successratefunction();
+
+  let successdeliveryratefunction = function () {
+    fetch("/api/1.0/getsuccessdeliveryrate", {
+      method: "POST",
+      headers: headers,
+    })
+      .then((response) => response.json())
+      .then(function (json) {
+        // console.log(json);
+        successdeliveryBar.style = `width: ${json.data}`;
+        successdelivery.innerHTML = `${json.data}`;
+      });
+  };
+  successdeliveryratefunction();
+
   let sentemailcount = function () {
     fetch("/api/1.0/getusersentemailcount", {
       method: "POST",
@@ -52,7 +69,7 @@ if (!token) {
     })
       .then((response) => response.json())
       .then(function (json) {
-        console.log(json);
+        // console.log(json);
         usersentemailcount.innerHTML = `${json.data.count}件`;
       });
   };

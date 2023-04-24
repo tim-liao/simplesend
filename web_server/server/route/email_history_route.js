@@ -8,6 +8,7 @@ import {
   getUserSentEmailqty,
   getUserSendEmailLog,
   getTrackingClickEmailInfor,
+  getSuccessDeliveryRate,
 } from "../controller/email_history_controller.js";
 router
   .route("/getemailhistory")
@@ -62,4 +63,9 @@ router
 //   }
 // }
 
+router
+  .route("/getsuccessdeliveryrate")
+  .post(wrapAsync(authentication), wrapAsync(getSuccessDeliveryRate));
+// req.body:{"userId":1}
+// res.body:{"data": "37.50%"}
 export default router;

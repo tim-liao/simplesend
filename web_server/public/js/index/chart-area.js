@@ -203,7 +203,7 @@ fetch("/api/1.0/getemailhistory", {
 })
   .then((response) => response.json())
   .then(function (json) {
-    console.log(json);
+    // console.log(json);
     let labelsArray = Object.keys(json.data);
     let dataArray = Object.values(json.data);
     // console.log(labelsArray, dataArray);

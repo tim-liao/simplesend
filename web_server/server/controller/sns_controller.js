@@ -7,7 +7,7 @@ export async function sns(req, res, next) {
   //   const data = req.body;
 
   let responsefromSNS = JSON.parse(req.body);
-  console.log(responsefromSNS);
+
   let responseMessage = JSON.parse(responsefromSNS.Message);
   let responsefromSNSType = responsefromSNS.Type;
   if (responsefromSNSType != "Notification") {
@@ -23,6 +23,7 @@ export async function sns(req, res, next) {
   // 若是delivery的話就把裡面的emailAddress記錄下來
   let responseMessageType = responseMessage["notificationType"];
   let responseMessageId = responseMessage.mail.messageId;
+
   if (responseMessageType == "Bounce") {
     let bouncedRecipientsInfor = responseMessage.bounce.bouncedRecipients;
     let createTime = generateTimeNow();
