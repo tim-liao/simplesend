@@ -1,0 +1,26 @@
+.shepherd-theme-default .shepherd-modal {
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+}
+
+.shepherd-theme-default .custom-class {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #dddddd;
+  color: #ff0000;
+  font-size: 16px;
+}
+
+.shepherd-theme-default .shepherd-modal-footer .shepherd-cancel-link {
+  color: #999999;
+}
+
+.shepherd-theme-default .shepherd-modal-footer .shepherd-button-primary {
+  background-color: #1a232b;
+  border-color: #a22ea4;
+  color: #ffffff;
+}
+
+.shepherd-theme-default .shepherd-modal .shepherd-content {
+  padding: 15px;
+}

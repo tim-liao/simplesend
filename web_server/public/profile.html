@@ -23,7 +23,10 @@
       href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
       rel="stylesheet"
     />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/11.1.1/css/shepherd.min.css"
+    />
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet" />
   </head>
@@ -52,9 +55,9 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
-          <a class="nav-link" href="index.html">
+          <a class="nav-link" id="dashboard" href="index.html">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a
+            <span>儀表板</span></a
           >
         </li>
 
@@ -66,15 +69,31 @@
 
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
-          <a class="nav-link" href="tables.html">
+          <a class="nav-link" id="emaillog" href="tables.html">
             <i class="fas fa-fw fa-table"></i>
             <span>郵件寄送詳細記錄</span></a
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/tim-liao/simplesend">
+          <a
+            class="nav-link"
+            id="github"
+            href="https://github.com/tim-liao/simplesend"
+          >
             <i class="fas fa-fw fa-table"></i>
-            <span>API使用說明</span></a
+            <span>GitHub</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="maunal-api">
+            <i class="fas fa-fw fa-table"></i>
+            <span>網站導覽</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="eachpage">
+            <i class="fas fa-fw fa-table"></i>
+            <span>本頁導覽</span></a
           >
         </li>
         <!-- Divider -->
@@ -189,7 +208,7 @@
             <h1 class="h3 mb-4 text-gray-800">個人頁面</h1>
           </div>
           <!-- /.container-fluid -->
-          <div class="container mt-5">
+          <div class="container mt-5" id="profileandapikey">
             <div class="row d-flex justify-content-center">
               <div class="col-md-12">
                 <div class="card p-5 py-10">
@@ -218,7 +237,7 @@
               </div>
             </div>
           </div>
-          <div class="container mt-5">
+          <div class="container mt-5" id="domainshepherd">
             <div class="row d-flex justify-content-center">
               <div class="col-md-12">
                 <div class="card p-5 py-10">
@@ -346,7 +365,7 @@
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/11.1.1/js/shepherd.min.js"></script>
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
@@ -354,5 +373,7 @@
     <script src="js/sb-admin-2.min.js"></script>
     <script src="js/profile/profile.js"></script>
     <script src="js/index/get-user-name.js"></script>
+    <script src="js/index/maunal-api.js"></script>
+    <script src="js/profile/profile-navigation.js"></script>
   </body>
 </html>

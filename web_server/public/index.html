@@ -18,6 +18,12 @@
       rel="stylesheet"
       type="text/css"
     />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/11.1.1/css/shepherd.min.css"
+    />
+    <link href="css/shepherd.css" rel="stylesheet" />
     <link
       href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
       rel="stylesheet"
@@ -60,7 +66,7 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
-          <a class="nav-link" href="index.html">
+          <a class="nav-link" id="dashboard" href="index.html">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>儀表板</span></a
           >
@@ -74,15 +80,31 @@
 
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
-          <a class="nav-link" href="tables.html">
+          <a class="nav-link" id="emaillog" href="tables.html">
             <i class="fas fa-fw fa-table"></i>
             <span>郵件寄送詳細記錄</span></a
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/tim-liao/simplesend">
+          <a
+            class="nav-link"
+            id="github"
+            href="https://github.com/tim-liao/simplesend"
+          >
             <i class="fas fa-fw fa-table"></i>
-            <span>API使用說明</span></a
+            <span>GitHub</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="maunal-api">
+            <i class="fas fa-fw fa-table"></i>
+            <span>網站導覽</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="eachpage">
+            <i class="fas fa-fw fa-table"></i>
+            <span>本頁導覽</span></a
           >
         </li>
         <!-- Divider -->
@@ -216,7 +238,7 @@
             <!-- Content Row -->
             <div class="row">
               <!-- Earnings (Monthly) Card Example -->
-              <div class="col-xl-3 col-md-6 mb-4">
+              <div class="col-xl-3 col-md-6 mb-4" id="successrateshepherd">
                 <div class="card border-left-primary shadow h-100 py-2">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -257,7 +279,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-md-6 mb-4">
+              <div class="col-xl-3 col-md-6 mb-4" id="successdeliveryshepherd">
                 <div class="card border-left-warning shadow h-100 py-2">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -299,7 +321,10 @@
                 </div>
               </div>
               <!-- Earnings (Monthly) Card Example -->
-              <div class="col-xl-3 col-md-6 mb-4">
+              <div
+                class="col-xl-3 col-md-6 mb-4"
+                id="usersentemailcountshepherd"
+              >
                 <div class="card border-left-success shadow h-100 py-2">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -325,7 +350,10 @@
               </div>
 
               <!-- Earnings (Monthly) Card Example -->
-              <div class="col-xl-3 col-md-6 mb-4">
+              <div
+                class="col-xl-3 col-md-6 mb-4"
+                id="trackingemailcountrateshepherd"
+              >
                 <div class="card border-left-info shadow h-100 py-2">
                   <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -367,7 +395,7 @@
                 </div>
               </div>
               <!-- Donut Chart -->
-              <div class="col-xl-4 col-lg-5">
+              <div class="col-xl-4 col-lg-5" id="countryPieChartshepherd">
                 <div class="card shadow mb-4">
                   <!-- Card Header - Dropdown -->
                   <div class="card-header py-3">
@@ -384,7 +412,7 @@
                 </div>
               </div>
               <!-- Donut Chart -->
-              <div class="col-xl-4 col-lg-5">
+              <div class="col-xl-4 col-lg-5" id="browserPieChartshepherd">
                 <div class="card shadow mb-4">
                   <!-- Card Header - Dropdown -->
                   <div class="card-header py-3">
@@ -401,7 +429,7 @@
                 </div>
               </div>
               <!-- Donut Chart -->
-              <div class="col-xl-4 col-lg-5">
+              <div class="col-xl-4 col-lg-5" id="platformPieChartshepherd">
                 <div class="card shadow mb-4">
                   <!-- Card Header - Dropdown -->
                   <div class="card-header py-3">
@@ -418,53 +446,85 @@
                 </div>
               </div>
             </div>
-
+            <div class="modal" id="MyModal" tabindex="-1" role="dialog">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modal_title"></h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body" id="modal_body">
+                    <p></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- Content Row -->
-            <div class="row">
-              <!-- Earnings (Monthly) Card Example -->
-              <div class="col-xl-12 col-md-12 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                  <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                      <div class="col mr-2">
-                        <div
-                          class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                        >
-                          選擇歷史的日期（台灣時區顯示）
-                        </div>
+            <div id="historysendemailcountshepherd">
+              <div class="row">
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-12 col-md-12 mb-4">
+                  <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                      <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                          <div
+                            class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                          >
+                            選擇歷史的日期（台灣時區顯示）
+                          </div>
 
-                        <div
-                          class="col-xl-12 h5 font-weight-bold text-gray-800"
-                        >
-                          <form id="form">
-                            <div
-                              class="input-daterange input-group"
-                              id="datepicker"
-                            >
-                              <input
-                                type="text"
-                                class="form-control datepicker"
-                                name="startTime"
-                                placeholder="From date"
-                              />
-                              <span
-                                class="input-group-addon"
-                                style="padding-right: 20px; padding-left: 20px"
+                          <div
+                            class="col-xl-12 h5 font-weight-bold text-gray-800"
+                          >
+                            <form id="form">
+                              <div
+                                class="input-daterange input-group"
+                                id="datepicker"
                               >
-                                to</span
-                              >
-                              <input
-                                type="text"
-                                class="form-control datepicker"
-                                name="endTime"
-                                placeholder="To date"
-                              />
-                              <span
-                                class="input-group-addon"
-                                style="padding-right: 20px"
-                              >
-                              </span>
-                              <!-- <button
+                                <input
+                                  type="text"
+                                  class="form-control datepicker"
+                                  name="startTime"
+                                  placeholder="From date"
+                                />
+                                <span
+                                  class="input-group-addon"
+                                  style="
+                                    padding-right: 20px;
+                                    padding-left: 20px;
+                                  "
+                                >
+                                  to</span
+                                >
+                                <input
+                                  type="text"
+                                  class="form-control datepicker"
+                                  name="endTime"
+                                  placeholder="To date"
+                                />
+                                <span
+                                  class="input-group-addon"
+                                  style="padding-right: 20px"
+                                >
+                                </span>
+                                <!-- <button
                                 class="btn btn-primary btn-icon-split"
                                 type="submit"
                               >
@@ -473,94 +533,67 @@
                                 </span>
                                 <span class="text">submit</span>
                               </button> -->
-                              <input
-                                class="btn btn-primary btn-icon-split"
-                                type="submit"
-                                value="Submit"
-                              />
-                            </div>
-                          </form>
+                                <input
+                                  class="btn btn-primary btn-icon-split"
+                                  type="submit"
+                                  value="Submit"
+                                />
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                        <div class="col-auto"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Earnings (Monthly) Card Example -->
+              </div>
+              <div class="row">
+                <!-- Area Chart -->
+                <div class="col-xl-12 col-lg-12">
+                  <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div
+                      class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                    >
+                      <h6 class="m-0 font-weight-bold text-primary">
+                        歷史寄件紀錄
+                      </h6>
+                      <div class="dropdown no-arrow">
+                        <a
+                          class="dropdown-toggle"
+                          href="#"
+                          role="button"
+                          id="dropdownMenuLink"
+                          data-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <i
+                            class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"
+                          ></i>
+                        </a>
+                        <div
+                          class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                          aria-labelledby="dropdownMenuLink"
+                        >
+                          <div class="dropdown-header">Dropdown Header:</div>
+                          <a class="dropdown-item" href="#">Action</a>
+                          <a class="dropdown-item" href="#">Another action</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#"
+                            >Something else here</a
+                          >
                         </div>
                       </div>
-                      <div class="col-auto"></div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal" id="MyModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">提醒</h5>
-                      <button
-                        type="button"
-                        class="close"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                      >
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <p>起始日期須小於結束日期</p>
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Earnings (Monthly) Card Example -->
-            </div>
-            <div class="row">
-              <!-- Area Chart -->
-              <div class="col-xl-12 col-lg-12">
-                <div class="card shadow mb-4">
-                  <!-- Card Header - Dropdown -->
-                  <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
-                  >
-                    <h6 class="m-0 font-weight-bold text-primary">
-                      歷史寄件紀錄
-                    </h6>
-                    <div class="dropdown no-arrow">
-                      <a
-                        class="dropdown-toggle"
-                        href="#"
-                        role="button"
-                        id="dropdownMenuLink"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <i
-                          class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"
-                        ></i>
-                      </a>
-                      <div
-                        class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                        aria-labelledby="dropdownMenuLink"
-                      >
-                        <div class="dropdown-header">Dropdown Header:</div>
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#"
-                          >Something else here</a
-                        >
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <div class="chart-area" id="chart-area">
+                        <canvas id="myAreaChart"></canvas>
                       </div>
-                    </div>
-                  </div>
-                  <!-- Card Body -->
-                  <div class="card-body">
-                    <div class="chart-area" id="chart-area">
-                      <canvas id="myAreaChart"></canvas>
                     </div>
                   </div>
                 </div>
@@ -646,7 +679,7 @@
     <script src="js/index/chart-area.js"></script>
     <!-- <script src="js/demo/chart-pie-demo.js"></script> -->
     <!-- 選擇日期 -->
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/11.1.1/js/shepherd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script>
       $(".datepicker").datepicker();
@@ -654,5 +687,7 @@
     <script type="module" src="js/index/index.js"></script>
     <script src="js/index/chart-pie.js"></script>
     <script src="js/index/get-user-name.js"></script>
+    <script src="js/index/maunal-api.js"></script>
+    <script src="js/index/dashboard-navigation.js"></script>
   </body>
 </html>

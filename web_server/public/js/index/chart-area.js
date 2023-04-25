@@ -149,6 +149,8 @@ function submitForm(e) {
   // console.log(formData);
 
   if (formData.startTime > formData.endTime) {
+    document.getElementById("modal_title").innerHTML = "提醒";
+    document.getElementById("modal_body").innerHTML = `起始日期須小於結束日期`;
     $("#MyModal").modal("show");
   } else {
     formData.forEach((val, key) => {
@@ -186,10 +188,22 @@ function submitForm(e) {
 
 // const paramsId = new URLSearchParams(document.location.search);
 // const id = paramsId.get("id");
+
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 1);
+const sevenDaysAgo = new Date(today);
+sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 let chartBody = {
   tz: "Asia/Taipei",
-  startTime: "2023-04-12",
-  endTime: "2023-04-19",
+  startTime: formatDate(sevenDaysAgo),
+  endTime: formatDate(tomorrow),
 };
 let chartHeaders = {
   "Content-Type": "application/json",
