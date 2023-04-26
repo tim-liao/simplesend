@@ -1,3 +1,4 @@
+import e from "express";
 import {
   getEmailHistory,
   turnTimeZone,
@@ -6,8 +7,10 @@ import {
   getOpenedEmailCount,
   getUserSentEmailCount,
   getUserTrackingClickInformation,
-  getUserSendEmailMessage,
+  getUserSendEmailMessagewithoutAttchment,
   getUserEmailSendActionFromSNS,
+  getUserSendEmailwithAttchment,
+  getUserSendEmailBounceMessage,
 } from "../model/email_history_model.js";
 export async function getUserEmailHistory(req, res, next) {
   const { startTime, endTime, tz } = req.body;
@@ -147,22 +150,54 @@ export async function getUserSentEmailqty(req, res, next) {
 
 export async function getUserSendEmailLog(req, res, next) {
   const { userId, email } = req.body.member;
-  let originalCount;
+  let userSendEmailMessagewithoutAttchment;
   try {
-    originalCount = await getUserSendEmailMessage(userId);
+    userSendEmailMessagewithoutAttchment =
+      await getUserSendEmailMessagewithoutAttchment(userId);
   } catch (e) {
     console.log(e);
     const err = new Error();
-    err.stack = "cannot get UserSendEmailMessage from sql";
+    err.stack = "cannot getUserSendEmailMessagewithoutAttchment from sql";
     err.status = 500;
     throw err;
   }
-  originalCount.forEach((element) => {
-    element.created_dt = `${turnTimeZone(element.created_dt)}`.slice(0, -4);
-  });
-  // console.log(originalCount);
+  let userSendEmailwithAttchment;
+  try {
+    userSendEmailwithAttchment = await getUserSendEmailwithAttchment(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot getUserSendEmailwithAttchment from sql";
+    err.status = 500;
+    throw err;
+  }
+  let newArray = userSendEmailMessagewithoutAttchment.concat(
+    userSendEmailwithAttchment
+  );
 
-  res.status(200).send({ data: originalCount });
+  newArray.forEach((element) => {
+    if (element.tracking_open == 1) {
+      element.tracking_open = "yes";
+    }
+    if (element.tracking_open == 0) {
+      element.tracking_open = "no";
+    }
+    if (element.tracking_click == 0) {
+      element.tracking_click = "no";
+    }
+    if (element.tracking_click == 1) {
+      element.tracking_click = "yes";
+    }
+    element.created_dt = `${turnTimeZone(element.created_dt)}`.slice(0, -4);
+    if (element.original_name) {
+      element.attachment = element.original_name;
+      delete element.original_name;
+    } else if (!element.original_name) {
+      element.attachment = "undefined";
+    }
+  });
+  // console.log(newArray);
+
+  res.status(200).send({ data: newArray });
 }
 
 export async function getTrackingClickEmailInfor(req, res, next) {
@@ -234,4 +269,20 @@ export async function getSuccessDeliveryRate(req, res, next) {
     successPercent = "0%";
   }
   res.status(200).send({ data: successPercent });
+}
+export async function getUserSendEmailBounceLog(req, res, next) {
+  const { userId, email } = req.body.member;
+  let log;
+  try {
+    log = await getUserSendEmailBounceMessage(userId);
+  } catch (e) {
+    const err = new Error();
+    err.stack = "cannot get getUserSendEmailBounceMessage from sql";
+    err.status = 500;
+    throw err;
+  }
+  log.forEach((element) => {
+    element.created_dt = `${turnTimeZone(element.created_dt)}`.slice(0, -4);
+  });
+  res.status(200).send({ data: log });
 }

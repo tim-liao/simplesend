@@ -9,6 +9,7 @@ import {
   getUserSendEmailLog,
   getTrackingClickEmailInfor,
   getSuccessDeliveryRate,
+  getUserSendEmailBounceLog,
 } from "../controller/email_history_controller.js";
 router
   .route("/getemailhistory")
@@ -40,7 +41,11 @@ router
   .post(wrapAsync(authentication), wrapAsync(getUserSendEmailLog));
 // req.body:{"userId":1}
 // res.body:{{"data": [{"recipient_email": "test", "time": "2023-04-04 06:41:44","email_subject": "999999","error_status": 400, "error_log": "Email address is not verified. The following identities failed the check in region AP-NORTHEAST-1: 456@gmail.com"},...}
-
+router
+  .route("/getUserSendEmailBounceMessage")
+  .post(wrapAsync(authentication), wrapAsync(getUserSendEmailBounceLog));
+// req.body:{"userId":1}
+// res.body:{{"data": [{"recipient_email": "test", "time": "2023-04-04 06:41:44","email_subject": "999999","error_status": 400, "error_log": "Email address is not verified. The following identities failed the check in region AP-NORTHEAST-1: 456@gmail.com"},...}
 router
   .route("/gettrackingclickemailinfor")
   .post(wrapAsync(authentication), wrapAsync(getTrackingClickEmailInfor));

@@ -54,6 +54,32 @@ document.getElementById("maunal-api").addEventListener("click", () => {
     ],
     id: "creating",
   });
+
+  tour.addStep({
+    title: "失敗郵件名單",
+    text: `紀錄您寄出的郵件，但是郵件地址無效的名單`,
+    attachTo: {
+      element: "#bounceemail",
+      on: "bottom",
+    },
+
+    buttons: [
+      {
+        action() {
+          this.back();
+        },
+        classes: "shepherd-button-secondary",
+        text: "Back",
+      },
+      {
+        action() {
+          this.next();
+        },
+        text: "Next",
+      },
+    ],
+    id: "creating",
+  });
   tour.addStep({
     title: "GitHub頁面",
     text: `點擊後會導覽到這個網站的GitHub頁面`,
