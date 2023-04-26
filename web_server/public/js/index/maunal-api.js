@@ -80,6 +80,31 @@ document.getElementById("maunal-api").addEventListener("click", () => {
     id: "creating",
   });
   tour.addStep({
+    title: "本站介紹頁面",
+    text: `點擊後會轉跳到本站的介紹畫面`,
+    attachTo: {
+      element: "#introduction",
+      on: "bottom",
+    },
+
+    buttons: [
+      {
+        action() {
+          this.back();
+        },
+        classes: "shepherd-button-secondary",
+        text: "Back",
+      },
+      {
+        action() {
+          this.next();
+        },
+        text: "Next",
+      },
+    ],
+    id: "creating",
+  });
+  tour.addStep({
     title: "個人資料及登出",
     text: `點擊後會顯示個人資料及登出按鈕。個人資料頁面可以獲得您的api key以及驗證您可以使用的寄件名稱。`,
     attachTo: {

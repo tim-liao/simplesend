@@ -1,0 +1,36 @@
+.code-block {
+  background-color: #000000;
+  border: 1px solid #ccc;
+  padding: 1vh;
+  margin: 10px 0;
+  font-family: monospace;
+  font-size: 14px;
+  position: relative;
+
+  border-radius: 20px;
+  width: 35vw;
+  box-shadow: 8px 16px 16px hsl(0deg 0% 0% /0.25);
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+  margin-bottom: 10px;
+}
+
+.code-header button {
+  background-color: rgb(0, 0, 0);
+  color: #333;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.code-content {
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  text-align: left;
+  color: #ccc;
+}
