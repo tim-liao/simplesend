@@ -36,7 +36,7 @@ fetch("/api/1.0/getUserSendEmailMessage", {
     let HTML = `<div class="card shadow mb-4">
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">
-      ERROR SENT
+    
       </h6>
     </div>
     <div class="card-body">
