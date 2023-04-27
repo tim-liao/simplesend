@@ -91,7 +91,7 @@
                       <a class="page-scroll" href="#why">使用</a>
                     </li>
                     <li class="nav-item">
-                      <a href="/sign_in.html">進入網站</a>
+                      <a href="/sign_in.html">進入儀表板</a>
                     </li>
                   </ul>
                 </div>
@@ -158,10 +158,10 @@
                 <i class="lni lni-envelope"></i>
               </div>
               <div class="content">
-                <h3>簡單透過API寄件</h3>
+                <h3>簡單透過 API 寄件</h3>
                 <p>
-                  只要註冊我們網站，並認證您的獨一無二的域名作為寄件名，即可簡單透過我們的API進行寄件代理。
-                  我們同時有提供npm套件讓您寄件超簡單！
+                  只要註冊我們網站，並認證您的獨一無二的域名作為寄件名，即可簡單透過我們的
+                  API 進行寄件代理。 我們同時有提供 npm 套件讓您寄件超簡單！
                 </p>
               </div>
             </div>
@@ -251,8 +251,8 @@ sendonlyemail(body, apiKey);
                   簡單三步驟，做完馬上寄
                 </h2>
                 <p class="wow fadeInUp" data-wow-delay=".4s">
-                  註冊、認證寄件名稱、下載
-                  npm套件，做完以上三件事就可以快速寄件！
+                  註冊、認證寄件名稱、下載 npm
+                  套件，做完以上三件事就可以快速寄件！
                 </p>
               </div>
               <a
@@ -276,16 +276,17 @@ sendonlyemail(body, apiKey);
             <div class="about-content">
               <div class="section-title mb-30">
                 <h2 class="mb-25 wow fadeInUp" data-wow-delay=".2s">
-                  若你不想使用npm套件...
+                  若您不想使用 npm 套件...
                 </h2>
                 <p class="wow fadeInUp" data-wow-delay=".4s">
-                  若是不需要附加檔案的郵件任務甚至直接使用我的API進行寄送即可，不需安裝，快速又方便！
+                  若是不需要附加檔案的郵件任務甚至直接使用我的 API
+                  進行寄送即可，不需安裝，快速又方便！
                 </p>
               </div>
               <ul>
-                <li>準備好API KEY、User ID以及可用的寄件名</li>
-                <li>直接用URL，並在後方貼上你的API KEY</li>
-                <li>使用post訪問，並在寄件時夾帶您的寄件資訊以及 User ID</li>
+                <li>準備好 API KEY、User ID 以及可用的寄件名</li>
+                <li>直接用 URL，並在後方貼上你的 API KEY</li>
+                <li>使用 post 訪問，並在寄件時夾帶您的寄件資訊以及 User ID</li>
                 <li>點擊送出！完成</li>
               </ul>
             </div>
@@ -359,14 +360,14 @@ body: JSON.stringify(body),
                     src="assets/img/aws/ec2.svg"
                     alt=""
                     class="shape shape-2"
-                    style="width: 4vh"
+                    style="width: 7vh"
                   />
                 </div>
                 <div class="content">
                   <h3>EC2</h3>
                   <p>
                     我們主要運用 AWS 提供的 EC2 服務，將 WEB SERVER
-                    架設在雲端電腦上，讓伺服器不架設在自己的電腦。
+                    架設在雲端電腦上，降低自行維護設備的成本。
                   </p>
                 </div>
               </div>
@@ -378,13 +379,13 @@ body: JSON.stringify(body),
                     src="assets/img/aws/ses.svg"
                     alt=""
                     class="shape shape-2"
-                    style="width: 4vh"
+                    style="width: 7vh"
                   />
                 </div>
                 <div class="content">
                   <h3>SES</h3>
                   <p>
-                    我們透過 AWS 的 SES(Simple Email Service)
+                    我們透過使用 AWS 的 SES(Simple Email Service)
                     來進行郵件投遞的工作。
                   </p>
                 </div>
@@ -397,7 +398,7 @@ body: JSON.stringify(body),
                     src="assets/img/aws/s3.svg"
                     alt=""
                     class="shape shape-2"
-                    style="width: 4vh"
+                    style="width: 7vh"
                   />
                 </div>
                 <div class="content">
@@ -417,14 +418,14 @@ body: JSON.stringify(body),
                     src="assets/img/aws/sns.svg"
                     alt=""
                     class="shape shape-2"
-                    style="width: 4vh"
+                    style="width: 7vh"
                   />
                 </div>
                 <div class="content">
                   <h3>SNS</h3>
                   <p>
                     我們運用 AWS 提供的 SNS(Simple Notification Service)
-                    服務，將寄件後的郵件是否真正投遞到收件者的郵箱狀態進行資訊回傳，讓你的郵件寄出後不會不知去向。
+                    服務，將寄件後的郵件是否真正投遞到收件者的郵箱狀態進行資訊回傳，讓您的郵件寄出後不會不知去向。
                   </p>
                 </div>
               </div>
@@ -438,9 +439,11 @@ body: JSON.stringify(body),
                 <div class="content">
                   <h3>AWS</h3>
                   <p>
-                    除了上面這些，我們還使用了其他的AWS服務來達到我們的需求，例如：
-                    RDS
-                    (作為資料庫儲存使用者的資料)、CloudWatch（儲存完整的SNS回傳資料）。
+                    除了上面這些，我們還使用了其他的 AWS
+                    服務來達到我們的需求，例如： RDS
+                    (作為資料庫儲存使用者的資料)、Lambda（ SNS 觸發 function
+                    寫資料進 CloudWatch
+                    ）、CloudWatch（儲存完整的SNS回傳資料）。
                   </p>
                 </div>
               </div>
@@ -452,7 +455,7 @@ body: JSON.stringify(body),
                     src="assets/img/aws/rabbitmq.svg"
                     alt=""
                     class="shape shape-2"
-                    style="width: 5vh"
+                    style="width: 7vh"
                   />
                 </div>
                 <div class="content">

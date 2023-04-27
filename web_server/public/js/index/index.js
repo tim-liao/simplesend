@@ -10,7 +10,7 @@ let trackingemailcountrateBar = document.getElementById(
 
 let token = localStorage.getItem("userToken");
 if (!token) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 } else {
   let usersentemailcount = document.getElementById("usersentemailcount");
 
