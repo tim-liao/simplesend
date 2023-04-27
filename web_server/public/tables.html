@@ -35,6 +35,15 @@
       href="vendor/datatables/dataTables.bootstrap4.min.css"
       rel="stylesheet"
     />
+    <!-- 以下是拿來選擇日期的 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css"
+    />
   </head>
 
   <body id="page-top">
@@ -272,8 +281,78 @@
             <!-- Page Heading -->
             <h1 class="h3 mb-2 text-gray-800">寄件紀錄</h1>
             <p class="mb-4">
-              可以左右滑動查看更多欄位，也可以點擊目標欄位最上方進行重新排序。
+              可以左右滑動查看更多欄位，也可以點擊目標欄位最上方進行重新排序。（預設載入是抓取前七天的歷史紀錄）
             </p>
+            <div class="row">
+              <!-- Earnings (Monthly) Card Example -->
+              <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div
+                          class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                        >
+                          選擇歷史的日期（台灣時區顯示）
+                        </div>
+
+                        <div
+                          class="col-xl-12 h5 font-weight-bold text-gray-800"
+                        >
+                          <form id="form">
+                            <div
+                              class="input-daterange input-group"
+                              id="datepicker"
+                            >
+                              <input
+                                type="text"
+                                class="form-control datepicker"
+                                name="startTime"
+                                placeholder="From date"
+                              />
+                              <span
+                                class="input-group-addon"
+                                style="padding-right: 20px; padding-left: 20px"
+                              >
+                                to</span
+                              >
+                              <input
+                                type="text"
+                                class="form-control datepicker"
+                                name="endTime"
+                                placeholder="To date"
+                              />
+                              <span
+                                class="input-group-addon"
+                                style="padding-right: 20px"
+                              >
+                              </span>
+                              <!-- <button
+                              class="btn btn-primary btn-icon-split"
+                              type="submit"
+                            >
+                              <span class="icon text-white-600">
+                                <i class="fas fa-arrow-right"></i>
+                              </span>
+                              <span class="text">submit</span>
+                            </button> -->
+                              <input
+                                class="btn btn-primary btn-icon-split"
+                                type="submit"
+                                value="Submit"
+                              />
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="col-auto"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Earnings (Monthly) Card Example -->
+            </div>
             <div id="userfailedemailmessage"></div>
             <!-- DataTales Example -->
           </div>
@@ -375,6 +454,10 @@
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+      $(".datepicker").datepicker();
+    </script>
     <script src="js/table/datatables.js"></script>
     <script src="js/index/get-user-name.js"></script>
     <script src="js/index/maunal-api.js"></script>

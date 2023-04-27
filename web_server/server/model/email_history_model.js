@@ -66,20 +66,24 @@ export async function getUserSentEmailCount(id) {
   return result;
 }
 
-export async function getUserSendEmailMessagewithoutAttchment(id) {
+export async function getUserSendEmailMessagewithoutAttchment(
+  id,
+  startTime,
+  endTime
+) {
   let [result] = await connectionPool.query(
-    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt,s.tracking_link,s.attachment  from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id where s.user_id = ? AND s.attachment = 0`,
-    [id],
+    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt,s.tracking_link,s.attachment  from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id where s.user_id = ? AND s.attachment = 0 and s.created_dt > ? and s.created_dt < ?`,
+    [id, startTime, endTime],
     function (err) {
       if (err) throw err;
     }
   );
   return result;
 }
-export async function getUserSendEmailwithAttchment(id) {
+export async function getUserSendEmailwithAttchment(id, startTime, endTime) {
   let [result] = await connectionPool.query(
-    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt,s.tracking_link,a.original_name  from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id JOIN send_email_attachment_list as a ON a.send_email_list_id = s.id where s.user_id = ? `,
-    [id],
+    `select s.name_from,s.email_to,s.email_bcc,s.email_cc,s.email_reply_to,s.email_subject,s.email_body_type,s.tracking_open,s.tracking_click,s.send_status,l.send_message,s.created_dt,s.tracking_link,a.original_name  from send_email_list as s JOIN send_email_log_list as l  ON s.id = l.send_email_list_id JOIN send_email_attachment_list as a ON a.send_email_list_id = s.id where s.user_id = ? and s.created_dt > ? and s.created_dt < ?`,
+    [id, startTime, endTime],
     function (err) {
       if (err) throw err;
     }

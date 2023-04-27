@@ -149,11 +149,12 @@ export async function getUserSentEmailqty(req, res, next) {
 }
 
 export async function getUserSendEmailLog(req, res, next) {
+  const { startTime, endTime, tz } = req.body;
   const { userId, email } = req.body.member;
   let userSendEmailMessagewithoutAttchment;
   try {
     userSendEmailMessagewithoutAttchment =
-      await getUserSendEmailMessagewithoutAttchment(userId);
+      await getUserSendEmailMessagewithoutAttchment(userId, startTime, endTime);
   } catch (e) {
     console.log(e);
     const err = new Error();
@@ -163,8 +164,13 @@ export async function getUserSendEmailLog(req, res, next) {
   }
   let userSendEmailwithAttchment;
   try {
-    userSendEmailwithAttchment = await getUserSendEmailwithAttchment(userId);
+    userSendEmailwithAttchment = await getUserSendEmailwithAttchment(
+      userId,
+      startTime,
+      endTime
+    );
   } catch (e) {
+    console.log(e);
     const err = new Error();
     err.stack = "cannot getUserSendEmailwithAttchment from sql";
     err.status = 500;

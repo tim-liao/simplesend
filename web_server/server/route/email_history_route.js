@@ -39,7 +39,7 @@ router
 router
   .route("/getUserSendEmailMessage")
   .post(wrapAsync(authentication), wrapAsync(getUserSendEmailLog));
-// req.body:{"userId":1}
+// req.body:{"userId":1,"startTime":"2023-04-04 00:00:00","endTime":"2023-04-06 13:00:00"}
 // res.body:{{"data": [{"recipient_email": "test", "time": "2023-04-04 06:41:44","email_subject": "999999","error_status": 400, "error_log": "Email address is not verified. The following identities failed the check in region AP-NORTHEAST-1: 456@gmail.com"},...}
 router
   .route("/getUserSendEmailBounceMessage")
