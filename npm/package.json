@@ -1,0 +1,22 @@
+{
+  "name": "simplesend",
+  "version": "1.0.6",
+  "description": "simplesend",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "simplesend",
+    "email",
+    "mail",
+    "service"
+  ],
+  "dependencies": {
+    "file-type": "^18.2.1",
+    "node-fetch": "^3.3.1"
+  },
+  "author": "Tim",
+  "license": "MIT"
+}
