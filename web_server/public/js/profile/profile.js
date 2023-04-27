@@ -5,7 +5,7 @@ let userprofilebody = {
 };
 let token = localStorage.getItem("userToken");
 if (!token) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 }
 
 let userprofileheaders = {
@@ -21,7 +21,7 @@ fetch("/api/1.0/getuserprofile", {
     if (json.status) {
       if (json.status == 403) {
         localStorage.removeItem("userToken");
-        return window.location.replace(`sign_in.html`);
+        return window.location.replace(`introduction.html`);
       }
     }
     let originalData = json.data;
@@ -273,5 +273,5 @@ let submitDeleteDomainName = function (domainName) {
 document.getElementById("logout").addEventListener("click", () => {
   localStorage.removeItem("userToken");
 
-  return window.location.replace(`sign_in.html`);
+  return window.location.replace(`introduction.html`);
 });

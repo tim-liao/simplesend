@@ -10,7 +10,7 @@ const platformChart = document.getElementById("platformPieChart");
 
 let userToken = localStorage.getItem("userToken");
 if (!userToken) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 }
 
 let userHeaders = { Authorization: `Bearer ${userToken}` };
@@ -212,5 +212,5 @@ gettrackingclickemailinfor();
 document.getElementById("logout").addEventListener("click", () => {
   localStorage.removeItem("userToken");
 
-  return window.location.replace(`sign_in.html`);
+  return window.location.replace(`introduction.html`);
 });

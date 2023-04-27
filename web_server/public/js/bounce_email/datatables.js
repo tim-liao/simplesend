@@ -1,7 +1,7 @@
 // Call the dataTables jQuery plugin
 let token = localStorage.getItem("userToken");
 if (!token) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 }
 let userfailedemailmessage = document.getElementById("userfailedemailmessage");
 
@@ -87,7 +87,7 @@ fetch("/api/1.0/getUserSendEmailBounceMessage", {
 document.getElementById("logout").addEventListener("click", () => {
   localStorage.removeItem("userToken");
 
-  return window.location.replace(`sign_in.html`);
+  return window.location.replace(`introduction.html`);
 });
 fetch("/api/1.0/getUserSendEmailBounceMessage", {
   method: "POST",

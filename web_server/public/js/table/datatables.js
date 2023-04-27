@@ -1,7 +1,7 @@
 // Call the dataTables jQuery plugin
 let token = localStorage.getItem("userToken");
 if (!token) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 }
 let userfailedemailmessage = document.getElementById("userfailedemailmessage");
 
@@ -38,7 +38,7 @@ const aa = function (body) {
       if (json.status) {
         if (json.status == 403) {
           localStorage.removeItem("userToken");
-          return window.location.replace(`sign_in.html`);
+          return window.location.replace(`introduction.html`);
         }
       }
       if (allMessage.length == 0) {
@@ -169,5 +169,5 @@ function submitForm(e) {
 document.getElementById("logout").addEventListener("click", () => {
   localStorage.removeItem("userToken");
 
-  return window.location.replace(`sign_in.html`);
+  return window.location.replace(`introduction.html`);
 });

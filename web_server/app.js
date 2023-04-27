@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.get("/", (req, res) => {
-  res.redirect("/index.html");
+  res.redirect("/introduction.html");
 });
 import user_route from "./server/route/user_route.js";
 import sentmail_route from "./server/route/sentmail_route.js";

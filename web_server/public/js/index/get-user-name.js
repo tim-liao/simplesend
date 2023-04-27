@@ -1,7 +1,7 @@
 let hahatoken = localStorage.getItem("userToken");
 let userName = document.getElementById("user-name");
 if (!token) {
-  window.location.replace(`sign_in.html`);
+  window.location.replace(`introduction.html`);
 } else {
   let headers = { Authorization: `Bearer ${hahatoken}` };
   let getUserName = function () {
