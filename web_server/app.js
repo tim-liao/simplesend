@@ -4,6 +4,10 @@ import dotenv from "dotenv";
 dotenv.config();
 process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger-output.json" assert { type: "json" };
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 /*|| 3000*/
 // import { createServer } from "http";
 // import { Server } from "socket.io";
@@ -14,13 +18,14 @@ const port = process.env.PORT;
 //   },
 // });
 // httpServer.listen(3030);
+
 import { trackMailClick } from "./server/route/track_mail_route.js";
 app.use(trackMailClick);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.get("/", (req, res) => {
+  /* #swagger.description = 'redirect to introduction page' */
   res.redirect("/introduction.html");
 });
 import user_route from "./server/route/user_route.js";

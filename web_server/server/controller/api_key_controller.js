@@ -13,6 +13,7 @@ import {
 } from "../model/api_key_model.js";
 
 export async function getnewestapikey(req, res) {
+  /* #swagger.description = 'Some description...'*/
   const { userId, email } = req.body.member;
   if (!userId) {
     const err = new Error();

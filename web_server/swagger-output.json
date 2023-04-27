@@ -1,0 +1,380 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "My API",
+    "description": "Description",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "redirect to introduction page",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/api/1.0/sentmail": {
+      "post": {
+        "description": "let user send email",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "successfully scheduled",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/sentrawmail": {
+      "post": {
+        "description": "let user send email with attachment and get url to upload attachment to my place",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "url": "URL",
+              "attachmentId": "ATTACHMENT_NAME"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/responseFromrawmailUploadToS3": {
+      "post": {
+        "description": "if upload successfully, send 200 response to user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "successfully scheduled",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getnewestapikey": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": {
+              "data": "API_KEY"
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/generatenewapikey": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": {
+              "data": "API_KEY"
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getAllActiveApiKeyWithExpiredTime": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": {
+              "data": [
+                {
+                  "api_key": "API_KEY",
+                  "expired_time": "2023-05-01 14:43:50.000"
+                },
+                {
+                  "api_key": "API_KEY",
+                  "expired_time": "2024-04-23 14:43:50.000"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getemailhistory": {
+      "post": {
+        "description": "get each day send email count by time interval",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "2023-04-04": 14,
+              "2023-04-05": 3,
+              "2023-04-06": 5
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getsuccessrate": {
+      "post": {
+        "description": "get success rate to send email from my server",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "37.50%",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/gettrackingopenemailcountrate": {
+      "post": {
+        "description": "get tracking open count rate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "37.50%",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getusersentemailcount": {
+      "post": {
+        "description": "get user sent email count since creating the member",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "count": 35
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getUserSendEmailMessage": {
+      "post": {
+        "description": "get user send email detail and status ",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": [
+              {
+                "recipient_email": "test",
+                "time": "2023-04-04 06:41:44",
+                "email_subject": "999999",
+                "error_status": 400,
+                "error_log": "Email address is not verified. The following identities failed the check in region AP-NORTHEAST-1: 456@gmail.com",
+                "andsoon": "and so on"
+              }
+            ],
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getUserSendEmailBounceMessage": {
+      "post": {
+        "description": "get all bounced recipients email address ,bounced message and created time ",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": [
+              {
+                "email_address": "example@asa.com",
+                "action": "failed",
+                "action_message": "reject from mail server",
+                "created_dt": "2024-04-23 14:43:50.000"
+              }
+            ],
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/gettrackingclickemailinfor": {
+      "post": {
+        "description": "get user tracking click and recipient info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "coutry": {
+              "TW": 16
+            },
+            "browser": {
+              "Chrome": 11,
+              "Mobile Safari": 5
+            },
+            "platform": {
+              "Macintosh": 6,
+              "Windows NT 10.0": 5,
+              "iPhone": 5
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getsuccessdeliveryrate": {
+      "post": {
+        "description": "get rate from email address when get \"delivery\" response from recipient mail server",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "37.50%",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getuserprofile": {
+      "post": {
+        "description": "get user info",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "id": 1,
+              "name": "aaa",
+              "email": "aaa@gmail.com"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/userGetStringToStoreInDnsSetting": {
+      "post": {
+        "description": "get setting string to let user verify the domain name which will be used in sending email",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "verifyString": "dsfakjdlsfgodisfjdsnvfdls"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/verifyUserDomainName": {
+      "post": {
+        "description": "verify user domain name ",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "verifyStatus": "success"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getAllUserDomainNameINfor": {
+      "post": {
+        "description": "get all user domain name , setting string and status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": [
+              {
+                "domain_name": "asdf.io",
+                "setting_string": "wy5rtyvbtegrhvetyghrrevyhtbvbhyetbdvhty",
+                "verify_status": "success"
+              },
+              {
+                "domain_name": "qwerhjk.com",
+                "setting_string": "wy5rtyvbtegrhvetyghrrevyhtbvbhyetbdvhty",
+                "verify_status": "failed"
+              }
+            ],
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/deleteUserDomainName": {
+      "post": {
+        "description": "let user to delete domain name",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": "successfully deleted",
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/userSignUp": {
+      "post": {
+        "description": "let user register to our website",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "access_token": "456rstghersg45e6rsh2df3gh45rtbg",
+              "acces_expired": 3600
+            },
+            "user": {
+              "id": 7,
+              "name": "apple",
+              "email": "4564564@gmail.com"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/userSignIn": {
+      "post": {
+        "description": "let user log in to our website",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "access_token": "456rstghersg45e6rsh2df3gh45rtbg",
+              "acces_expired": 3600
+            },
+            "user": {
+              "id": 7,
+              "name": "apple",
+              "email": "4564564@gmail.com"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/getusername": {
+      "post": {
+        "description": "get user name ",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "data": {
+              "userName": "name"
+            },
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/1.0/sns": {
+      "post": {
+        "description": "let SNS notify the mail-sending-info when get response from recipient mail server",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
