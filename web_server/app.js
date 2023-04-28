@@ -5,7 +5,7 @@ dotenv.config();
 process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger-output.json" assert { type: "json" };
+import swaggerDocument from "./swagger.json" assert { type: "json" };
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 /*|| 3000*/

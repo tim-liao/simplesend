@@ -7,7 +7,9 @@
   },
   "host": "localhost:3000",
   "basePath": "/",
-  "schemes": ["http"],
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "/": {
       "get": {
@@ -24,6 +26,96 @@
           "200": {
             "data": "successfully scheduled",
             "description": "OK"
+          },
+          "400": {
+            "data": "Bad request parameters",
+            "description": "Bad Request"
+          },
+          "500": {
+            "data": "Server error",
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Parameters required to send an email",
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "user_id",
+                  "nameFrom",
+                  "emailTo",
+                  "emailSubject",
+                  "emailBodyType",
+                  "emailBodyContent",
+                  "trackingOpen",
+                  "trackingClick"
+                ],
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "nameFrom": {
+                    "type": "string",
+                    "example": "example.cpm"
+                  },
+                  "emailTo": {
+                    "type": "string",
+                    "example": "fasdf@gmail.com"
+                  },
+                  "emailBcc": {
+                    "type": "string",
+                    "example": "fasdf@gmail.com"
+                  },
+                  "emailCc": {
+                    "type": "string",
+                    "example": "fasdf@gmail.com"
+                  },
+                  "emailReplyTo": {
+                    "type": "string",
+                    "example": "fasdf@gmail.com"
+                  },
+                  "emailSubject": {
+                    "type": "string",
+                    "example": "hahaha"
+                  },
+                  "emailBodyType": {
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "html"
+                    ],
+                    "example": "text"
+                  },
+                  "emailBodyContent": {
+                    "type": "string",
+                    "example": "text"
+                  },
+                  "trackingOpen": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "example": "text"
+                  },
+                  "trackingClick": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "example": "text"
+                  },
+                  "trackingLink": {
+                    "type": "string",
+                    "example": "text"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -372,6 +464,21 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/definitions/sample"
+              }
+            }
           }
         }
       }

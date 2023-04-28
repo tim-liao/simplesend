@@ -1,0 +1,1397 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SIMPLE SEND API DOCUMENT",
+    "description": "Description",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "Bearer Token"
+    }
+  },
+  "tags": [
+    {
+      "name": "send email service",
+      "description": "API for user to send email"
+    },
+    { "name": "dashboard", "description": "support for dashboard page" },
+    { "name": "profile", "description": "support for profile page" },
+    { "name": "email detail", "description": "support for email detail page" },
+    { "name": "bounce email", "description": "support for bounce email page" },
+    {
+      "name": "sign in and sign up",
+      "description": "support for sign in and sign up page"
+    },
+    { "name": "other", "description": "other" }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["other"],
+        "summary": "redirect to introduction page",
+        "description": "redirect to introduction page",
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/api/1.0/sentmail": {
+      "post": {
+        "parameters": [
+          {
+            "name": "APIKEY",
+            "in": "query",
+            "description": "send email api key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["send email service"],
+        "summary": "let user send email",
+        "description": "without attachment",
+        "requestBody": {
+          "description": "Parameters required to send an email",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/sendemail" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successschscheduled"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/clientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/serverError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/sentrawmail": {
+      "post": {
+        "parameters": [
+          {
+            "name": "APIKEY",
+            "in": "query",
+            "description": "send email api key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["send email service"],
+        "summary": "let user send email",
+        "description": "let user send email with attachment and get url to upload attachment to my place",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sendrawemail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/presignedURL"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/clientError"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/serverError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/responseFromrawmailUploadToS3": {
+      "post": {
+        "tags": ["send email service"],
+        "summary": "if upload successfully, send 200 response to user",
+        "description": "if upload successfully, send 200 response to user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadToS3"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successschscheduled"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getnewestapikey": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "get user active api key",
+        "description": "get user active api key",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getapikey"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/generatenewapikey": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "generate new api key ,the old key will be setted new expired time (7 days)",
+        "description": "generate new api key ,the old key will be setted new expired time (7 days)",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getapikey"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getAllActiveApiKeyWithExpiredTime": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "get user api key and detail",
+        "description": "get user api key and detail",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "get all api key and expired time",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apikeywithexpiredtime"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getemailhistory": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get each day send email count by time interval",
+        "description": "get each day send email count by time interval",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getemailhistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getsuccessrate": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get success rate to send email from my server",
+        "description": "get success rate to send email from my server",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getrate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/gettrackingopenemailcountrate": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get tracking open count rate",
+        "description": "get tracking open count rate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getrate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getusersentemailcount": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get user sent email count since creating the member",
+        "description": "get user sent email count since creating the member",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getusersentemailcount"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getUserSendEmailMessage": {
+      "post": {
+        "tags": ["email detail"],
+        "summary": "get user send email detail and status",
+        "description": "get user send email detail and status",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getusersendemailmessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getUserSendEmailBounceMessage": {
+      "post": {
+        "tags": ["bounce email"],
+        "summary": "get all bounced recipients email address ,bounced message and created time",
+        "description": "get all bounced recipients email address ,bounced message and created time",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getusersendemailbouncemessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/gettrackingclickemailinfor": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get user tracking click and recipient info",
+        "description": "get user tracking click and recipient info",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gettrackingclickemailinfor"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getsuccessdeliveryrate": {
+      "post": {
+        "tags": ["dashboard"],
+        "summary": "get rate from email address when get \"delivery\" response from recipient mail server",
+        "description": "get rate from email address when get \"delivery\" response from recipient mail server",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getrate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getuserprofile": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "get user ID , user name and user email",
+        "description": "get user ID , user name and user email",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getuserprofile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/userGetStringToStoreInDnsSetting": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "get setting string to let user verify the domain name which will be used in sending email",
+        "description": "get setting string to let user verify the domain name which will be used in sending email",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getdomainname"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getnewsettingstring"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/verifyUserDomainName": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "verify user domain name ",
+        "description": "verify user domain name ",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getdomainname"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getdomainnameverifystatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getAllUserDomainNameINfor": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "get all user domain name , setting string and status",
+        "description": "get all user domain name , setting string and status",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getalluserdomainnameinfor"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/deleteUserDomainName": {
+      "post": {
+        "tags": ["profile"],
+        "summary": "let user to delete domain name",
+        "description": "let user to delete domain name",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getdomainname"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/deletedomainname"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/userSignUp": {
+      "post": {
+        "tags": ["sign in and sign up"],
+        "summary": "let user register to our website",
+        "description": "let user register to our website",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/signup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/usertokenandinfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/userSignIn": {
+      "post": {
+        "tags": ["sign in and sign up"],
+        "summary": "let user log in to our website",
+        "description": "let user log in to our website",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/signin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/usertokenandinfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/getusername": {
+      "post": {
+        "tags": ["other"],
+        "summary": "get user name",
+        "description": "get user name ",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "Bearer Token for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getusername"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/1.0/sns": {
+      "post": {
+        "tags": ["other"],
+        "summary": "let SNS notify the mail-sending-info when get response from recipient mail server",
+        "description": "let SNS notify the mail-sending-info when get response from recipient mail server",
+        "requestBody": {
+          "required": true
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "sendemail": {
+        "required": [
+          "user_id",
+          "nameFrom",
+          "emailTo",
+          "emailSubject",
+          "emailBodyType",
+          "emailBodyContent",
+          "trackingOpen",
+          "trackingClick"
+        ],
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nameFrom": {
+            "type": "string",
+            "example": "example.cpm"
+          },
+          "emailTo": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailBcc": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailCc": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailReplyTo": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailSubject": {
+            "type": "string",
+            "example": "welcome!"
+          },
+          "emailBodyType": {
+            "type": "string",
+            "enum": ["text", "html"],
+            "example": "text"
+          },
+          "emailBodyContent": {
+            "type": "string",
+            "example": "I get it!"
+          },
+          "trackingOpen": {
+            "type": "string",
+            "enum": ["yes", "no"],
+            "example": "yes"
+          },
+          "trackingClick": {
+            "type": "string",
+            "enum": ["yes", "no"],
+            "example": "yes"
+          },
+          "trackingLink": {
+            "description": "type what you want to tracking link",
+            "type": "string",
+            "example": "https://google.com"
+          }
+        }
+      },
+      "sendrawemail": {
+        "required": [
+          "user_id",
+          "nameFrom",
+          "emailTo",
+          "emailSubject",
+          "emailBodyType",
+          "emailBodyContent",
+          "trackingOpen",
+          "trackingClick",
+          "attachmentDataType",
+          "attachmentDataLength",
+          "attachmentDataName"
+        ],
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nameFrom": {
+            "type": "string",
+            "example": "example.cpm"
+          },
+          "emailTo": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailBcc": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailCc": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailReplyTo": {
+            "type": "string",
+            "example": "fasdf@gmail.com"
+          },
+          "emailSubject": {
+            "type": "string",
+            "example": "welcome!"
+          },
+          "emailBodyType": {
+            "type": "string",
+            "enum": ["text", "html"],
+            "example": "text"
+          },
+          "emailBodyContent": {
+            "type": "string",
+            "example": "I get it!"
+          },
+          "trackingOpen": {
+            "type": "string",
+            "enum": ["yes", "no"],
+            "example": "yes"
+          },
+          "trackingClick": {
+            "type": "string",
+            "enum": ["yes", "no"],
+            "example": "yes"
+          },
+          "trackingLink": {
+            "description": "type what you want to tracking link",
+            "type": "string",
+            "example": "https://google.com"
+          },
+          "attachmentDataType": {
+            "description": "taype of attachment",
+            "type": "string",
+            "example": "image/jpeg"
+          },
+          "attachmentDataLength": {
+            "description": "type what you want to tracking link",
+            "type": "number",
+            "example": 40777
+          },
+          "attachmentDataName": {
+            "description": "original attachment name",
+            "type": "string",
+            "example": "example.jpg"
+          }
+        }
+      },
+      "clientError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid input data"
+          }
+        }
+      },
+      "serverError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "serverError"
+          }
+        }
+      },
+      "successschscheduled": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "example": "successfully scheduled"
+          }
+        }
+      },
+      "presignedURL": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "example": "https://aa.com"
+              },
+              "attachmentId": {
+                "type": "number",
+                "example": 456
+              }
+            }
+          }
+        }
+      },
+      "getapikey": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "api key",
+            "type": "string",
+            "example": "asdfiouwervdrtjk;gcretv4566yvrsyvth4rt1h2b3t"
+          }
+        }
+      },
+      "UploadToS3": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "type": "number",
+                "example": 200
+              },
+              "statusMessage": {
+                "type": "string",
+                "example": "OK"
+              },
+              "attachmentId": {
+                "type": "number",
+                "example": 789
+              }
+            }
+          }
+        }
+      },
+      "apikeywithexpiredtime": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "api_key": {
+                  "description": "api key",
+                  "type": "string",
+                  "example": "rsbgdvsefvcacef456a456artv132cvaw6e5v"
+                },
+                "expired_time": {
+                  "description": "expired time of api key",
+                  "type": "string",
+                  "example": "2024-04-23 14:43:50.000"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getemailhistory": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "2023-04-04": {
+                "type": "number",
+                "example": 8
+              },
+              "2023-04-05": {
+                "type": "number",
+                "example": 10
+              }
+            }
+          }
+        }
+      },
+      "getrate": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "example": "37.50%"
+          }
+        }
+      },
+      "getusersentemailcount": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "number",
+                "example": 35
+              }
+            }
+          }
+        }
+      },
+      "getusersendemailmessage": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "name_from": {
+                  "type": "string",
+                  "example": "example.com"
+                },
+                "email_to": {
+                  "type": "string",
+                  "example": "example@gmail.com"
+                },
+                "email_bcc": {
+                  "type": "string",
+                  "example": "example@gmail.com"
+                },
+                "email_cc": {
+                  "type": "string",
+                  "example": "example@gmail.com"
+                },
+                "email_reply_to": {
+                  "type": "string",
+                  "example": "example@gmail.com"
+                },
+                "email_subject": {
+                  "type": "string",
+                  "example": "hi"
+                },
+                "email_body_type": {
+                  "type": "string",
+                  "example": "html"
+                },
+                "tracking_open": {
+                  "type": "string",
+                  "example": "yes"
+                },
+                "tracking_click": {
+                  "type": "string",
+                  "example": "yes"
+                },
+                "send_status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "send_message": {
+                  "type": "string",
+                  "example": "successfully send email"
+                },
+                "created_dt": {
+                  "type": "string",
+                  "example": "2023-04-24 15:07:37"
+                },
+                "tracking_link": {
+                  "type": "string",
+                  "example": "https://google.com"
+                },
+                "attachment": {
+                  "type": "string",
+                  "example": "example.jpg"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getusersendemailbouncemessage": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "email_address": {
+                  "type": "string",
+                  "example": "example@asa.com"
+                },
+                "action": {
+                  "type": "string",
+                  "example": "failed"
+                },
+                "action_message": {
+                  "type": "string",
+                  "example": "reject from mail server"
+                },
+                "created_dt": {
+                  "type": "string",
+                  "example": "2024-04-23 14:43:50.000"
+                }
+              }
+            }
+          }
+        }
+      },
+      "gettrackingclickemailinfor": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "object",
+            "properties": {
+              "TW": {
+                "type": "number",
+                "example": 35
+              }
+            }
+          },
+          "browser": {
+            "type": "object",
+            "properties": {
+              "Chrome": {
+                "type": "number",
+                "example": 35
+              },
+              "Mobile Safari": {
+                "type": "number",
+                "example": 90
+              }
+            }
+          },
+          "platform": {
+            "type": "object",
+            "properties": {
+              "Macintosh": {
+                "type": "number",
+                "example": 35
+              },
+              "iPhone": {
+                "type": "number",
+                "example": 35
+              }
+            }
+          }
+        }
+      },
+      "getuserprofile": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 1
+              },
+              "name": {
+                "type": "string",
+                "example": "apple"
+              },
+              "email": {
+                "type": "string",
+                "example": "aaa@gmail.com"
+              }
+            }
+          }
+        }
+      },
+      "getdomainname": {
+        "type": "object",
+        "properties": {
+          "domainName": {
+            "type": "string",
+            "example": "example.io"
+          }
+        }
+      },
+      "getnewsettingstring": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "verifyString": {
+                "type": "string",
+                "example": "dsafejkwgljvrdsgreg123bragvrwgv"
+              }
+            }
+          }
+        }
+      },
+      "getdomainnameverifystatus": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "verifyStatus": {
+                "type": "string",
+                "example": "success"
+              }
+            }
+          }
+        }
+      },
+      "getalluserdomainnameinfor": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "domain_name": {
+                  "type": "string",
+                  "example": "example.io"
+                },
+                "setting_string": {
+                  "type": "string",
+                  "example": "aewtgewatrwe4tragt89aer4"
+                },
+                "verify_status": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      },
+      "deletedomainname": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "example": "successfully deleted"
+          }
+        }
+      },
+      "usertokenandinfo": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "example": "aegvtgr456ergv485aer6gvae"
+              },
+              "acces_expired": {
+                "type": "number",
+                "example": 3600
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 1
+              },
+              "name": {
+                "type": "string",
+                "example": "apple"
+              },
+              "email": {
+                "type": "string",
+                "example": "aaa@gmail.com"
+              }
+            }
+          }
+        }
+      },
+      "signin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "aaa@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "testtest"
+          }
+        }
+      },
+      "signup": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "aaa@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "testtest"
+          },
+          "name": {
+            "type": "string",
+            "example": "apple"
+          }
+        }
+      },
+      "getusername": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "userName": {
+                "type": "string",
+                "example": "apple"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

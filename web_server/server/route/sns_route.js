@@ -9,6 +9,21 @@ router.route("/sns").post(
   wrapAsync(sns)
   /* #swagger.description = 'let SNS notify the mail-sending-info when get response from recipient mail server'
   #swagger.responses[200] ={}
-  */
+    	#swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        $ref: "#/definitions/User"
+                    }  
+                },
+                "application/xml": {
+                    schema: {
+                        $ref: "#/definitions/sample"
+                    }  
+                }
+            }
+        } 
+    */
 );
 export default router;
