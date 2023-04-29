@@ -400,7 +400,7 @@ export async function userSignIn(req, res, next) {
   const { email, password } = req.body;
   if (!email || !password) {
     const err = new Error();
-    err.stack = "your requst lose email or password ";
+    err.stack = "your requst lose email or password";
     err.status = 400;
     throw err;
   }

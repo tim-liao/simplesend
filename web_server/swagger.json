@@ -75,19 +75,59 @@
             }
           },
           "400": {
+            "description": "client error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/clientError"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "notActiveAPiKey": {
+                    "value": {
+                      "status": "400",
+                      "message": "not active api key"
+                    }
+                  },
+                  "useNotVerifiedDomainName": {
+                    "value": {
+                      "status": "400",
+                      "message": "you can just use the verified domain name as nameFrom"
+                    }
+                  }
                 }
               }
             }
           },
           "500": {
+            "description": "server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/serverError"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "InsertDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot insert createEmailRequest in sql"
+                    }
+                  }
                 }
               }
             }
@@ -108,7 +148,7 @@
         ],
         "tags": ["send email service"],
         "summary": "let user send email",
-        "description": "let user send email with attachment and get url to upload attachment to my place",
+        "description": "let user send email with attachment and get URL to upload attachment to my place",
         "requestBody": {
           "required": true,
           "content": {
@@ -131,19 +171,59 @@
             }
           },
           "400": {
+            "description": "client error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/clientError"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "notActiveAPiKey": {
+                    "value": {
+                      "status": "400",
+                      "message": "not active api key"
+                    }
+                  },
+                  "useNotVerifiedDomainName": {
+                    "value": {
+                      "status": "400",
+                      "message": "you can just use the verified domain name as nameFrom"
+                    }
+                  }
                 }
               }
             }
           },
           "500": {
+            "description": "server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/serverError"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "InsertDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot insert createEmailRequest in sql"
+                    }
+                  }
                 }
               }
             }
@@ -153,9 +233,18 @@
     },
     "/api/1.0/responseFromrawmailUploadToS3": {
       "post": {
+        "parameters": [
+          {
+            "name": "APIKEY",
+            "in": "query",
+            "description": "send email api key",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": ["send email service"],
         "summary": "if upload successfully, send 200 response to user",
-        "description": "if upload successfully, send 200 response to user",
+        "description": "client get the response from upload place,and send the request include that response to server",
         "requestBody": {
           "required": true,
           "content": {
@@ -175,32 +264,111 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot selectAttachmentSendEmailId in sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getnewestapikey": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "get user active api key",
         "description": "get user active api key",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/getapikey"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot selectApiKey from sql"
+                    }
+                  }
                 }
               }
             }
@@ -210,20 +378,15 @@
     },
     "/api/1.0/generatenewapikey": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "generate new api key ,the old key will be setted new expired time (7 days)",
         "description": "generate new api key ,the old key will be setted new expired time (7 days)",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "content": {
@@ -233,26 +396,85 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "updateColumnDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot updateApiKeyexpiredTime in sql"
+                    }
+                  },
+                  "generateAPIKEYError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot generate API KEY"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getAllActiveApiKeyWithExpiredTime": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "get user api key and detail",
         "description": "get user api key and detail",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "get all api key and expired time",
@@ -263,26 +485,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot getAllActiveApiKeyData from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getemailhistory": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get each day send email count by time interval",
         "description": "get each day send email count by time interval",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -293,26 +568,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get EmailHistory from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getsuccessrate": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get success rate to send email from my server",
         "description": "get success rate to send email from my server",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -320,6 +648,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/getrate"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get UserEmailStatus from sql"
+                    }
+                  }
                 }
               }
             }
@@ -329,20 +715,15 @@
     },
     "/api/1.0/gettrackingopenemailcountrate": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get tracking open count rate",
         "description": "get tracking open count rate",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -353,26 +734,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get userSuccessSentEmailCount from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getusersentemailcount": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get user sent email count since creating the member",
         "description": "get user sent email count since creating the member",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -383,26 +817,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get UserSentEmailCount from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getUserSendEmailMessage": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["email detail"],
         "summary": "get user send email detail and status",
         "description": "get user send email detail and status",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -413,26 +900,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot getUserSendEmailMessagewithoutAttchment from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getUserSendEmailBounceMessage": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["bounce email"],
         "summary": "get all bounced recipients email address ,bounced message and created time",
         "description": "get all bounced recipients email address ,bounced message and created time",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -443,26 +983,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get getUserSendEmailBounceMessage from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/gettrackingclickemailinfor": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get user tracking click and recipient info",
         "description": "get user tracking click and recipient info",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -473,26 +1066,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get UserTrackingClickInformation from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getsuccessdeliveryrate": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["dashboard"],
         "summary": "get rate from email address when get \"delivery\" response from recipient mail server",
         "description": "get rate from email address when get \"delivery\" response from recipient mail server",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -503,26 +1149,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get UserEmailSendActionFromSNS from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getuserprofile": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "get user ID , user name and user email",
         "description": "get user ID , user name and user email",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -533,26 +1232,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get userProfile from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/userGetStringToStoreInDnsSetting": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "get setting string to let user verify the domain name which will be used in sending email",
         "description": "get setting string to let user verify the domain name which will be used in sending email",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -573,26 +1325,85 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  },
+                  "missingDomainNameInForm": {
+                    "value": {
+                      "status": "400",
+                      "message": "miss domain name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot selectDomainName from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/verifyUserDomainName": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "verify user domain name ",
         "description": "verify user domain name ",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -613,26 +1424,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot get userDomainName from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getAllUserDomainNameINfor": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "get all user domain name , setting string and status",
         "description": "get all user domain name , setting string and status",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "",
@@ -643,26 +1507,79 @@
                 }
               }
             }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot selectAllSuccessUserDomainName from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/deleteUserDomainName": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["profile"],
         "summary": "let user to delete domain name",
         "description": "let user to delete domain name",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -680,6 +1597,70 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/deletedomainname"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  },
+                  "missDomainNameInForm": {
+                    "value": {
+                      "status": "400",
+                      "message": "miss domain name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot selectUserSettingString from sql"
+                    }
+                  }
                 }
               }
             }
@@ -713,6 +1694,64 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "wrongEmail": {
+                    "value": {
+                      "status": "400",
+                      "message": "your email address length should smaller than 100"
+                    }
+                  },
+                  "emailAlreadyExists": {
+                    "value": {
+                      "status": "400",
+                      "message": "Email Already Exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot checkUserEmailUsedOrNot from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -743,26 +1782,79 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missRequiredColumn": {
+                    "value": {
+                      "status": "400",
+                      "message": "your requst lose email or password"
+                    }
+                  },
+                  "notSignUp": {
+                    "value": {
+                      "status": "400",
+                      "message": "this email donot sign up our web site"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot checkUserEmailUsedOrNot from sql"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/1.0/getusername": {
       "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["other"],
         "summary": "get user name",
         "description": "get user name ",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "Bearer Token for authentication",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+
         "responses": {
           "200": {
             "description": "",
@@ -770,6 +1862,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/getusername"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "description": "client error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "noBearerToken": {
+                    "value": {
+                      "status": "401",
+                      "message": "No token"
+                    }
+                  },
+                  "wrongBearerToken": {
+                    "value": {
+                      "status": "403",
+                      "message": "Wrong token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "selectDBError": {
+                    "value": {
+                      "status": "500",
+                      "message": "cannot getUserNameById from sql"
+                    }
+                  }
                 }
               }
             }
@@ -789,6 +1939,13 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "sendemail": {
         "required": [

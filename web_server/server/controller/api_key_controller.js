@@ -142,7 +142,7 @@ export async function generatenewapikey(req, res) {
     } catch (e) {
       console.log(e);
       const err = new Error();
-      err.stack = "cannot  updateApiKeyexpiredTime in sql";
+      err.stack = "cannot updateApiKeyexpiredTime in sql";
       err.status = 500;
       throw err;
     }
@@ -152,7 +152,7 @@ export async function generatenewapikey(req, res) {
       newApiKey = await genrateAPIKEY(userId);
     } catch (e) {
       const err = new Error();
-      err.stack = "cannot genrate API KEY";
+      err.stack = "cannot generate API KEY";
       err.status = 500;
       throw err;
     }
@@ -185,7 +185,7 @@ export async function getAllActiveApiKeyWithExpiredTime(req, res) {
     originalData = await getAllActiveApiKey(userId, timeNow);
   } catch (e) {
     const err = new Error();
-    err.stack = "cannot getAllActiveApiKeyData from sql ";
+    err.stack = "cannot getAllActiveApiKeyData from sql";
     err.status = 500;
     throw err;
   }
