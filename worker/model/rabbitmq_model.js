@@ -7,7 +7,7 @@ export async function getMessage(cb) {
     "sendemail",
     function (msg) {
       // let output
-      //   console.log(" [x] Received %s", msg.content.toString());
+      console.log(" [x] Received %s", msg.content.toString());
       let sendEmailId = msg.content.toString();
       // console.log(sendEmailId);
       cb(sendEmailId);

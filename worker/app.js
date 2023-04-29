@@ -3,6 +3,7 @@ import { Base64 } from "js-base64";
 import { SendEmailCommand, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
 import client from "./model/ses_config.js";
+import { fakeSNSResponse } from "./model/stress_testing_model.js";
 import {
   selectAllSendEmailInformation,
   updateSendEmailRequestStatusAndTriggerTime,
@@ -32,7 +33,7 @@ const io = new Server(httpServer, {
 });
 
 httpServer.listen(3030);
-
+let stressTestingCount = 0;
 dotenv.config();
 const users = {};
 io.on("connection", (socket) => {
@@ -112,69 +113,71 @@ const aa = async function (sendEmailId) {
   // 並且用dns跑20次
   let txtDNSSetting = [];
   let verifyTime = 20;
-  for (let i = 0; i < verifyTime; i++) {
-    let originalTxtDNSSetting;
-    try {
-      originalTxtDNSSetting = await getTxtDNSSetting(nameFrom);
-    } catch (e) {
-      console.error(e);
-    }
-    txtDNSSetting.push(originalTxtDNSSetting[0][0]);
-  }
-  let sendEmailOrNot = 0;
+  // for (let i = 0; i < verifyTime; i++) {
+  //   let originalTxtDNSSetting;
+  //   try {
+  //     originalTxtDNSSetting = await getTxtDNSSetting(nameFrom);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+
+  //   txtDNSSetting.push(originalTxtDNSSetting[0][0]);
+  // }
+  let sendEmailOrNot = 1;
+  // 先不在這邊驗證
   // 用一個變數來控制究竟要不要觸發寄件function
-  if (txtDNSSetting.length == verifyTime) {
-    for (let i = 0; i < verifyTime; i++) {
-      if (txtDNSSetting[i] != settingString) {
-        // 因為我驗證多次，只要有一次不符合我的字串，就儲存failed及現在時間到我的資料庫，並回傳失敗給他
-        // 如果有問題，把send_email_list的send_status改成failed
-        try {
-          await updateSendEmailRequestStatus("failed", sendEmailId);
-        } catch (e) {
-          console.error(e);
-        }
-        // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
-        let timeNow = generateTimeNow();
-        try {
-          await insertDefaultSendEmailLog(
-            sendEmailId,
-            0,
-            timeNow,
-            timeNow,
-            400,
-            "your domain name is not verified"
-          );
-        } catch (e) {
-          console.error(e);
-        }
-      } else if (i == verifyTime - 1 && txtDNSSetting[i] == settingString) {
-        // 如果沒問題就放行
-        sendEmailOrNot = 1;
-      }
-    }
-  } else {
-    // 長度不足代表有至少一次回圈失敗，有失敗代表還沒有真的更新完成
-    // 如果有問題，把send_email_list的send_status改成failed
-    try {
-      await updateSendEmailRequestStatus("failed", sendEmailId);
-    } catch (e) {
-      console.error(e);
-    }
-    // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
-    let timeNow = generateTimeNow();
-    try {
-      await insertDefaultSendEmailLog(
-        sendEmailId,
-        0,
-        timeNow,
-        timeNow,
-        400,
-        "your domain name is not verified"
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  // if (txtDNSSetting.length == verifyTime) {
+  //   for (let i = 0; i < verifyTime; i++) {
+  //     if (txtDNSSetting[i] != settingString) {
+  //       // 因為我驗證多次，只要有一次不符合我的字串，就儲存failed及現在時間到我的資料庫，並回傳失敗給他
+  //       // 如果有問題，把send_email_list的send_status改成failed
+  //       try {
+  //         await updateSendEmailRequestStatus("failed", sendEmailId);
+  //       } catch (e) {
+  //         console.error(e);
+  //       }
+  //       // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
+  //       let timeNow = generateTimeNow();
+  //       try {
+  //         await insertDefaultSendEmailLog(
+  //           sendEmailId,
+  //           0,
+  //           timeNow,
+  //           timeNow,
+  //           400,
+  //           "your domain name is not verified"
+  //         );
+  //       } catch (e) {
+  //         console.error(e);
+  //       }
+  //     } else if (i == verifyTime - 1 && txtDNSSetting[i] == settingString) {
+  //       // 如果沒問題就放行
+  //       sendEmailOrNot = 1;
+  //     }
+  //   }
+  // } else {
+  //   // 長度不足代表有至少一次回圈失敗，有失敗代表還沒有真的更新完成
+  //   // 如果有問題，把send_email_list的send_status改成failed
+  //   try {
+  //     await updateSendEmailRequestStatus("failed", sendEmailId);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  //   // 並且新增send_email_log_list（trigger_dt,send_response_dt都存發現錯誤的當下時間，status code以及sendmessage個別存400以及your name from is not verified）
+  //   let timeNow = generateTimeNow();
+  //   try {
+  //     await insertDefaultSendEmailLog(
+  //       sendEmailId,
+  //       0,
+  //       timeNow,
+  //       timeNow,
+  //       400,
+  //       "your domain name is not verified"
+  //     );
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   /////////
   let transformName;
@@ -470,6 +473,7 @@ Content-Transfer-Encoding: base64
   let failedSendStatusCode;
   let failedSendMessage;
   let messageId;
+
   async function sendEmailToSES() {
     // 這個function是寄送郵件
     let sendEmailLogId;
@@ -491,7 +495,7 @@ Content-Transfer-Encoding: base64
     }
 
     try {
-      data = await client.send(command);
+      data = await fakeSNSResponse();
     } catch (e) {
       failedSendStatusCode = e["$metadata"].httpStatusCode;
       failedSendMessage = e.message;
@@ -504,6 +508,8 @@ Content-Transfer-Encoding: base64
     count++;
     // 寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
     if (data && data["$metadata"].httpStatusCode == 200) {
+      stressTestingCount++;
+      console.log(stressTestingCount);
       messageId = data.MessageId;
       try {
         await updateSendEmailLog(
