@@ -1,4 +1,4 @@
-import amqp from "amqplib/callback_api.js";
+import amqp from "amqplib";
 import jwt from "jsonwebtoken";
 import connectionPool from "./mysql_config.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -55,25 +55,37 @@ export async function createEmailRequest(
 }
 
 export async function putINMQ(messageInput) {
-  amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
-    if (error0) {
-      throw error0;
-    }
-    connection.createChannel(function (error1, channel) {
-      if (error1) {
-        throw error1;
-      }
-      var queue = "sendemail";
-      var msg = messageInput;
+  const connection = await amqp.connect("amqp://localhost?heartbeat=30");
+  const channel = await connection.createChannel();
+  let queue = "sendemail";
+  await channel.assertQueue(queue, { durable: false });
+  channel.sendToQueue(queue, Buffer.from(JSON.stringify(messageInput)));
 
-      channel.assertQueue(queue, {
-        durable: false,
-      });
+  console.log(" [x] Sent %s", messageInput);
 
-      channel.sendToQueue(queue, Buffer.from(msg));
-      // console.log(" [x] Sent %s", msg);
-    });
-  });
+  setTimeout(() => {
+    connection.close();
+  }, 500);
+
+  // amqp.connect("amqp://localhost?heartbeat=5", function (error0, connection) {
+  //   if (error0) {
+  //     throw error0;
+  //   }
+  //   connection.createChannel(function (error1, channel) {
+  //     if (error1) {
+  //       throw error1;
+  //     }
+  //     var queue = "sendemail";
+  //     var msg = messageInput;
+
+  //     channel.assertQueue(queue, {
+  //       durable: false,
+  //     });
+
+  //     channel.sendToQueue(queue, Buffer.from(msg));
+  //     // console.log(" [x] Sent %s", msg);
+  //   });
+  // });
 }
 export async function vertifyAPIKEY(key) {
   const SECRET = process.env.APP_KEY_SECRET;

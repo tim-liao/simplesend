@@ -18,7 +18,7 @@ import {
   checkHTMLIsIncludeTrackingLinkOrNot,
 } from "../model/sentmail_model.js";
 dotenv.config();
-
+let count = 0;
 export async function sentmail(req, res, next) {
   let {
     nameFrom,
@@ -205,17 +205,29 @@ export async function sentmail(req, res, next) {
     throw err;
   }
   // console.log(originalRequestId);
-  let requestId = `${originalRequestId.insertId}`;
-  console.log(requestId);
+  let requestId = originalRequestId.insertId;
+  // console.log(requestId);
   // 把requestId塞到queue裡面，之後從queue拿出來會再呼叫
-  putINMQ(requestId);
 
+  // try {
+  //   await putINMQ(requestId);
+  // } catch (e) {
+  //   console.log(e);
+  //   const err = new Error();
+  //   err.stack = "cannotputINMQ";
+  //   err.status = 500;
+  //   throw err;
+  // }
+  await putINMQ(requestId);
+  count++;
+  console.log(count);
   res.status(200).send({ data: "successfully scheduled" });
 }
 
 export async function authenticationApiKey(req, res, next) {
   let { APIKEY } = req.query;
   let realUserId = req.body.user_id;
+
   if (!realUserId) {
     const err = new Error("No user_id");
     err.status = 401;
