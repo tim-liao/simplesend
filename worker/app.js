@@ -3,7 +3,10 @@ import { Base64 } from "js-base64";
 import { SendEmailCommand, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
 import client from "./model/ses_config.js";
-import { fakeSNSResponse } from "./model/stress_testing_model.js";
+import {
+  fakeSNSResponse,
+  fakeSESResponseERROR,
+} from "./model/stress_testing_model.js";
 import {
   selectAllSendEmailInformation,
   updateSendEmailRequestStatusAndTriggerTime,
@@ -493,23 +496,33 @@ Content-Transfer-Encoding: base64
     } catch (e) {
       console.error(e);
     }
-
+    let aa;
     try {
-      data = await fakeSNSResponse();
+      aa = await fakeSESResponseERROR();
     } catch (e) {
       failedSendStatusCode = e["$metadata"].httpStatusCode;
-      failedSendMessage = e.message;
-      messageId = e.MessageId;
+
+      if (e.message) {
+        failedSendMessage = e.message;
+      } else {
+        failedSendMessage = e.Code;
+      }
+      if (e.MessageId) {
+        messageId = e.MessageId;
+      } else {
+        messageId = 0;
+      }
+
       // console.error(e["$metadata"].httpStatusCode, e.message);
     } finally {
       responseDT = generateTimeNow();
     }
-
+    failedSendStatusCode = aa["$metadata"].httpStatusCode;
+    failedSendMessage = aa.Code;
+    messageId = 0;
     count++;
     // 寄件成功就資料庫得狀態改成success，並紀錄回傳email log以及回傳時間紀錄到資料庫
     if (data && data["$metadata"].httpStatusCode == 200) {
-      stressTestingCount++;
-      console.log(stressTestingCount);
       messageId = data.MessageId;
       try {
         await updateSendEmailLog(
@@ -541,6 +554,7 @@ Content-Transfer-Encoding: base64
       }
     } else if (!data && count < 6) {
       // 寄件失敗但在補寄過程時，不需要變更資料庫寄件狀態，但要紀錄email log，並紀錄回傳時間到資料庫
+
       setTimeout(sendEmailToSES, count * 2000);
       try {
         await updateSendEmailLog(
@@ -555,6 +569,8 @@ Content-Transfer-Encoding: base64
       }
     } else if (!data && count == 6) {
       // 若是自動補寄完仍然失敗，變更資料庫寄件狀態為failed，並紀錄email log，並紀錄回傳時間到資料庫
+      stressTestingCount++;
+      console.log(stressTestingCount);
       try {
         await updateSendEmailLog(
           sendEmailLogId,
