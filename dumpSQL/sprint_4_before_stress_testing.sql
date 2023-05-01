@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.32, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.32, for macos13 (x86_64)
 --
--- Host: simplesend-04-08.cj0fjqdp2v0l.ap-northeast-1.rds.amazonaws.com    Database: simplesend
+-- Host: localhost    Database: simplesend
 -- ------------------------------------------------------
 -- Server version	8.0.32
 
@@ -14,18 +14,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
-
---
--- GTID state at the beginning of the backup 
---
-
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
 
 --
 -- Table structure for table `api_key_list`
 --
+
 
 DROP TABLE IF EXISTS `api_key_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
