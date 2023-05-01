@@ -262,7 +262,6 @@ LOCK TABLES `user_name_from_list` WRITE;
 INSERT INTO `user_name_from_list` VALUES (1,'side-project2023.online','success','ee03dd79d72331a4c325c246b2882942','2023-04-16 16:27:06','2023-04-26 13:46:47',1),(1,'simple-send.online','success','d94526faa7f59b14c7a91a9b1acc5094','2023-04-16 16:28:42','2023-04-26 13:46:50',2),(1,'ts-json.link','success','463620d05824c7c6451bf883c028139d','2023-04-17 10:25:38','2023-04-26 13:46:52',3);
 /*!40000 ALTER TABLE `user_name_from_list` ENABLE KEYS */;
 UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
