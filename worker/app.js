@@ -110,8 +110,9 @@ const aa = async function (sendEmailId) {
   }
   settingString = originalsSettingString[0].setting_string;
   // 並且用dns跑20次
+  // 改成2次
   let txtDNSSetting = [];
-  let verifyTime = 20;
+  let verifyTime = 2;
   for (let i = 0; i < verifyTime; i++) {
     let originalTxtDNSSetting;
     try {
