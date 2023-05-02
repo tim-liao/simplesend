@@ -9,7 +9,7 @@ export async function getMessage(cb) {
       // let output
       //   console.log(" [x] Received %s", msg.content.toString());
       let sendEmailId = msg.content.toString();
-      // console.log(sendEmailId);
+      console.log(sendEmailId);
       cb(sendEmailId);
     },
     {
