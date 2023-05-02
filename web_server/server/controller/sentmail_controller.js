@@ -208,7 +208,7 @@ export async function sentmail(req, res, next) {
   let requestId = originalRequestId.insertId;
   console.log(requestId);
   // 把requestId塞到queue裡面，之後從queue拿出來會再呼叫
-  putINMQ(requestId);
+  await putINMQ(requestId);
 
   res.status(200).send({ data: "successfully scheduled" });
 }
