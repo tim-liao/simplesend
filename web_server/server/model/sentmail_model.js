@@ -1,4 +1,4 @@
-import amqp from "amqplib/callback_api.js";
+import amqp from "amqplib";
 import jwt from "jsonwebtoken";
 import connectionPool from "./mysql_config.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
