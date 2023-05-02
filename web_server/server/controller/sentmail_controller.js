@@ -205,7 +205,7 @@ export async function sentmail(req, res, next) {
     throw err;
   }
   // console.log(originalRequestId);
-  let requestId = `${originalRequestId.insertId}`;
+  let requestId = originalRequestId.insertId;
   console.log(requestId);
   // 把requestId塞到queue裡面，之後從queue拿出來會再呼叫
   putINMQ(requestId);
@@ -598,7 +598,7 @@ export async function responseFromrawmailUploadToS3(req, res, next) {
       err.status = 500;
       throw err;
     }
-    let sendEmailId = `${originalSendEmailId[0].send_email_list_id}`;
+    let sendEmailId = originalSendEmailId[0].send_email_list_id;
     putINMQ(sendEmailId);
     res.status(200).send({ data: "successfully scheduled" });
   } else {
