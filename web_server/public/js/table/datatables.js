@@ -148,12 +148,12 @@ function submitForm(e) {
     $("#MyModal").modal("show");
   } else {
     formData.forEach((val, key) => {
-      const parts = val.split("/");
-      const year = parts[2];
-      const month = parts[0].padStart(2, "0");
-      const day = parts[1].padStart(2, "0");
-      const convertedDate = `${year}-${month}-${day}`;
-      formData[key] = convertedDate;
+      // const parts = val.split("/");
+      // const year = parts[2];
+      // const month = parts[0].padStart(2, "0");
+      // const day = parts[1].padStart(2, "0");
+      // const convertedDate = `${year}-${month}-${day}`;
+      // formData[key] = convertedDate;
     });
     let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     formData["tz"] = tz;

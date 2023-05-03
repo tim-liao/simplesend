@@ -128,8 +128,9 @@ submitDomainName.addEventListener("click", () => {
             "記得去DNS那邊設定TXT";
           document.getElementById(
             "modal_body"
-          ).innerHTML = `string : ${originalData.verifyString}`;
+          ).innerHTML = ` <img src="img/example.png" style="width:28vw" /><p>string : ${originalData.verifyString}</p>`;
           $("#MyModal").modal("show");
+          getAllDomainNameInfo();
         } else {
           if (json.status == 400) {
             document.getElementById("modal_title").innerHTML = "錯誤";
@@ -162,15 +163,16 @@ const forFun = function () {
   $("#MyModal").modal("show");
 };
 let allDomainName = document.getElementById("allDomainName");
-fetch("/api/1.0/getAllUserDomainNameINfor", {
-  method: "POST",
-  headers: userprofileheaders,
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    let originalData = json.data;
-    if (json.message == "you donot have submitted domain name") {
-      allDomainName.innerHTML += `<div class="input-group mb-3">
+let getAllDomainNameInfo = function () {
+  fetch("/api/1.0/getAllUserDomainNameINfor", {
+    method: "POST",
+    headers: userprofileheaders,
+  })
+    .then((response) => response.json())
+    .then(function (json) {
+      let originalData = json.data;
+      if (json.message == "you donot have submitted domain name") {
+        allDomainName.innerHTML += `<div class="input-group mb-3">
       <input
         type="text"
         class="form-control"
@@ -188,11 +190,12 @@ fetch("/api/1.0/getAllUserDomainNameINfor", {
       </div>
       
     </div>`;
-    }
-    if (originalData) {
-      for (let i = 0; i < originalData.length; i++) {
-        console.log(i);
-        allDomainName.innerHTML += `<div class="input-group mb-3">
+      }
+      if (originalData) {
+        allDomainName.innerHTML = "";
+        for (let i = 0; i < originalData.length; i++) {
+          console.log(i);
+          allDomainName.innerHTML += `<div class="input-group mb-3">
       <input
         type="text"
         class="form-control"
@@ -218,10 +221,12 @@ fetch("/api/1.0/getAllUserDomainNameINfor", {
         </button>
       </div>
     </div>`;
+        }
+      } else {
       }
-    } else {
-    }
-  });
+    });
+};
+getAllDomainNameInfo();
 let submitVerifyDomainName = function (domainName) {
   let bbheaders = {
     "Content-Type": "application/json",
@@ -242,6 +247,7 @@ let submitVerifyDomainName = function (domainName) {
         "modal_body"
       ).innerHTML = `string : ${originalData.verifyStatus}`;
       $("#MyModal").modal("show");
+      getAllDomainNameInfo();
     });
 };
 let submitDeleteDomainName = function (domainName) {
@@ -262,6 +268,7 @@ let submitDeleteDomainName = function (domainName) {
         document.getElementById("modal_title").innerHTML = "刪除了";
         document.getElementById("modal_body").innerHTML = `已進行刪除`;
         $("#MyModal").modal("show");
+        getAllDomainNameInfo();
       } else {
         document.getElementById("modal_title").innerHTML =
           "在刪除時出了點問題..";

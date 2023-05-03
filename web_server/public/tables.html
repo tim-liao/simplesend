@@ -57,13 +57,29 @@
         <hr class="sidebar-divider my-0" />
 
         <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" id="dashboard" href="index.html">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>儀表板</span></a
           >
         </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider" />
 
+        <!-- Heading -->
+        <div class="sidebar-heading">網站使用步驟</div>
+        <li class="nav-item">
+          <a class="nav-link" id="maunal-api">
+            <i class="fas fa-fw fa-table"></i>
+            <span>網站導覽</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="eachpage">
+            <i class="fas fa-fw fa-table"></i>
+            <span>本頁導覽</span></a
+          >
+        </li>
         <!-- Divider -->
         <hr class="sidebar-divider" />
 
@@ -71,7 +87,7 @@
         <div class="sidebar-heading">其他介面</div>
 
         <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
+        <li class="nav-item active">
           <a class="nav-link" id="emaillog" href="tables.html">
             <i class="fas fa-fw fa-table"></i>
             <span>郵件寄送詳細記錄</span></a
@@ -93,18 +109,7 @@
             <span>GitHub</span></a
           >
         </li>
-        <li class="nav-item">
-          <a class="nav-link" id="maunal-api">
-            <i class="fas fa-fw fa-table"></i>
-            <span>網站導覽</span></a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="eachpage">
-            <i class="fas fa-fw fa-table"></i>
-            <span>本頁導覽</span></a
-          >
-        </li>
+
         <li class="nav-item">
           <a class="nav-link" id="introduction" href="/introduction.html">
             <i class="fas fa-fw fa-table"></i>
@@ -269,7 +274,7 @@
             <!-- Page Heading -->
             <h1 class="h3 mb-2 text-gray-800">寄件紀錄</h1>
             <p class="mb-4">
-              可以左右滑動查看更多欄位，也可以點擊目標欄位最上方進行重新排序。（預設載入是抓取前七天的歷史紀錄）
+              可以左右滑動查看更多欄位，也可以點擊目標欄位最上方進行重新排序。（PS:預設載入是抓取前七天的歷史紀錄，若時間區間資料超過1000筆，則會從起始時間抓取一定資料，不會全部呈現，若要更精確的搜尋請縮小時間區間）
             </p>
             <div class="row">
               <!-- Earnings (Monthly) Card Example -->
@@ -292,9 +297,15 @@
                               class="input-daterange input-group"
                               id="datepicker"
                             >
+                              <span
+                                class="input-group-addon"
+                                style="padding-right: 20px; padding-left: 20px"
+                              >
+                                from</span
+                              >
                               <input
-                                type="text"
-                                class="form-control datepicker"
+                                type="datetime-local"
+                                class="form-control"
                                 name="startTime"
                                 placeholder="From date"
                               />
@@ -305,8 +316,8 @@
                                 to</span
                               >
                               <input
-                                type="text"
-                                class="form-control datepicker"
+                                type="datetime-local"
+                                class="form-control"
                                 name="endTime"
                                 placeholder="To date"
                               />
