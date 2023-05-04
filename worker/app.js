@@ -101,27 +101,27 @@ const aa = async function (sendEmailId) {
   const attachment = allSendEmailInformation[0].attachment;
   //認真檢查nameFrom是不是使用者可用：web server接收時只有驗證一下下（因為不要讓負載都在web server上，同時不會讓使用者等太久），所以這邊要認真驗證，比照檢查是否可用時驗證20次，20次都通過才放行，不然的話就要存成失敗。
   // 找對應到的userId,string,domainname出來
-  let settingString;
-  let originalsSettingString;
-  try {
-    originalsSettingString = await selectUserSettingString(userId, nameFrom);
-  } catch (e) {
-    console.error(e);
-  }
-  settingString = originalsSettingString[0].setting_string;
+  // let settingString;
+  // let originalsSettingString;
+  // try {
+  //   originalsSettingString = await selectUserSettingString(userId, nameFrom);
+  // } catch (e) {
+  //   console.error(e);
+  // }
+  // settingString = originalsSettingString[0].setting_string;
 
   // 改成寄件時不認證
-  let txtDNSSetting = [];
-  let verifyTime = 2;
-  for (let i = 0; i < verifyTime; i++) {
-    let originalTxtDNSSetting;
-    try {
-      originalTxtDNSSetting = await getTxtDNSSetting(nameFrom);
-    } catch (e) {
-      console.error(e);
-    }
-    txtDNSSetting.push(originalTxtDNSSetting[0][0]);
-  }
+  // let txtDNSSetting = [];
+  // let verifyTime = 2;
+  // for (let i = 0; i < verifyTime; i++) {
+  //   let originalTxtDNSSetting;
+  //   try {
+  //     originalTxtDNSSetting = await getTxtDNSSetting(nameFrom);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  //   txtDNSSetting.push(originalTxtDNSSetting[0][0]);
+  // }
   // let sendEmailOrNot = 0;
   // // 用一個變數來控制究竟要不要觸發寄件function
   // if (txtDNSSetting.length == verifyTime) {
