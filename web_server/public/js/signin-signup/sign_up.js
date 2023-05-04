@@ -39,26 +39,18 @@ document.getElementById("user").addEventListener("submit", (e) => {
       document.getElementById("modal_body").innerHTML = `email太長`;
       $("#MyModal").modal("show");
     }
-    let checkDotCom = "";
-    for (let i = email.length - 1; i > email.length - 5; i--) {
-      checkDotCom = email[i] + checkDotCom;
-    }
-    if (checkValueISOkOrNot == true && checkDotCom != ".com") {
-      checkValueISOkOrNot = false;
-      document.getElementById("modal_title").innerHTML = "email不符規格";
-      document.getElementById("modal_body").innerHTML = `email沒有.com`;
-      $("#MyModal").modal("show");
-    }
     if (checkValueISOkOrNot == true) {
-      for (let i = 0; i < email.length; i++) {
-        if (email[i] == "@") {
-          break;
-        } else if (i == email.length - 1 && email[i] != "@") {
-          checkValueISOkOrNot = false;
-          document.getElementById("modal_title").innerHTML = "email不符規格";
-          document.getElementById("modal_body").innerHTML = `email沒有@`;
-          $("#MyModal").modal("show");
-        }
+      function isValidEmail(email) {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email);
+      }
+      let legalEmailOrNot = isValidEmail(email);
+      if (legalEmailOrNot == false) {
+        document.getElementById("modal_title").innerHTML = "email不符規格";
+        document.getElementById(
+          "modal_body"
+        ).innerHTML = `email須包含「＠」以及域名`;
+        $("#MyModal").modal("show");
       }
     }
     if (checkValueISOkOrNot == true) {

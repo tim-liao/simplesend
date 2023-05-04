@@ -119,10 +119,74 @@ export async function generatenewapikey(req, res) {
   if (selectApiKeyList.length > 1) {
     // 檢查他七天內有沒有進行刪除
     // 有效的key超過１把，就代表七天內有做過了
-    const err = new Error();
-    err.stack = "you have genarated a new api key in 7 days";
-    err.status = 400;
-    throw err;
+    // console.log(selectApiKeyList);
+
+    // const err = new Error();
+    // err.stack = "you have genarated a new api key in 7 days";
+    // err.status = 400;
+    // throw err;
+    //////
+    // 若是七天內有進行生成的話
+    // 代表有兩把key
+    // 就把舊的那把改成現在到期
+    // 比較新的那把改成七天後到期
+    // 然後生成一把新的key是一年後到期
+    let oldestApiKey;
+    let moreNewApiKey;
+    if (selectApiKeyList[0].expired_time < selectApiKeyList[1].expired_time) {
+      oldestApiKey = selectApiKeyList[0].api_key;
+      moreNewApiKey = selectApiKeyList[1].api_key;
+    } else {
+      oldestApiKey = selectApiKeyList[1].api_key;
+      moreNewApiKey = selectApiKeyList[0].api_key;
+    }
+    // 把舊的apikey過期時間改掉
+    let timeSevenDaysLater = generateTimeSevenDaysLater();
+    try {
+      await updateApiKeyexpiredTimeAndStatus(userId, oldestApiKey, timeNow, 0);
+    } catch (e) {
+      console.log(e);
+      const err = new Error();
+      err.stack = "cannot updateApiKeyexpiredTime in sql";
+      err.status = 500;
+      throw err;
+    }
+    try {
+      await updateApiKeyexpiredTimeAndStatus(
+        userId,
+        moreNewApiKey,
+        timeSevenDaysLater,
+        0
+      );
+    } catch (e) {
+      console.log(e);
+      const err = new Error();
+      err.stack = "cannot updateApiKeyexpiredTime in sql";
+      err.status = 500;
+      throw err;
+    }
+    // 生成新的api key放到資料庫
+    let newApiKey;
+    try {
+      newApiKey = await genrateAPIKEY(userId);
+    } catch (e) {
+      const err = new Error();
+      err.stack = "cannot generate API KEY";
+      err.status = 500;
+      throw err;
+    }
+    let status = 1;
+    let startTime = generateTimeNow();
+    let expiredTime = generateTime365DaysLater();
+    try {
+      await insertApiKey(userId, newApiKey, status, startTime, expiredTime);
+    } catch (e) {
+      const err = new Error();
+      err.stack = "cannot insert API KEY with user";
+      err.status = 500;
+      throw err;
+    }
+    return res.status(200).send({ data: newApiKey });
   } else if (selectApiKeyList.length == 0) {
     const err = new Error();
     err.stack = "you have to  get api key first";

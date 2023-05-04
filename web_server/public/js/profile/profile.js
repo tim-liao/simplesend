@@ -35,22 +35,24 @@ fetch("/api/1.0/getuserprofile", {
   `;
   });
 
-fetch("/api/1.0/getnewestapikey", {
-  method: "POST",
-  headers: userprofileheaders,
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    fetch("/api/1.0/getAllActiveApiKeyWithExpiredTime", {
-      method: "POST",
-      headers: userprofileheaders,
-      body: JSON.stringify(userprofilebody),
-    })
-      .then((response) => response.json())
-      .then(function (json) {
-        let originalData = json.data;
-        for (let i = 0; i < originalData.length; i++) {
-          userAPiKey.innerHTML += ` 
+let getnewestapikey = function () {
+  fetch("/api/1.0/getnewestapikey", {
+    method: "POST",
+    headers: userprofileheaders,
+  })
+    .then((response) => response.json())
+    .then(function (json) {
+      fetch("/api/1.0/getAllActiveApiKeyWithExpiredTime", {
+        method: "POST",
+        headers: userprofileheaders,
+        body: JSON.stringify(userprofilebody),
+      })
+        .then((response) => response.json())
+        .then(function (json) {
+          let originalData = json.data;
+          userAPiKey.innerHTML = "";
+          for (let i = 0; i < originalData.length; i++) {
+            userAPiKey.innerHTML += ` 
           <div class="px-4 mt-1">
             <p class="fonts" id="apikey">
             <hr>
@@ -63,10 +65,11 @@ fetch("/api/1.0/getnewestapikey", {
             </p>
           </div>
           `;
-        }
-      });
-  });
-
+          }
+        });
+    });
+};
+getnewestapikey();
 let generatenewapikeyButton = document.getElementById("generatenewapikey");
 generatenewapikeyButton.addEventListener("click", function (e) {
   let aaheaders = {
@@ -81,8 +84,7 @@ generatenewapikeyButton.addEventListener("click", function (e) {
     .then(function (json) {
       if (json.status == 400) {
         document.getElementById("modal_title").innerHTML = "提醒";
-        document.getElementById("modal_body").innerHTML =
-          "七天內只能生成一次喔";
+        document.getElementById("modal_body").innerHTML = "客戶端出問題";
         $("#MyModal").modal("show");
       } else if (json.status == 500) {
         document.getElementById("modal_title").innerHTML = "系統問題";
@@ -91,10 +93,11 @@ generatenewapikeyButton.addEventListener("click", function (e) {
       } else {
         document.getElementById("apikey").innerHTML = `API
         KEY : ${json.data}`;
-        document.getElementById("modal_title").innerHTML = "已生成";
+        document.getElementById("modal_title").innerHTML = "已生成新的 api key";
         document.getElementById("modal_body").innerHTML =
-          "舊的key還可以有七天的使用期限，七天內只有一次的換key機會";
+          "一次最多只有兩把有效的 api key ，一把有效期限為一年，較舊的另外一把為七天";
         $("#MyModal").modal("show");
+        getnewestapikey();
       }
     });
 });
@@ -105,8 +108,7 @@ submitDomainName.addEventListener("click", () => {
   console.log(newdomainName);
   if (!newdomainName) {
     document.getElementById("modal_title").innerHTML = "錯誤";
-    document.getElementById("modal_body").innerHTML =
-      "請打入你想要提交的domain name";
+    document.getElementById("modal_body").innerHTML = "請打入你想要提交的域名";
     $("#MyModal").modal("show");
   } else {
     let bbheaders = {
@@ -148,18 +150,9 @@ submitDomainName.addEventListener("click", () => {
   }
 });
 const forFun = function () {
-  let aa = [
-    "真的是 for fun 歐～！",
-    "你啥都沒有，但你有for fun! 新會專屬！！",
-    "喜不喜歡？驚不驚喜？",
-  ];
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-  let bb = getRandomInt(3);
-  document.getElementById("modal_title").innerHTML = aa[bb];
+  document.getElementById("modal_title").innerHTML = "您尚無登記任何域名...";
   document.getElementById("modal_body").innerHTML =
-    "好玩嗎？好玩！但還是要記得本站的初衷喔";
+    "請於上方欄位鍵入您可使用的域名來進行認證登記，認證完畢後方可進行寄件";
   $("#MyModal").modal("show");
 };
 let allDomainName = document.getElementById("allDomainName");
@@ -185,23 +178,53 @@ let getAllDomainNameInfo = function () {
           type="button"
           onClick="forFun()"
         >
-          FOR FUN
+          CLICK
         </button>
       </div>
       
     </div>`;
       }
       if (originalData) {
-        allDomainName.innerHTML = "";
+        allDomainName.innerHTML = `<div class="input-group mb-3">
+        <input type="text" class="form-control text-center" style="flex-basis: 180px;" value="DOMAIN NAME" disabled="disabled" />
+        <input type="text" class="form-control text-center" style="flex-basis: 180px;" value="STATUS" disabled="disabled" />
+        <input type="text" class="form-control text-center" style="flex-basis: 180px;" value="SETTING STRING" disabled="disabled" />
+        <input type="text" class="form-control text-center" style="width: 330px;" value="ACTION" disabled="disabled" />
+      </div>
+      
+      
+      `;
         for (let i = 0; i < originalData.length; i++) {
           console.log(i);
           allDomainName.innerHTML += `<div class="input-group mb-3">
       <input
         type="text"
-        class="form-control"
-        value="domain name :${originalData[i].domain_name} | string : ${originalData[i].setting_string} | status : ${originalData[i].verify_status}"
+        class="form-control col-3  text-center"
+        value="${originalData[i].domain_name}"
         disabled="disabled"
       />
+    <input
+      type="text"
+      class="form-control col-3  text-center"
+      value="${originalData[i].verify_status}"
+      disabled="disabled"
+    />
+    <input
+    type="text"
+    class="form-control col-3 "
+    value="${originalData[i].setting_string}"
+    disabled="disabled"
+  />
+  
+      <div class="input-group-append">
+      <button
+      class="btn btn-outline-primary px-4"
+      type="button"
+      onClick="copySettingString('${originalData[i].setting_string}')"
+    >
+      COPY STRING
+    </button>
+    </div>
       <div class="input-group-append">
         <button
           class="btn btn-outline-primary px-4"
@@ -220,6 +243,7 @@ let getAllDomainNameInfo = function () {
           DELETE
         </button>
       </div>
+ 
     </div>`;
         }
       } else {
@@ -276,6 +300,17 @@ let submitDeleteDomainName = function (domainName) {
         $("#MyModal").modal("show");
       }
     });
+};
+let copySettingString = function (string) {
+  navigator.clipboard.writeText(string);
+  document.getElementById("modal_title").innerHTML = "已複製";
+  document.getElementById("modal_body").innerHTML = `${string}`;
+  $("#MyModal").modal("show");
+};
+let notForUse = function () {
+  document.getElementById("modal_title").innerHTML = "提示";
+  document.getElementById("modal_body").innerHTML = `此為無效按鈕`;
+  $("#MyModal").modal("show");
 };
 document.getElementById("logout").addEventListener("click", () => {
   localStorage.removeItem("userToken");

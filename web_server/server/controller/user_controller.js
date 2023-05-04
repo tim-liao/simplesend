@@ -317,26 +317,16 @@ export async function userSignUp(req, res, next) {
     err.status = 400;
     throw err;
   }
-  let checkDotCom = "";
-  for (let i = email.length - 1; i > email.length - 5; i--) {
-    checkDotCom = email[i] + checkDotCom;
+  function isValidEmail(email) {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
   }
-
-  if (checkDotCom != ".com") {
+  let legalEmailOrNot = isValidEmail(email);
+  if (legalEmailOrNot == false) {
     const err = new Error();
-    err.stack = "your email address donot have .com";
+    err.stack = "your email address is not legal";
     err.status = 400;
     throw err;
-  }
-  for (let i = 0; i < email.length; i++) {
-    if (email[i] == "@") {
-      break;
-    } else if (i == email.length - 1 && email[i] != "@") {
-      const err = new Error();
-      err.stack = "your email address donot have @";
-      err.status = 400;
-      throw err;
-    }
   }
   // 檢查email有沒有被註冊過
   let checkDBId;
@@ -420,27 +410,18 @@ export async function userSignIn(req, res, next) {
     err.status = 400;
     throw err;
   }
-  let checkDotCom = "";
-  for (let i = email.length - 1; i > email.length - 5; i--) {
-    checkDotCom = email[i] + checkDotCom;
+  function isValidEmail(email) {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
   }
-
-  if (checkDotCom != ".com") {
+  let legalEmailOrNot = isValidEmail(email);
+  if (legalEmailOrNot == false) {
     const err = new Error();
-    err.stack = "your email address donot have .com";
+    err.stack = "your email address is not legal";
     err.status = 400;
     throw err;
   }
-  for (let i = 0; i < email.length; i++) {
-    if (email[i] == "@") {
-      break;
-    } else if (i == email.length - 1 && email[i] != "@") {
-      const err = new Error();
-      err.stack = "your email address donot have @";
-      err.status = 400;
-      throw err;
-    }
-  }
+
   // 直接用email撈看看有沒有這個hashedpassword，沒有的話就代表沒有註冊過
   let originalPasswordAndUserIdWithNameInDB;
   try {

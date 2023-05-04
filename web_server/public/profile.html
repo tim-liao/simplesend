@@ -18,6 +18,11 @@
       rel="stylesheet"
       type="text/css"
     />
+    <link
+      href="font-awesome-4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <link href="css/profile.css" rel="stylesheet" />
     <link href="css/google-api.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/shepherd.min.css" />
@@ -54,39 +59,17 @@
             <span>儀表板</span></a
           >
         </li>
-        <!-- Divider -->
-        <hr class="sidebar-divider" />
-
-        <!-- Heading -->
-        <div class="sidebar-heading">網站使用步驟</div>
-        <li class="nav-item">
-          <a class="nav-link" id="maunal-api">
-            <i class="fas fa-fw fa-table"></i>
-            <span>網站導覽</span></a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="eachpage">
-            <i class="fas fa-fw fa-table"></i>
-            <span>本頁導覽</span></a
-          >
-        </li>
-        <!-- Divider -->
-        <hr class="sidebar-divider" />
-
-        <!-- Heading -->
-        <div class="sidebar-heading">其他介面</div>
 
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
           <a class="nav-link" id="emaillog" href="tables.html">
-            <i class="fas fa-fw fa-table"></i>
+            <i class="fas fa-area-chart"></i>
             <span>郵件寄送詳細記錄</span></a
           >
         </li>
         <li class="nav-item">
           <a class="nav-link" id="bounceemail" href="bounce_email.html">
-            <i class="fas fa-fw fa-table"></i>
+            <i class="fas fa fa-envelope"></i>
             <span>失敗郵件名單記錄</span></a
           >
         </li>
@@ -96,14 +79,32 @@
             id="github"
             href="https://github.com/tim-liao/simplesend"
           >
-            <i class="fas fa-fw fa-table"></i>
+            <i class="fas fa fa-github" style="font-size: 18px"></i>
             <span>GitHub</span></a
           >
         </li>
+
         <li class="nav-item">
           <a class="nav-link" id="introduction" href="/introduction.html">
-            <i class="fas fa-fw fa-table"></i>
+            <i class="fas fa fa-address-card"></i>
             <span>本站介紹頁面</span></a
+          >
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider" />
+
+        <!-- Heading -->
+        <div class="sidebar-heading">網站使用步驟</div>
+        <li class="nav-item">
+          <a class="nav-link" id="maunal-api" style="cursor: pointer">
+            <i class="fa fa-map" aria-hidden="true"></i>
+            <span>網站導覽</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="eachpage" style="cursor: pointer">
+            <i class="fa fa-location-arrow" aria-hidden="true"></i>
+            <span>本頁導覽</span></a
           >
         </li>
         <!-- Divider -->
@@ -238,7 +239,7 @@
                         class="btn btn-outline-primary px-4"
                         id="generatenewapikey"
                       >
-                        生成新的api key
+                        生成新的 api key
                       </button>
                     </div>
                     <hr />
@@ -267,7 +268,6 @@
                         placeholder="submit domain name which you want to add in ...."
                         aria-label="submit domain name which you want to add in ..."
                         aria-describedby="basic-addon2"
-                        value="simple-send.online"
                       />
                       <div class="input-group-append">
                         <button

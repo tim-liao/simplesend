@@ -24,14 +24,8 @@ fetch("/api/1.0/getUserSendEmailBounceMessage", {
       }
     }
     if (allMessage.length == 0) {
-      let aa = ["登愣...", "空空的很正常喔...", "意不意外？驚不驚喜？"];
-      function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
-      }
-      let bb = getRandomInt(3);
-      document.getElementById("modal_title").innerHTML = aa[bb];
-      document.getElementById("modal_body").innerHTML =
-        "你還沒有任何email 的訊息，因為你還沒有寄出任何郵件過...";
+      document.getElementById("modal_title").innerHTML = "無任何資訊顯示";
+      document.getElementById("modal_body").innerHTML = "尚無任何資訊可供顯示";
       $("#MyModal").modal("show");
     }
     let HTML = `<div class="card shadow mb-4">
@@ -50,18 +44,18 @@ fetch("/api/1.0/getUserSendEmailBounceMessage", {
         >
           <thead>
             <tr>
-            <th>email_address</th>
-            <th>action</th>
-            <th>action_message</th>
-            <th>created_dt</th>
+            <th>失敗郵件地址</th>
+            <th>失敗詳細狀態</th>
+            <th>失敗詳細訊息</th>
+            <th>資訊生成時間</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-            <th>email_address</th>
-            <th>action</th>
-            <th>action_message</th>
-            <th>created_dt</th>
+            <th>Email_Address</th>
+            <th>Action</th>
+            <th>Action_Message</th>
+            <th>Created_Time</th>
             </tr>
           </tfoot>
           <tbody >`;

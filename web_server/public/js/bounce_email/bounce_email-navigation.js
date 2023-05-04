@@ -13,7 +13,7 @@ document.getElementById("eachpage").addEventListener("click", () => {
 
   tour.addStep({
     title: "失敗寄送名單",
-    text: `是不是有些郵件寄出後杳無音信？可能被對方拒絕或是被放到黑名單囉～！）`,
+    text: `是不是有些郵件寄出後杳無音信？其中一個原因是寄送失敗，這邊會紀錄失敗原因、紀錄時間。`,
     attachTo: {
       element: "#shepherd",
       on: "bottom",
@@ -22,16 +22,9 @@ document.getElementById("eachpage").addEventListener("click", () => {
     buttons: [
       {
         action() {
-          this.back();
-        },
-        classes: "shepherd-button-secondary",
-        text: "Back",
-      },
-      {
-        action() {
           this.next();
         },
-        text: "Next",
+        text: "Close",
       },
     ],
     id: "creating",

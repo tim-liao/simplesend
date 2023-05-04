@@ -223,23 +223,23 @@ import { sendemailwithattachment, sendonlyemail } from "simplesend";
 
 const body = {
 user_id: 0, //your user ID //required
-nameFrom: "example.com", // your verify name //required
-emailTo: "email@example.com", //required
-emailBcc: "email@example.com",
-emailCc: "email@example.com",
-emailReplyTo: "email@example.com",
-emailSubject: `example`, //required
-emailBodyType: "text", //required //'html' or 'text'
-emailBodyContent: `Hello world!`, //required
-trackingOpen: "yes", //required  //'yes' or 'no'
-trackingClick: "yes", //required  //'yes' or 'no'
-trackingLink: "https://example.com", //if you want to track your click ,you have to provide the link you want to track in your html content
+  nameFrom: "example.com", // your verify name //required
+  emailTo: "email@example.com", //required
+  emailBcc: "email@example.com",
+  emailCc: "email@example.com",
+  emailReplyTo: "email@example.com",
+  emailSubject: `example`, //required
+  emailBodyType: "text", //required //'html' or 'text'
+  emailBodyContent: `Hello world!`, //required
+  trackingOpen: "yes", //required  //'yes' or 'no'
+  trackingClick: "yes", //required  //'yes' or 'no'
+  trackingLink: "https://example.com", //if you want to track your click ,you have to provide the link you want to track in your html content
 };
 const apiKey = "your api key it will provide from our web service";
 const filePath = "your/file/path";
 //send email with attachment
 sendemailwithattachment(body, filePath, apiKey);
-                  
+
 // without attachment
 sendonlyemail(body, apiKey);
 </pre
@@ -273,7 +273,7 @@ sendonlyemail(body, apiKey);
                 target="_blank"
                 class="main-btn btn-hover border-btn wow fadeInUp"
                 data-wow-delay=".6s"
-                >來看我的npm</a
+                >來看我的 npm</a
               >
             </div>
           </div>
@@ -298,8 +298,8 @@ sendonlyemail(body, apiKey);
                 </p>
               </div>
               <ul>
-                <li>準備好 API KEY、User ID 以及可用的寄件名</li>
-                <li>直接用 URL，並在後方貼上你的 API KEY</li>
+                <li>準備好 API KEY 、 User ID 以及可用的寄件名</li>
+                <li>直接用 URL ，並在後方貼上你的 API KEY</li>
                 <li>使用 post 訪問，並在寄件時夾帶您的寄件資訊以及 User ID</li>
                 <li>點擊送出！完成</li>
               </ul>
@@ -313,21 +313,18 @@ sendonlyemail(body, apiKey);
                     <span>操作參考</span>
                   </div>
                   <pre class="code-content">
-let body = {user_id:YOUR_USER_ID,....} //其他填寫欄位可以上 npm 網站確認
+let body = { user_id: YOUR_USER_ID }; //其他填寫欄位可以上 npm 網站確認
 let header = {
- "Content-Type": "application/json",
- Accept: "application/json",
+  "Content-Type": "application/json",
+  Accept: "application/json",
 };
-fetch(
-"https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY",
-{
- method: "POST",
- headers: header,
-body: JSON.stringify(body),
- }
-)
-.then((response) => response.json())
-.then((json) => console.log(json));
+fetch("https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY", {
+  method: "POST",
+  headers: header,
+  body: JSON.stringify(body),
+})
+  .then((response) => response.json())
+  .then((json) => console.log(json));
 </pre
                   >
                 </div>
@@ -399,7 +396,7 @@ body: JSON.stringify(body),
                 <div class="content">
                   <h3>SES</h3>
                   <p>
-                    我們透過使用 AWS 的 SES(Simple Email Service)
+                    我們透過使用 AWS 的 SES (Simple Email Service)
                     來進行郵件投遞的工作。
                   </p>
                 </div>
@@ -438,7 +435,7 @@ body: JSON.stringify(body),
                 <div class="content">
                   <h3>SNS</h3>
                   <p>
-                    我們運用 AWS 提供的 SNS(Simple Notification Service)
+                    我們運用 AWS 提供的 SNS (Simple Notification Service)
                     服務，將寄件後的郵件是否真正投遞到收件者的郵箱狀態進行資訊回傳，讓您的郵件寄出後不會不知去向。
                   </p>
                 </div>
@@ -510,7 +507,7 @@ body: JSON.stringify(body),
             <div class="col-xl-3 col-lg-3 col-md-6">
               <div class="footer-widget">
                 <h3 class="desc mb-50 text-white" style="width: 500px">
-                  Use SIMPLE SEND ,make your email simple send.
+                  Use SIMPLE SEND, make your email simple send.
                 </h3>
                 <ul class="socials">
                   <li>
@@ -518,7 +515,7 @@ body: JSON.stringify(body),
                       href="https://www.npmjs.com/package/simplesend"
                       target="_blank"
                     >
-                      <i class="lni lni-npm"></i>
+                      <i class="lni lni-npm" style="font-size: 40px"></i>
                     </a>
                   </li>
                   <li>
@@ -526,7 +523,10 @@ body: JSON.stringify(body),
                       href="https://github.com/tim-liao/simplesend"
                       target="_blank"
                     >
-                      <i class="lni lni-github-original"></i>
+                      <i
+                        class="lni lni-github-original"
+                        style="font-size: 40px"
+                      ></i>
                     </a>
                   </li>
                 </ul>

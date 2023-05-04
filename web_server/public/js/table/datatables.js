@@ -42,14 +42,9 @@ const aa = function (body) {
         }
       }
       if (allMessage.length == 0) {
-        let aa = ["登愣...", "空空的...", "意不意外？驚不驚喜？", "怎麼會..."];
-        function getRandomInt(max) {
-          return Math.floor(Math.random() * max);
-        }
-        let bb = getRandomInt(4);
-        document.getElementById("modal_title").innerHTML = aa[bb];
+        document.getElementById("modal_title").innerHTML = "無資訊顯示";
         document.getElementById("modal_body").innerHTML =
-          "這個時間區間都沒有紀錄喔...";
+          "此時間區間無任何紀錄";
         $("#MyModal").modal("show");
       }
       let HTML = `<div class="card shadow mb-4">
@@ -68,38 +63,38 @@ const aa = function (body) {
         >
           <thead>
             <tr>
-            <th>name_from</th>
-            <th>email_to</th>
-            <th>email_bcc</th>
-            <th>email_cc</th>
-            <th>email_reply_to</th>
-            <th>email_subject</th>
-            <th>email_body_type</th>
-            <th>tracking_open</th>
-            <th>tracking_click</th>
-            <th>send_status</th>
-            <th>send_message</th>
-            <th>created_dt</th>
-            <th>tracking_link</th>
-            <th>attachment</th>
+            <th>寄件名稱</th>
+            <th>主要收件人</th>
+            <th>密件副本收件人</th>
+            <th>副本收件人</th>
+            <th>信件回覆地址</th>
+            <th>信件標題</th>
+            <th>信件格式</th>
+            <th>信件追蹤</th>
+            <th>連結追蹤</th>
+            <th>寄件狀態</th>
+            <th>詳細訊息</th>
+            <th>生成時間</th>
+            <th>追蹤連結</th>
+            <th>附件檔名</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-            <th>name_from</th>
-            <th>email_to</th>
-            <th>email_bcc</th>
-            <th>email_cc</th>
-            <th>email_reply_to</th>
-            <th>email_subject</th>
-            <th>email_body_type</th>
-            <th>tracking_open</th>
-            <th>tracking_click</th>
-            <th>send_status</th>
-            <th>send_message</th>
-            <th>created_dt</th>
-            <th>tracking_link</th>
-            <th>attachment</th>
+            <th>Name_From</th>
+            <th>Email_To</th>
+            <th>Email_Bcc</th>
+            <th>Email_Cc</th>
+            <th>Email_Reply_To</th>
+            <th>Email_Subject</th>
+            <th>Email_Body_Type</th>
+            <th>Tracking_Open</th>
+            <th>Tracking_Click</th>
+            <th>Send_Status</th>
+            <th>Send_Message</th>
+            <th>Created_Time</th>
+            <th>Tracking_Link</th>
+            <th>Attachment</th>
             </tr>
           </tfoot>
           <tbody >`;
