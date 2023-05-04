@@ -12,7 +12,7 @@ document.getElementById("eachpage").addEventListener("click", () => {
   });
   tour.addStep({
     title: "郵件送出率",
-    text: `若您提供的郵件皆為合格，被我方mail server發出的郵件即視為送出，若寄件失敗則視為未送出。未送出的詳細資料會在左側的郵件寄送詳細記錄頁面顯示。另外若是有我方mail server出現問題而造成郵件未寄出也會視為未送出。(被我方送出不代表已送達。)
+    text: `若您提供的郵件皆為合格，被我方 mail server 發出的郵件即視為送出，若寄件失敗則視為未送出。未送出的詳細資料會在左側的郵件寄送詳細記錄頁面顯示。另外若是有我方 mail server 出現問題而造成郵件未寄出也會視為未送出。(被我方送出不代表已送達。)
     `,
     attachTo: {
       element: "#successrateshepherd",
