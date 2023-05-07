@@ -406,26 +406,6 @@ fetch("https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY", {
               <div class="single-feature-extended">
                 <div class="icon">
                   <img
-                    src="assets/img/aws/s3.svg"
-                    alt=""
-                    class="shape shape-2"
-                    style="width: 7vh"
-                  />
-                </div>
-                <div class="content">
-                  <h3>S3</h3>
-                  <p>
-                    為了讓使用者可以寄送附帶檔案的郵件，我們運用了 AWS 提供的 S3
-                    服務，將使用者提供的附加檔案儲存至這個雲端儲存空間，不會佔用過多
-                    WEB SERVER 所在的雲端電腦的空間，提高 WEB SERVER 的可用率。
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-              <div class="single-feature-extended">
-                <div class="icon">
-                  <img
                     src="assets/img/aws/sns.svg"
                     alt=""
                     class="shape shape-2"
@@ -441,7 +421,6 @@ fetch("https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY", {
                 </div>
               </div>
             </div>
-
             <div class="col-lg-4 col-md-6">
               <div class="single-feature-extended">
                 <div class="icon">
@@ -454,11 +433,12 @@ fetch("https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY", {
                     服務來達到我們的需求，例如： RDS
                     (作為資料庫儲存使用者的資料)、Lambda（ SNS 觸發 function
                     寫資料進 CloudWatch
-                    ）、CloudWatch（儲存完整的SNS回傳資料）。
+                    ）、CloudWatch（儲存完整的SNS回傳資料）、S3（儲存使用者寄件的附帶檔案）以及ALB（分攤流量到不同的instance上）。
                   </p>
                 </div>
               </div>
             </div>
+
             <div class="col-lg-4 col-md-6">
               <div class="single-feature-extended">
                 <div class="icon">
@@ -474,7 +454,26 @@ fetch("https://side-project2023.online/api/1.0/sentmail?APIKEY=YOUR_API_KEY", {
                   <p>
                     其他部分我們還運用 RabbitMQ 將接收到的寄件需求交由另外一個
                     WORKER
-                    進行實際寄件工作，讓使用者將寄件需求提交後可以快速提交新的寄件需求給我們的網站，不將壓力囤積在使用者身上！
+                    進行實際寄件工作，讓使用者將寄件需求提交後可以快速提交新的寄件需求給我們的網站，不將壓力囤積在使用者身上。
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+              <div class="single-feature-extended">
+                <div class="icon">
+                  <img
+                    src="assets/img/aws/stress-testing-2.svg"
+                    alt=""
+                    class="shape shape-2"
+                    style="width: 7vh"
+                  />
+                </div>
+                <div class="content">
+                  <h3>壓力測試</h3>
+                  <p>
+                    我們通過壓力測試可以承擔每秒 200
+                    次的請求，讓我們不漏接用戶的每封寄件需求。
                   </p>
                 </div>
               </div>
