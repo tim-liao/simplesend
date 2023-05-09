@@ -18,8 +18,8 @@ import {
   getUserNameById,
 } from "../model/user_model.js";
 
-export async function getUserProfile(req, res, next) {
-  const { userId, email } = req.body.member;
+export async function getUserProfile(req, res) {
+  const { userId } = req.body.member;
   let userProfile;
   try {
     userProfile = await selectUserProfile(userId);
@@ -33,9 +33,9 @@ export async function getUserProfile(req, res, next) {
   res.status(200).send({ data: userProfile[0] });
 }
 
-export async function userGetStringToStoreInDnsSetting(req, res, next) {
+export async function userGetStringToStoreInDnsSetting(req, res) {
   const { domainName } = req.body;
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
 
   //檢查對應的使用者是否有對應的domainName在資料庫
   if (!userId) {
@@ -115,9 +115,9 @@ export async function userGetStringToStoreInDnsSetting(req, res, next) {
   res.status(200).send({ data: { verifyString } });
 }
 
-export async function verifyUserDomainName(req, res, next) {
+export async function verifyUserDomainName(req, res) {
   const { domainName } = req.body;
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
   // 檢查對應的使用者是否有對應的domainName的string在資料庫
   let getUserDomainName;
   try {
@@ -214,8 +214,8 @@ export async function verifyUserDomainName(req, res, next) {
   }
 }
 
-export async function getAllUserDomainNameINfor(req, res, next) {
-  const { userId, email } = req.body.member;
+export async function getAllUserDomainNameINfor(req, res) {
+  const { userId } = req.body.member;
   // 撈出所有該使用者驗證通過的domainname並回傳
   // 都沒有的話就告訴他沒有任何東西
   let originalData;
@@ -236,9 +236,9 @@ export async function getAllUserDomainNameINfor(req, res, next) {
   }
 }
 
-export async function deleteUserDomainName(req, res, next) {
+export async function deleteUserDomainName(req, res) {
   const { domainName } = req.body;
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
   //檢查對應的使用者是否有對應的domainName在資料庫
   if (!userId) {
     const err = new Error();
@@ -291,7 +291,7 @@ export async function deleteUserDomainName(req, res, next) {
   res.status(200).send({ data: "successfully deleted" });
 }
 
-export async function userSignUp(req, res, next) {
+export async function userSignUp(req, res) {
   const { email, password, name } = req.body;
   if (!email || !password || !name) {
     const err = new Error();
@@ -386,7 +386,7 @@ export async function userSignUp(req, res, next) {
   res.status(200).send({ data, user });
 }
 
-export async function userSignIn(req, res, next) {
+export async function userSignIn(req, res) {
   const { email, password } = req.body;
   if (!email || !password) {
     const err = new Error();
@@ -474,8 +474,8 @@ export async function userSignIn(req, res, next) {
   }
 }
 
-export async function getUserName(req, res, next) {
-  const { userId, email } = req.body.member;
+export async function getUserName(req, res) {
+  const { userId } = req.body.member;
 
   let originalUserName;
   try {

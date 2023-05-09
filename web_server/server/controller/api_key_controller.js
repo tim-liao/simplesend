@@ -1,6 +1,5 @@
 import {
   genrateAPIKEY,
-  getIDByEmail,
   insertApiKey,
   selectApiKey,
   vertifyAPIKEY,
@@ -14,7 +13,7 @@ import {
 
 export async function getnewestapikey(req, res) {
   /* #swagger.description = 'Some description...'*/
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";
@@ -58,9 +57,9 @@ export async function getnewestapikey(req, res) {
     //TODO:檢查是否過期，過期再生成新的，沒有過期就不生成新的，直接傳舊的給他
 
     let apiKeyInDB = selectApiKeyInDB[0].api_key;
-    let decoded;
+
     try {
-      decoded = await vertifyAPIKEY(apiKeyInDB);
+      await vertifyAPIKEY(apiKeyInDB);
     } catch (e) {
       if (!(e.message == "jwt expired")) {
         const err = new Error("there is something wrong with api key");
@@ -98,7 +97,7 @@ export async function getnewestapikey(req, res) {
 }
 
 export async function generatenewapikey(req, res) {
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";
@@ -236,7 +235,7 @@ export async function generatenewapikey(req, res) {
 }
 
 export async function getAllActiveApiKeyWithExpiredTime(req, res) {
-  const { userId, email } = req.body.member;
+  const { userId } = req.body.member;
   if (!userId) {
     const err = new Error();
     err.stack = "please send user id";

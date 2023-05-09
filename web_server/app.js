@@ -8,16 +8,6 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-/*|| 3000*/
-// import { createServer } from "http";
-// import { Server } from "socket.io";
-// const httpServer = createServer();
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: "http://localhost:3030",
-//   },
-// });
-// httpServer.listen(3030);
 
 import { trackMailClick } from "./server/route/track_mail_route.js";
 app.use(trackMailClick);

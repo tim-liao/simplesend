@@ -1,4 +1,3 @@
-import amqp from "amqplib/callback_api.js";
 import { Base64 } from "js-base64";
 import { SendEmailCommand, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import dotenv from "dotenv";
@@ -9,60 +8,19 @@ import {
   updateSendEmailRequestStatus,
   insertDefaultSendEmailLog,
   updateSendEmailLog,
-  selectUserSettingString,
   selectAttchmentInfor,
 } from "./model/sql_model.js";
 import { generateTimeNow } from "./model/time_model.js";
 import { transformToTrackedHTML } from "./model/transform_html_model.js";
-import moment from "moment";
-import { getTxtDNSSetting } from "./model/dns_model.js";
-import { Server } from "socket.io";
-import { createServer } from "http";
+
 import { getMessage } from "./model/rabbitmq_model.js";
 import path from "path";
 import fs from "fs";
 import { downloadFile, deleteFile } from "./model/delete_and_download_model.js";
 dotenv.config();
-const httpServer = createServer();
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:3000", //我的電腦
-    // origin: `${process.env.URL}:3000`,
-  },
-});
-
-httpServer.listen(3030);
 
 dotenv.config();
-const users = {};
-io.on("connection", (socket) => {
-  let userId;
-  const socketId = socket.id;
-  socket.on("toserver", (id) => {
-    users[id] = socketId;
-    userId = id;
-    console.log(users);
-  });
-  socket.emit("toclient", `socket.io connected`);
-  socket.on("disconnect", () => {
-    const userId = Object.keys(users).find((key) => users[key] === socketId);
-    if (userId) {
-      // delete users[userId];
-      console.log(new Date(Date.now()), users);
-    }
-  });
-});
 
-const updateDashboard = function (userId) {
-  const socketId = users[userId];
-  if (socketId) {
-    console.log("connected");
-    io.to(socketId).emit(
-      "updateDashboard",
-      `successfully send email:userId = ${userId}`
-    );
-  }
-};
 const aa = async function (sendEmailId) {
   // console.log(originalSendEmailInformation);
   // 把東西從資料庫拿出來
@@ -85,7 +43,7 @@ const aa = async function (sendEmailId) {
   }
   //把東西寄出去
   // console.log(allSendEmailInformation);
-  const userId = allSendEmailInformation[0].user_id;
+  // const userId = allSendEmailInformation[0].user_id;
   const nameFrom = allSendEmailInformation[0].name_from;
   const emailTo = allSendEmailInformation[0].email_to;
   const emailBcc = allSendEmailInformation[0].email_bcc;
@@ -522,7 +480,7 @@ Content-Transfer-Encoding: base64
       } catch (e) {
         console.error(e);
       }
-      updateDashboard(userId);
+
       if (attachment == 1) {
         // 刪除該物件
         // console.log("成功");
@@ -566,7 +524,7 @@ Content-Transfer-Encoding: base64
       } catch (e) {
         console.error(e);
       }
-      updateDashboard(userId);
+
       if (attachment == 1) {
         // 刪除該物件
         // console.log("失敗");

@@ -3,7 +3,7 @@ import {
   createdeliveryStatusFromMailServer,
 } from "../model/sns_model.js";
 
-export async function sns(req, res, next) {
+export async function sns(req, res) {
   //   const data = req.body;
 
   let responsefromSNS = JSON.parse(req.body);

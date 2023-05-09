@@ -2,9 +2,6 @@ import dotenv from "dotenv";
 import {
   putINMQ,
   vertifyAPIKEY,
-  selectApiKey,
-  selectApiKeyOldList,
-  generateTimeSevenDaysAgo,
   generateTimeNow,
   getAllActiveApiKey,
   createEmailRequest,
@@ -19,7 +16,7 @@ import {
 } from "../model/sentmail_model.js";
 dotenv.config();
 
-export async function sentmail(req, res, next) {
+export async function sentmail(req, res) {
   let {
     nameFrom,
     emailTo,
@@ -282,7 +279,7 @@ export async function authenticationApiKey(req, res, next) {
   next();
 }
 
-export async function sentrawmail(req, res, next) {
+export async function sentrawmail(req, res) {
   // 欄位和一般的只差在attachmentData
   // 實際使用ses的寄件方式也有差別
   // 這個方法為了要可以寄送附件，須以原始email開始設計
@@ -565,8 +562,7 @@ export async function sentrawmail(req, res, next) {
   // res.status(200).send({ data: "successfully scheduled" });
 }
 
-export async function responseFromrawmailUploadToS3(req, res, next) {
-  const userId = req.body.member.id;
+export async function responseFromrawmailUploadToS3(req, res) {
   const { statusCode, statusMessage, attachmentId } = req.body;
   let uploadDT = generateTimeNow();
   if (statusCode == 200) {

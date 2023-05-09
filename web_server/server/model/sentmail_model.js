@@ -257,7 +257,7 @@ export function generateRandomString(length) {
 export function checkHTMLIsIncludeTrackingLinkOrNot(link, html) {
   let checkCount = 0;
   const $ = cheerio.load(html);
-  $("a").each(function (i, elem) {
+  $("a").each(function () {
     const href = $(this).attr("href");
     if (href) {
       if (href == link) {
