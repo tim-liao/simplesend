@@ -1,9 +1,9 @@
 import amqp from "amqplib";
 import jwt from "jsonwebtoken";
-import connectionPool from "./mysql_config.js";
+import connectionPool from "../../util/mysql_config.js";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import s3 from "./s3_config.js";
+import s3 from "../../util/s3_config.js";
 import moment from "moment";
 import * as cheerio from "cheerio";
 import dotenv from "dotenv";
@@ -23,7 +23,7 @@ export async function createEmailRequest(
   trackingClick,
   createDT,
   sendStatus,
-  firstTiggerDT,
+  firstTriggerDT,
   attachment,
   trackingLink
 ) {
@@ -43,18 +43,15 @@ export async function createEmailRequest(
       trackingClick,
       createDT,
       sendStatus,
-      firstTiggerDT,
+      firstTriggerDT,
       attachment,
       trackingLink,
-    ],
-    function (err) {
-      if (err) throw err;
-    }
+    ]
   );
   return result;
 }
 
-export async function putINMQ(messageInput) {
+export async function putInMQ(messageInput) {
   const connection = await amqp.connect("amqp://localhost?heartbeat=30");
   const channel = await connection.createChannel();
   let queue = "sendemail";
@@ -67,44 +64,16 @@ export async function putINMQ(messageInput) {
     connection.close();
   }, 500);
 }
-export async function vertifyAPIKEY(key) {
+export async function verifyApiKey(key) {
   const SECRET = process.env.APP_KEY_SECRET;
   const check = jwt.verify(key, SECRET);
   return check;
 }
 
-// export async function genrateAPIKEY(id) {
-//   const SECRET = process.env.APP_KEY_SECRET;
-//   const token = jwt.sign(
-//     {
-//       userId: id,
-//     },
-//     SECRET,
-//     {
-//       expiresIn: "365d",
-//     }
-//   );
-//   return token;
-// }
-
-// export async function updateApiKey(id, apikey) {
-//   let [result] = await connectionPool.query(
-//     `UPDATE api_key_list SET API_key =? WHERE user_id =?  `,
-//     [apikey, id],
-//     function (err) {
-//       if (err) throw err;
-//     }
-//   );
-//   return result;
-// }
-
 export async function selectApiKey(id) {
   let [result] = await connectionPool.query(
     `SELECT API_key FROM  api_key_list WHERE user_id = ?`,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }
@@ -112,10 +81,7 @@ export async function selectApiKey(id) {
 export async function selectApiKeyOldList(id, time) {
   let [result] = await connectionPool.query(
     `SELECT old_api_key FROM  old_api_key_list WHERE user_id = ? AND time > ?`,
-    [id, time],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, time]
   );
   return result;
 }
@@ -141,10 +107,7 @@ export function generateTimeNow() {
 export async function getAllActiveApiKey(id, timeNow) {
   let [result] = await connectionPool.query(
     `SELECT api_key FROM  api_key_list WHERE user_id = ?  AND expired_time > ?`,
-    [id, timeNow],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, timeNow]
   );
   return result;
 }
@@ -152,10 +115,7 @@ export async function getAllActiveApiKey(id, timeNow) {
 export async function selectVerifiedUserDomainName(userId, domainName) {
   let [result] = await connectionPool.query(
     `select user_id from user_name_from_list WHERE user_id = ?  AND  domain_name = ? AND verify_status = 'success' `,
-    [userId, domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [userId, domainName]
   );
   return result;
 }
@@ -185,20 +145,17 @@ export async function createEmailAttachmentRequest(
       upload_dt,
       statusCode,
       statusMessage,
-    ],
-    function (err) {
-      if (err) throw err;
-    }
+    ]
   );
   return result;
 }
 
 export async function getPresignedUrlFromS3(transformNameWithPath) {
-  const putcommand = new PutObjectCommand({
+  const putCommand = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME,
     Key: transformNameWithPath,
   });
-  const url = await getSignedUrl(s3, putcommand, { expiresIn: 60 * 60 });
+  const url = await getSignedUrl(s3, putCommand, { expiresIn: 60 * 60 });
 
   return url;
 }
@@ -206,15 +163,12 @@ export async function getPresignedUrlFromS3(transformNameWithPath) {
 export async function updateEmailAttachmentRequest(status, id) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_attachment_list SET upload_status = ? WHERE id =? `,
-    [status, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [status, id]
   );
   return result;
 }
 
-export async function updateEmailAttachmentRequestAfterResponseFromrawmailUploadToS3(
+export async function updateEmailAttachmentRequestAfterResponseFromRawEmailUploadToS3(
   status,
   statusCode,
   message,
@@ -223,10 +177,7 @@ export async function updateEmailAttachmentRequestAfterResponseFromrawmailUpload
 ) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_attachment_list SET upload_status = ?,upload_status_code=?,upload_status_message=?,upload_dt=? WHERE id =? `,
-    [status, statusCode, message, uploadDT, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [status, statusCode, message, uploadDT, id]
   );
   return result;
 }
@@ -234,10 +185,7 @@ export async function updateEmailAttachmentRequestAfterResponseFromrawmailUpload
 export async function selectAttachmentSendEmailId(id) {
   let [result] = await connectionPool.query(
     `select send_email_list_id from send_email_attachment_list WHERE id = ? `,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }

@@ -6,6 +6,7 @@ process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
+import Error from "./server/error/indexError.js";
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -14,17 +15,13 @@ app.use(trackMailClick);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.get("/", (req, res) => {
-  /* #swagger.description = 'redirect to introduction page' */
-  res.redirect("/introduction.html");
-});
 import user_route from "./server/route/user_route.js";
-import sentmail_route from "./server/route/sentmail_route.js";
+import send_email_route from "./server/route/send_email_route.js";
 import api_key_route from "./server/route/api_key_route.js";
 import email_history_route from "./server/route/email_history_route.js";
 import sns_route from "./server/route/sns_route.js";
 app.use("/api/1.0/", [
-  sentmail_route,
+  send_email_route,
   api_key_route,
   email_history_route,
   user_route,
@@ -32,10 +29,7 @@ app.use("/api/1.0/", [
 ]);
 
 app.use((req, res, next) => {
-  const err = new Error();
-  err.status = 404;
-  err.stack = "404 not found";
-  next(err);
+  next(new Error.NotFoundError("404 not found"));
 });
 
 app.use(function (err, req, res, next) {
@@ -43,11 +37,12 @@ app.use(function (err, req, res, next) {
   const dateString = new Date(now).toLocaleString();
   let path = req._parsedUrl.pathname;
   console.error(path, dateString, err);
-  // res.redirect("/404.html");
   if (err.status == 404) {
     res.redirect("/404.html");
+  } else if (!err.status) {
+    res.status(500).json({ error: "Server error" });
   } else {
-    res.status(err.status).json({ status: err.status, message: err.stack });
+    res.status(err.status).json({ status: err.status, message: err.message });
   }
 });
 

@@ -3,7 +3,7 @@ import { fileTypeFromFile } from "file-type";
 import path from "path";
 import fetch from "node-fetch";
 import https from "https";
-export function sendemailwithattachment(emailBody, filePath, apiKey) {
+export function sendEmailWithAttachment(emailBody, filePath, apiKey) {
   let body = emailBody;
   let { user_id } = body;
   let headers = {
@@ -33,7 +33,7 @@ export function sendemailwithattachment(emailBody, filePath, apiKey) {
       body.attachmentDataName = fileName;
 
       fetch(
-        `https://side-project2023.online/api/1.0/sentrawmail?APIKEY=${apiKey}`,
+        `https://side-project2023.online/api/1.0/email/send/attachment?APIKEY=${apiKey}`,
         {
           method: "POST",
           headers: headers,
@@ -68,7 +68,7 @@ export function sendemailwithattachment(emailBody, filePath, apiKey) {
                 Accept: "application/json",
               };
               fetch(
-                `https://side-project2023.online/api/1.0/responseFromrawmailUploadToS3?APIKEY=${apiKey}`,
+                `https://side-project2023.online/api/1.0/email/send/attachment/attachmentid?APIKEY=${apiKey}`,
                 {
                   method: "POST",
                   headers: qqheaders,
@@ -94,13 +94,13 @@ export function sendemailwithattachment(emailBody, filePath, apiKey) {
     }
   });
 }
-export function sendonlyemail(emailBody, apiKey) {
+export function sendOnlyEmail(emailBody, apiKey) {
   let body = emailBody;
   let headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
   };
-  fetch(`https://side-project2023.online/api/1.0/sentmail?APIKEY=${apiKey}`, {
+  fetch(`https://side-project2023.online/api/1.0/email/send?APIKEY=${apiKey}`, {
     method: "POST",
     headers: headers,
     body: JSON.stringify(body),

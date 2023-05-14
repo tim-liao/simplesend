@@ -1,4 +1,4 @@
-import connectionPool from "./mysql_config.js";
+import connectionPool from "../../util/mysql_config.js";
 import crypto from "crypto";
 import moment from "moment";
 import bcrypt from "bcrypt";
@@ -6,23 +6,17 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import dns from "dns";
 dotenv.config();
-export async function addUser(name, email, hashword) {
+export async function addUser(name, email, hashWord) {
   let [result] = await connectionPool.query(
     `INSERT INTO user (name, email, hashword) VALUES (?,?,?)`,
-    [name, email, hashword],
-    function (err) {
-      if (err) throw err;
-    }
+    [name, email, hashWord]
   );
   return result;
 }
 export async function checkUserEmail(email) {
   let [result] = await connectionPool.query(
     `SELECT id from user where email= ? `,
-    [email],
-    function (err) {
-      if (err) throw err;
-    }
+    [email]
   );
   return result;
 }
@@ -30,10 +24,7 @@ export async function checkUserEmail(email) {
 export async function selectPasswordByEmail(email) {
   let [result] = await connectionPool.query(
     `SELECT hashword from user where email= ? `,
-    [email],
-    function (err) {
-      if (err) throw err;
-    }
+    [email]
   );
   return result;
 }
@@ -41,10 +32,7 @@ export async function selectPasswordByEmail(email) {
 export async function selectUserProfile(id) {
   let [result] = await connectionPool.query(
     `select id,name,email from user WHERE id = ? `,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }
@@ -52,10 +40,7 @@ export async function selectUserProfile(id) {
 export async function selectUserSettingString(id, domainName) {
   let [result] = await connectionPool.query(
     `select setting_string from user_name_from_list WHERE user_id = ? AND domain_name = ? `,
-    [id, domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, domainName]
   );
   return result;
 }
@@ -63,15 +48,12 @@ export async function selectUserSettingString(id, domainName) {
 export async function selectDomainName(domainName) {
   let [result] = await connectionPool.query(
     `select user_id from user_name_from_list WHERE domain_name = ? `,
-    [domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [domainName]
   );
   return result;
 }
 
-export function genrateVerifyString() {
+export function generateVerifyString() {
   return crypto.randomBytes(16).toString("hex");
 }
 
@@ -85,10 +67,7 @@ export async function addUserDomainNameWithString(
 ) {
   let [result] = await connectionPool.query(
     `INSERT INTO user_name_from_list (user_id,domain_name,verify_status,setting_string,created_dt,verify_dt) VALUES (?,?,?,?,?,?)`,
-    [userId, domainName, verifyStatus, settingString, createdDt, verifyDt],
-    function (err) {
-      if (err) throw err;
-    }
+    [userId, domainName, verifyStatus, settingString, createdDt, verifyDt]
   );
   return result;
 }
@@ -110,7 +89,7 @@ export async function getTxtDNSSetting(domainName) {
 }
 
 export async function updateUserDomainNameStatus(
-  varifyStatus,
+  verifyStatus,
   verifyDt,
   userId,
   settingString,
@@ -118,21 +97,15 @@ export async function updateUserDomainNameStatus(
 ) {
   let [result] = await connectionPool.query(
     `UPDATE user_name_from_list SET verify_status = ?,verify_dt = ? WHERE user_id = ? AND setting_string = ? AND domain_name =? `,
-    [varifyStatus, verifyDt, userId, settingString, domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [verifyStatus, verifyDt, userId, settingString, domainName]
   );
   return result;
 }
 
-export async function selectAllUserDomainNameINfor(id) {
+export async function selectAllUserDomainNameINfo(id) {
   let [result] = await connectionPool.query(
     `select domain_name,setting_string , verify_status from user_name_from_list WHERE user_id = ?  AND verify_status !='deleted' `,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }
@@ -140,10 +113,7 @@ export async function selectAllUserDomainNameINfor(id) {
 export async function updateUserDNSStatus(verifyStatus, userId, domainName) {
   let [result] = await connectionPool.query(
     `UPDATE user_name_from_list SET verify_status =? WHERE user_id =?  AND domain_name =? `,
-    [verifyStatus, userId, domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [verifyStatus, userId, domainName]
   );
   return result;
 }
@@ -151,10 +121,7 @@ export async function updateUserDNSStatus(verifyStatus, userId, domainName) {
 export async function checkUserEmailUsedOrNot(email) {
   let [result] = await connectionPool.query(
     `select  id from user where email = ? `,
-    [email],
-    function (err) {
-      if (err) throw err;
-    }
+    [email]
   );
   return result;
 }
@@ -164,23 +131,20 @@ export async function createPasswordHashed(passWord, saltRounds) {
   return result;
 }
 
-export async function createNewUserInfor(name, email, password) {
+export async function createNewUserInfo(name, email, password) {
   let [result] = await connectionPool.query(
     `INSERT INTO user (name,email,password) VALUES (?,?,?) `,
-    [name, email, password],
-    function (err) {
-      if (err) throw err;
-    }
+    [name, email, password]
   );
   return result;
 }
 
-export async function genrateUserAccessToken(userid, useremail, expiredTime) {
+export async function generateUserAccessToken(userId, userEmail, expiredTime) {
   const SECRET = process.env.ACCESS_TOKEN_SECRET;
   const token = jwt.sign(
     {
-      userid: userid,
-      useremail: useremail,
+      userId: userId,
+      userEmail: userEmail,
     },
     SECRET,
     {
@@ -193,10 +157,7 @@ export async function genrateUserAccessToken(userid, useremail, expiredTime) {
 export async function getPasswordAndUserIdWithNameByEmail(email) {
   let [result] = await connectionPool.query(
     `select  password,id,name from user where email = ? `,
-    [email],
-    function (err) {
-      if (err) throw err;
-    }
+    [email]
   );
   return result;
 }
@@ -209,10 +170,7 @@ export async function checkPassword(passWord, hashedPassword) {
 export async function getUserNameById(userId) {
   let [result] = await connectionPool.query(
     `select  name from user where id = ? `,
-    [userId],
-    function (err) {
-      if (err) throw err;
-    }
+    [userId]
   );
   return result;
 }

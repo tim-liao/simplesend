@@ -5,13 +5,9 @@ if (!token) {
 }
 let userfailedemailmessage = document.getElementById("userfailedemailmessage");
 
-let body = {
-  userId: 1,
-};
-
 let headers = { Authorization: `Bearer ${token}` };
-fetch("/api/1.0/getUserSendEmailBounceMessage", {
-  method: "POST",
+fetch("/api/1.0/dashboard/bounce", {
+  method: "GET",
   headers: headers,
 })
   .then((response) => response.json())
@@ -83,11 +79,3 @@ document.getElementById("logout").addEventListener("click", () => {
 
   return window.location.replace(`introduction.html`);
 });
-fetch("/api/1.0/getUserSendEmailBounceMessage", {
-  method: "POST",
-  headers: headers,
-})
-  .then((response) => response.json())
-  .then(function (json) {
-    console.log(json);
-  });

@@ -21,13 +21,14 @@ let chartBody = {
   startTime: formatDate(sevenDaysAgo),
   endTime: formatDate(tomorrow),
 };
+
 const aa = function (body) {
   let headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
   };
-  fetch("/api/1.0/getUserSendEmailMessage", {
+  fetch("/api/1.0/dashboard/emails", {
     method: "POST",
     headers: headers,
     body: JSON.stringify(body),
@@ -158,6 +159,7 @@ function submitForm(e) {
       startTime: formData.startTime,
       endTime: formData.endTime,
     };
+    console.log(body);
     aa(body);
   }
 }

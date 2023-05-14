@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import connectionPool from "./mysql_config.js";
+import connectionPool from "../../util/mysql_config.js";
 import moment from "moment";
 import dotenv from "dotenv";
 dotenv.config();
@@ -7,7 +7,7 @@ dotenv.config();
 
 // 建立 Token
 
-export async function genrateAPIKEY(id) {
+export async function generateApiKey(id) {
   const SECRET = process.env.APP_KEY_SECRET;
   const token = jwt.sign(
     {
@@ -20,7 +20,7 @@ export async function genrateAPIKEY(id) {
   );
   return token;
 }
-export async function vertifyAPIKEY(key) {
+export async function verifyApiKey(key) {
   const SECRET = process.env.APP_KEY_SECRET;
   const check = jwt.verify(key, SECRET);
   return check;
@@ -28,10 +28,7 @@ export async function vertifyAPIKEY(key) {
 export async function getIDByEmail(email) {
   let [result] = await connectionPool.query(
     `SELECT id from user where email= ? `,
-    [email],
-    function (err) {
-      if (err) throw err;
-    }
+    [email]
   );
   return result;
 }
@@ -39,10 +36,7 @@ export async function getIDByEmail(email) {
 export async function insertApiKey(id, apikey, status, startTime, expiredTime) {
   let [result] = await connectionPool.query(
     `INSERT INTO api_key_list (user_id,api_key,status,start_time,expired_time) VALUES (?,?,?,?,?)`,
-    [id, apikey, status, startTime, expiredTime],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, apikey, status, startTime, expiredTime]
   );
   return result;
 }
@@ -61,10 +55,7 @@ export function generateTime365DaysLater() {
 export async function selectApiKey(id, status, timeNow) {
   let [result] = await connectionPool.query(
     `SELECT api_key FROM  api_key_list WHERE user_id = ? AND status = ? AND expired_time > ?`,
-    [id, status, timeNow],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, status, timeNow]
   );
   return result;
 }
@@ -72,10 +63,7 @@ export async function selectApiKey(id, status, timeNow) {
 export async function updateApiKey(id, apikey) {
   let [result] = await connectionPool.query(
     `UPDATE api_key_list SET API_key =? WHERE user_id =?  `,
-    [apikey, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [apikey, id]
   );
   return result;
 }
@@ -83,10 +71,7 @@ export async function updateApiKey(id, apikey) {
 export async function insertApiKeytoOldList(id, apikey, time) {
   let [result] = await connectionPool.query(
     `INSERT INTO old_api_key_list (user_id, old_api_key,time) VALUES (?,?,?)`,
-    [id, apikey, time],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, apikey, time]
   );
   return result;
 }
@@ -109,7 +94,7 @@ export function generateTimeSevenDaysLater() {
   return time;
 }
 
-export async function updateApiKeyexpiredTimeAndStatus(
+export async function updateApiKeyExpiredTimeAndStatus(
   id,
   apikey,
   expiredTime,
@@ -117,10 +102,7 @@ export async function updateApiKeyexpiredTimeAndStatus(
 ) {
   let [result] = await connectionPool.query(
     `UPDATE api_key_list SET expired_time = ? , status = ?  WHERE API_key = ? AND user_id = ?  `,
-    [expiredTime, status, apikey, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [expiredTime, status, apikey, id]
   );
   return result;
 }
@@ -128,10 +110,7 @@ export async function updateApiKeyexpiredTimeAndStatus(
 export async function getAllActiveApiKey(id, timeNow) {
   let [result] = await connectionPool.query(
     `SELECT api_key,expired_time FROM  api_key_list WHERE user_id = ?  AND expired_time > ?`,
-    [id, timeNow],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, timeNow]
   );
   return result;
 }

@@ -1,4 +1,4 @@
-# simplesend v1.0.6
+# simplesend v1.0.10
 
 user our [web site](https://side-project2023.online/) to send email simple!!
 
@@ -14,14 +14,14 @@ $ npm install simplesend
 In Node.js(ESM):
 
 ```js
-import { sendemailwithattachment, sendonlyemail } from "simplesend";
+import { sendEmailWithAttachment, sendOnlyEmail } from "simplesend";
 const body = {
   user_id: 0, //your user ID //required
   nameFrom: "example.com", // your verify name //required
   emailTo: "email@example.com", //required
-  // emailBcc: "email@example.com",
+  emailBcc: "email@example.com",
   emailCc: "email@example.com",
-  // emailReplyTo: "email@example.com",
+  emailReplyTo: "email@example.com",
   emailSubject: `example`, //required
   emailBodyType: "html", //required //'html' or 'text'
   emailBodyContent: `
@@ -33,10 +33,10 @@ const body = {
 const apiKey = "your api key it will provide from our web service";
 const filePath = "your/file/path";
 //send email with attachment
-sendemailwithattachment(body, filePath, apiKey);
+sendEmailWithAttachment(body, filePath, apiKey);
 
 // without attachment
-sendonlyemail(body, apiKey);
+sendOnlyEmail(body, apiKey);
 ```
 
 **Note:**<br>

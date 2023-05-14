@@ -1,4 +1,4 @@
-import connectionPool from "./sql_config.js";
+import connectionPool from "../util/sql_config.js";
 export async function insertEmailInforDefaultStatusIsFailed(
   user_id,
   email_subject,
@@ -6,10 +6,7 @@ export async function insertEmailInforDefaultStatusIsFailed(
 ) {
   let [result] = await connectionPool.query(
     `INSERT INTO send_email_list (user_id, email_subject,time,status) VALUES (?,?,?,?)`,
-    [user_id, email_subject, time, 0],
-    function (err) {
-      if (err) throw err;
-    }
+    [user_id, email_subject, time, 0]
   );
   //   return會回傳id
   return result.insertId;
@@ -23,10 +20,7 @@ export async function insertFailedEmailInfor(
 ) {
   let [result] = await connectionPool.query(
     `INSERT INTO failed_email_list (send_email_list_id, error_status,error_log,recipient_email) VALUES (?,?,?,?)`,
-    [send_email_list_id, error_status, error_log, recipientEmail],
-    function (err) {
-      if (err) throw err;
-    }
+    [send_email_list_id, error_status, error_log, recipientEmail]
   );
   return result.insertId;
 }
@@ -34,10 +28,7 @@ export async function insertFailedEmailInfor(
 export async function updateFailedEmailStatusBeSuccess(id) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_list SET status = 1 WHERE id =?  `,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }
@@ -46,10 +37,7 @@ export async function updateFailedEmailStatusBeSuccess(id) {
 export async function selectAllSendEmailInformation(id) {
   let [result] = await connectionPool.query(
     `SELECT user_id,name_from,email_to,email_bcc,email_cc,email_reply_to,email_subject,email_body_type,email_body_content,tracking_open,tracking_click,attachment,tracking_link FROM  send_email_list WHERE id = ?`,
-    [id],
-    function (err) {
-      if (err) throw err;
-    }
+    [id]
   );
   return result;
 }
@@ -61,10 +49,7 @@ export async function updateSendEmailRequestStatusAndTriggerTime(
 ) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_list SET first_trigger_dt = ? , send_status = ?  WHERE id =  ?  `,
-    [firstTriggerDt, status, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [firstTriggerDt, status, id]
   );
   return result;
 }
@@ -72,10 +57,7 @@ export async function updateSendEmailRequestStatusAndTriggerTime(
 export async function updateSendEmailRequestStatus(status, sendEmailId) {
   let [result] = await connectionPool.query(
     `UPDATE send_email_list SET send_status = ?  WHERE id =  ?  `,
-    [status, sendEmailId],
-    function (err) {
-      if (err) throw err;
-    }
+    [status, sendEmailId]
   );
   return result;
 }
@@ -99,10 +81,7 @@ export async function insertDefaultSendEmailLog(
       SendStatusCode,
       SendMessage,
       messageId,
-    ],
-    function (err) {
-      if (err) throw err;
-    }
+    ]
   );
   return result.insertId;
 }
@@ -116,10 +95,7 @@ export async function updateSendEmailLog(
 ) {
   let [result] = await connectionPool.query(
     `UPDATE  send_email_log_list SET send_response_dt = ? ,send_status_code = ? , send_message = ?, send_response_message_id = ?  WHERE id =  ?  `,
-    [sendResponseDT, SendStatusCode, SendMessage, messageId, id],
-    function (err) {
-      if (err) throw err;
-    }
+    [sendResponseDT, SendStatusCode, SendMessage, messageId, id]
   );
   return result.insertId;
 }
@@ -127,10 +103,7 @@ export async function updateSendEmailLog(
 export async function selectUserSettingString(id, domainName) {
   let [result] = await connectionPool.query(
     `select setting_string from user_name_from_list WHERE user_id = ? AND domain_name = ? `,
-    [id, domainName],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, domainName]
   );
   return result;
 }
@@ -138,10 +111,7 @@ export async function selectUserSettingString(id, domainName) {
 export async function selectAttchmentInfor(sendEmailId) {
   let [result] = await connectionPool.query(
     `select original_name,transform_name,data_type from send_email_attachment_list WHERE send_email_list_id =?`,
-    [sendEmailId],
-    function (err) {
-      if (err) throw err;
-    }
+    [sendEmailId]
   );
   return result;
 }

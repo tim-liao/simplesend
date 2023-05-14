@@ -16,8 +16,8 @@ if (!userToken) {
 let userHeaders = { Authorization: `Bearer ${userToken}` };
 
 let gettrackingclickemailinfor = function () {
-  fetch("/api/1.0/gettrackingclickemailinfor", {
-    method: "POST",
+  fetch("/api/1.0/dashboard/emails/tracking/info", {
+    method: "GET",
     headers: userHeaders,
   })
     .then((response) => response.json())

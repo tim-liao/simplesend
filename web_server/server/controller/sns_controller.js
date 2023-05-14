@@ -1,21 +1,15 @@
 import {
   generateTimeNow,
-  createdeliveryStatusFromMailServer,
+  createDeliveryStatusFromMailServer,
 } from "../model/sns_model.js";
 
 export async function sns(req, res) {
-  //   const data = req.body;
+  let responseFromSNS = JSON.parse(req.body);
 
-  let responsefromSNS = JSON.parse(req.body);
-
-  let responseMessage = JSON.parse(responsefromSNS.Message);
-  let responsefromSNSType = responsefromSNS.Type;
-  if (responsefromSNSType != "Notification") {
-    console.log(responsefromSNS);
-    const err = new Error();
-    err.stack = "something wrong with sns notification";
-    err.status = 500;
-    throw err;
+  let responseMessage = JSON.parse(responseFromSNS.Message);
+  let responsefromSNSType = responseFromSNS.Type;
+  if (responsefromSNSType !== "Notification") {
+    console.error("something wrong with sns notification", responseFromSNS);
   }
   // 檢查這個messageId在send_email_log_list裡面有沒有
   // 有的話就確認這個是delivery還是bounce
@@ -24,55 +18,38 @@ export async function sns(req, res) {
   let responseMessageType = responseMessage["notificationType"];
   let responseMessageId = responseMessage.mail.messageId;
 
-  if (responseMessageType == "Bounce") {
-    let bouncedRecipientsInfor = responseMessage.bounce.bouncedRecipients;
+  if (responseMessageType === "Bounce") {
+    let bouncedRecipientsInfo = responseMessage.bounce.bouncedRecipients;
     let createTime = generateTimeNow();
-    for (let i = 0; i < bouncedRecipientsInfor.length; i++) {
-      let bouncedEmailAddress = bouncedRecipientsInfor[i].emailAddress;
-      let actionMessage = bouncedRecipientsInfor[i].diagnosticCode;
-      let action = bouncedRecipientsInfor[i].action;
-      try {
-        await createdeliveryStatusFromMailServer(
-          responseMessageId,
-          responseMessageType,
-          bouncedEmailAddress,
-          action,
-          actionMessage,
-          createTime
-        );
-      } catch (e) {
-        const err = new Error();
-        err.stack = "cannot createdeliveryStatusFromMailServer in sql";
-        err.status = 500;
-        throw err;
-      }
+    for (let i = 0; i < bouncedRecipientsInfo.length; i++) {
+      let bouncedEmailAddress = bouncedRecipientsInfo[i].emailAddress;
+      let actionMessage = bouncedRecipientsInfo[i].diagnosticCode;
+      let action = bouncedRecipientsInfo[i].action;
+
+      await createDeliveryStatusFromMailServer(
+        responseMessageId,
+        responseMessageType,
+        bouncedEmailAddress,
+        action,
+        actionMessage,
+        createTime
+      );
     }
-  } else if (responseMessageType == "Delivery") {
+  } else if (responseMessageType === "Delivery") {
     let createTime = generateTimeNow();
     let recipientsArray = responseMessage.delivery.recipients;
     for (let i = 0; i < recipientsArray.length; i++) {
-      try {
-        await createdeliveryStatusFromMailServer(
-          responseMessageId,
-          responseMessageType,
-          recipientsArray[i],
-          "success",
-          "success",
-          createTime
-        );
-      } catch (e) {
-        const err = new Error();
-        err.stack = "cannot createdeliveryStatusFromMailServer in sql";
-        err.status = 500;
-        throw err;
-      }
+      await createDeliveryStatusFromMailServer(
+        responseMessageId,
+        responseMessageType,
+        recipientsArray[i],
+        "success",
+        "success",
+        createTime
+      );
     }
   } else {
-    console.log(responsefromSNS);
-    const err = new Error();
-    err.stack = "something wrong with sns notification";
-    err.status = 500;
-    throw err;
+    console.error("something wrong with sns notification", responseFromSNS);
   }
   return res.json({});
 }

@@ -64,7 +64,7 @@ document.getElementById("user").addEventListener("submit", (e) => {
         password: formData.password,
         name: formData.name,
       };
-      fetch("/api/1.0/userSignUp", {
+      fetch("/api/1.0/user/signup", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body),

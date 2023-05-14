@@ -1,8 +1,6 @@
 let userProfile = document.getElementById("userprofile");
 let userAPiKey = document.getElementById("userapikey");
-let userprofilebody = {
-  userId: 1,
-};
+
 let token = localStorage.getItem("userToken");
 if (!token) {
   window.location.replace(`introduction.html`);
@@ -11,10 +9,9 @@ if (!token) {
 let userprofileheaders = {
   Authorization: `Bearer ${token}`,
 };
-fetch("/api/1.0/getuserprofile", {
-  method: "POST",
+fetch("/api/1.0/user", {
+  method: "GET",
   headers: userprofileheaders,
-  body: JSON.stringify(userprofilebody),
 })
   .then((response) => response.json())
   .then(function (json) {
@@ -36,23 +33,16 @@ fetch("/api/1.0/getuserprofile", {
   });
 
 let getnewestapikey = function () {
-  fetch("/api/1.0/getnewestapikey", {
-    method: "POST",
+  fetch("/api/1.0/apikey", {
+    method: "GET",
     headers: userprofileheaders,
   })
     .then((response) => response.json())
     .then(function (json) {
-      fetch("/api/1.0/getAllActiveApiKeyWithExpiredTime", {
-        method: "POST",
-        headers: userprofileheaders,
-        body: JSON.stringify(userprofilebody),
-      })
-        .then((response) => response.json())
-        .then(function (json) {
-          let originalData = json.data;
-          userAPiKey.innerHTML = "";
-          for (let i = 0; i < originalData.length; i++) {
-            userAPiKey.innerHTML += ` 
+      let originalData = json.data;
+      userAPiKey.innerHTML = "";
+      for (let i = 0; i < originalData.length; i++) {
+        userAPiKey.innerHTML += ` 
           <div class="px-4 mt-1">
             <p class="fonts" id="apikey">
             <hr>
@@ -65,8 +55,7 @@ let getnewestapikey = function () {
             </p>
           </div>
           `;
-          }
-        });
+      }
     });
 };
 getnewestapikey();
@@ -76,7 +65,7 @@ generatenewapikeyButton.addEventListener("click", function (e) {
     Authorization: `Bearer ${token}`,
   };
 
-  fetch("/api/1.0/generatenewapikey", {
+  fetch("/api/1.0/apikey", {
     method: "POST",
     headers: aaheaders,
   })
@@ -105,7 +94,6 @@ generatenewapikeyButton.addEventListener("click", function (e) {
 let submitDomainName = document.getElementById("submitDomainName");
 submitDomainName.addEventListener("click", () => {
   let newdomainName = document.getElementById("newdomainName").value;
-  console.log(newdomainName);
   if (!newdomainName) {
     document.getElementById("modal_title").innerHTML = "錯誤";
     document.getElementById("modal_body").innerHTML = "請打入你想要提交的域名";
@@ -116,7 +104,7 @@ submitDomainName.addEventListener("click", () => {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
     };
-    fetch("/api/1.0/userGetStringToStoreInDnsSetting", {
+    fetch("/api/1.0/user/dns/settingstring", {
       method: "POST",
       headers: bbheaders,
       body: JSON.stringify({ domainName: newdomainName }),
@@ -157,8 +145,8 @@ const forFun = function () {
 };
 let allDomainName = document.getElementById("allDomainName");
 let getAllDomainNameInfo = function () {
-  fetch("/api/1.0/getAllUserDomainNameINfor", {
-    method: "POST",
+  fetch("/api/1.0/user/dns", {
+    method: "GET",
     headers: userprofileheaders,
   })
     .then((response) => response.json())
@@ -195,7 +183,6 @@ let getAllDomainNameInfo = function () {
       
       `;
         for (let i = 0; i < originalData.length; i++) {
-          console.log(i);
           allDomainName.innerHTML += `<div class="input-group mb-3">
       <input
         type="text"
@@ -257,7 +244,7 @@ let submitVerifyDomainName = function (domainName) {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
   };
-  fetch("/api/1.0/verifyUserDomainName", {
+  fetch("/api/1.0/user/dns/verify", {
     method: "POST",
     headers: bbheaders,
     body: JSON.stringify({ domainName: domainName }),
@@ -280,8 +267,8 @@ let submitDeleteDomainName = function (domainName) {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
   };
-  fetch("/api/1.0/deleteUserDomainName", {
-    method: "POST",
+  fetch("/api/1.0/user/dns/domainname", {
+    method: "DELETE",
     headers: bbheaders,
     body: JSON.stringify({ domainName: domainName }),
   })

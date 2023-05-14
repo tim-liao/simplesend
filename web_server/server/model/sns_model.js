@@ -1,5 +1,5 @@
 import moment from "moment";
-import connectionPool from "./mysql_config.js";
+import connectionPool from "../../util/mysql_config.js";
 export function generateTimeNow() {
   let now = new Date().toLocaleString("en-US", {
     timeZone: "Asia/Taipei",
@@ -8,7 +8,7 @@ export function generateTimeNow() {
   return time;
 }
 
-export async function createdeliveryStatusFromMailServer(
+export async function createDeliveryStatusFromMailServer(
   messageId,
   type,
   emailAddress,
@@ -18,10 +18,7 @@ export async function createdeliveryStatusFromMailServer(
 ) {
   let [result] = await connectionPool.query(
     `Insert into  delivery_status_from_mail_server_list (send_email_log_send_response_message_id,notification_type,email_address,action,action_message,created_dt) VALUES  (?,?,?,?,?,?)`,
-    [messageId, type, emailAddress, action, actionMessage, createTime],
-    function (err) {
-      if (err) throw err;
-    }
+    [messageId, type, emailAddress, action, actionMessage, createTime]
   );
   return result;
 }

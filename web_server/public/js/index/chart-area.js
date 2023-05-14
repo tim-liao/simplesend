@@ -163,14 +163,13 @@ function submitForm(e) {
     });
     let tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     formData["tz"] = tz;
-    console.log(formData);
+    // console.log(formData);
     let body = {
       tz: formData.tz,
       startTime: formData.startTime,
       endTime: formData.endTime,
     };
-
-    fetch("/api/1.0/getemailhistory", {
+    fetch("/api/1.0/dashboard/emails/dailycount", {
       method: "POST",
       headers: aaheaders,
       body: JSON.stringify(body),
@@ -210,7 +209,7 @@ let chartHeaders = {
   Accept: "application/json",
   Authorization: `Bearer ${token}`,
 };
-fetch("/api/1.0/getemailhistory", {
+fetch("/api/1.0/dashboard/emails/dailycount", {
   method: "POST",
   headers: aaheaders,
   body: JSON.stringify(chartBody),

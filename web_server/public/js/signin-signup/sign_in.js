@@ -55,7 +55,7 @@ document.getElementById("user").addEventListener("submit", (e) => {
       email: formData.email,
       password: formData.password,
     };
-    fetch("/api/1.0/userSignIn", {
+    fetch("/api/1.0/user/signin", {
       method: "POST",
       headers: headers,
       body: JSON.stringify(body),

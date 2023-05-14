@@ -1,8 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "SIMPLE SEND API DOCUMENT",
-    "description": "Description",
+    "title": "Simple Send API Document",
     "version": "1.0.0"
   },
   "host": "localhost:3000",
@@ -18,30 +17,19 @@
   },
   "tags": [
     {
-      "name": "send email service",
-      "description": "API for user to send email"
+      "name": "Sending Email API"
     },
-    { "name": "dashboard", "description": "support for dashboard page" },
-    { "name": "profile", "description": "support for profile page" },
-    { "name": "email detail", "description": "support for email detail page" },
-    { "name": "bounce email", "description": "support for bounce email page" },
+    { "name": "Dashboard" },
+    { "name": "Profile" },
+    { "name": "Email Detail" },
+    { "name": "Bounce Email" },
     {
-      "name": "sign in and sign up",
-      "description": "support for sign in and sign up page"
+      "name": "Sign In And Sign Up"
     },
-    { "name": "other", "description": "other" }
+    { "name": "Other" }
   ],
   "paths": {
-    "/": {
-      "get": {
-        "tags": ["other"],
-        "summary": "redirect to introduction page",
-        "description": "redirect to introduction page",
-        "parameters": [],
-        "responses": {}
-      }
-    },
-    "/api/1.0/sentmail": {
+    "/api/1.0/email/send": {
       "post": {
         "parameters": [
           {
@@ -52,9 +40,8 @@
             "type": "string"
           }
         ],
-        "tags": ["send email service"],
-        "summary": "let user send email",
-        "description": "without attachment",
+        "tags": ["Sending Email API"],
+        "summary": "User can send emails with this API",
         "requestBody": {
           "description": "Parameters required to send an email",
           "required": true,
@@ -122,10 +109,10 @@
                   }
                 },
                 "examples": {
-                  "InsertDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot insert createEmailRequest in sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -135,20 +122,18 @@
         }
       }
     },
-    "/api/1.0/sentrawmail": {
+    "/api/1.0/email/send/attachment": {
       "post": {
         "parameters": [
           {
             "name": "APIKEY",
             "in": "query",
-            "description": "send email api key",
             "required": true,
             "type": "string"
           }
         ],
-        "tags": ["send email service"],
-        "summary": "let user send email",
-        "description": "let user send email with attachment and get URL to upload attachment to my place",
+        "tags": ["Sending Email API"],
+        "summary": "User can get pre-signed URL for uploading  an attachment ",
         "requestBody": {
           "required": true,
           "content": {
@@ -218,10 +203,10 @@
                   }
                 },
                 "examples": {
-                  "InsertDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot insert createEmailRequest in sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -231,20 +216,18 @@
         }
       }
     },
-    "/api/1.0/responseFromrawmailUploadToS3": {
+    "/api/1.0/email/send/attachment/attachmentid": {
       "post": {
         "parameters": [
           {
             "name": "APIKEY",
             "in": "query",
-            "description": "send email api key",
             "required": true,
             "type": "string"
           }
         ],
-        "tags": ["send email service"],
-        "summary": "if upload successfully, send 200 response to user",
-        "description": "client get the response from upload place,and send the request include that response to server",
+        "tags": ["Sending Email API"],
+        "summary": " if upload successfully, send 200 response to user>> if user finish the uploading, posting request to this API  to schedule this email sending event",
         "requestBody": {
           "required": true,
           "content": {
@@ -281,10 +264,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot selectAttachmentSendEmailId in sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -294,16 +277,15 @@
         }
       }
     },
-    "/api/1.0/getnewestapikey": {
+    "/api/1.0/apikey": {
       "post": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "get user active api key",
-        "description": "get user active api key",
+        "tags": ["Profile"],
+        "summary": "Generate a new api key to the user, and change the older api key to invalid. (Only provide users with two legal api keys)",
         "parameters": [],
         "responses": {
           "200": {
@@ -363,10 +345,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot selectApiKey from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -374,106 +356,15 @@
             }
           }
         }
-      }
-    },
-    "/api/1.0/generatenewapikey": {
-      "post": {
+      },
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "generate new api key ,the old key will be setted new expired time (7 days)",
-        "description": "generate new api key ,the old key will be setted new expired time (7 days)",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/getapikey"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "description": "client error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "noBearerToken": {
-                    "value": {
-                      "status": "401",
-                      "message": "No token"
-                    }
-                  },
-                  "wrongBearerToken": {
-                    "value": {
-                      "status": "403",
-                      "message": "Wrong token"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "updateColumnDBError": {
-                    "value": {
-                      "status": "500",
-                      "message": "cannot updateApiKeyexpiredTime in sql"
-                    }
-                  },
-                  "generateAPIKEYError": {
-                    "value": {
-                      "status": "500",
-                      "message": "cannot generate API KEY"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/1.0/getAllActiveApiKeyWithExpiredTime": {
-      "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": ["profile"],
-        "summary": "get user api key and detail",
-        "description": "get user api key and detail",
+        "tags": ["Profile"],
+        "summary": "Obtain all legal api key information",
         "parameters": [],
         "responses": {
           "200": {
@@ -534,10 +425,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot getAllActiveApiKeyData from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -547,16 +438,24 @@
         }
       }
     },
-    "/api/1.0/getemailhistory": {
+
+    "/api/1.0/dashboard/emails/dailycount": {
       "post": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get each day send email count by time interval",
-        "description": "get each day send email count by time interval",
+        "tags": ["Dashboard"],
+        "summary": "Get the count sent per day based on a given time interval",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/emailsdailycount" }
+            }
+          }
+        },
         "parameters": [],
         "responses": {
           "200": {
@@ -617,10 +516,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get EmailHistory from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -630,16 +529,15 @@
         }
       }
     },
-    "/api/1.0/getsuccessrate": {
-      "post": {
+    "/api/1.0/dashboard/emails/sendingrate": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get success rate to send email from my server",
-        "description": "get success rate to send email from my server",
+        "tags": ["Dashboard"],
+        "summary": "Get sending rate for emails",
         "parameters": [],
         "responses": {
           "200": {
@@ -700,10 +598,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get UserEmailStatus from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -713,16 +611,15 @@
         }
       }
     },
-    "/api/1.0/gettrackingopenemailcountrate": {
-      "post": {
+    "/api/1.0/dashboard/emails/tracking/openingrate": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get tracking open count rate",
-        "description": "get tracking open count rate",
+        "tags": ["Dashboard"],
+        "summary": "Get the probability of whether the recipient opens the letter",
         "parameters": [],
         "responses": {
           "200": {
@@ -783,10 +680,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get userSuccessSentEmailCount from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -796,16 +693,15 @@
         }
       }
     },
-    "/api/1.0/getusersentemailcount": {
-      "post": {
+    "/api/1.0/dashboard/emails/count": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get user sent email count since creating the member",
-        "description": "get user sent email count since creating the member",
+        "tags": ["Dashboard"],
+        "summary": "Get historical sending quantity",
         "parameters": [],
         "responses": {
           "200": {
@@ -866,10 +762,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get UserSentEmailCount from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -879,17 +775,24 @@
         }
       }
     },
-    "/api/1.0/getUserSendEmailMessage": {
+    "/api/1.0/dashboard/emails": {
       "post": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["email detail"],
+        "tags": ["Email Detail"],
         "summary": "get user send email detail and status",
-        "description": "get user send email detail and status",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/emails" }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -949,10 +852,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot getUserSendEmailMessagewithoutAttchment from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -962,16 +865,15 @@
         }
       }
     },
-    "/api/1.0/getUserSendEmailBounceMessage": {
-      "post": {
+    "/api/1.0/dashboard/bounce": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["bounce email"],
-        "summary": "get all bounced recipients email address ,bounced message and created time",
-        "description": "get all bounced recipients email address ,bounced message and created time",
+        "tags": ["Bounce Email"],
+        "summary": "Get all bounced recipient email addresses, bounced messages, and data retrieval time",
         "parameters": [],
         "responses": {
           "200": {
@@ -1032,10 +934,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get getUserSendEmailBounceMessage from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1045,16 +947,15 @@
         }
       }
     },
-    "/api/1.0/gettrackingclickemailinfor": {
-      "post": {
+    "/api/1.0/dashboard/emails/tracking/info": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get user tracking click and recipient info",
-        "description": "get user tracking click and recipient info",
+        "tags": ["Dashboard"],
+        "summary": "Get the recipient information of the click tracker link",
         "parameters": [],
         "responses": {
           "200": {
@@ -1115,10 +1016,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get UserTrackingClickInformation from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1128,16 +1029,15 @@
         }
       }
     },
-    "/api/1.0/getsuccessdeliveryrate": {
-      "post": {
+    "/api/1.0/dashboard/emails/deliveredrate": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["dashboard"],
-        "summary": "get rate from email address when get \"delivery\" response from recipient mail server",
-        "description": "get rate from email address when get \"delivery\" response from recipient mail server",
+        "tags": ["Dashboard"],
+        "summary": "Get delivered rate for emails",
         "parameters": [],
         "responses": {
           "200": {
@@ -1198,10 +1098,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get UserEmailSendActionFromSNS from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1211,16 +1111,15 @@
         }
       }
     },
-    "/api/1.0/getuserprofile": {
-      "post": {
+    "/api/1.0/user": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "get user ID , user name and user email",
-        "description": "get user ID , user name and user email",
+        "tags": ["Profile"],
+        "summary": "Get user ID , user name and user email",
         "parameters": [],
         "responses": {
           "200": {
@@ -1281,10 +1180,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get userProfile from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1294,16 +1193,15 @@
         }
       }
     },
-    "/api/1.0/userGetStringToStoreInDnsSetting": {
+    "/api/1.0/user/dns/settingstring": {
       "post": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "get setting string to let user verify the domain name which will be used in sending email",
-        "description": "get setting string to let user verify the domain name which will be used in sending email",
+        "tags": ["Profile"],
+        "summary": "Let the user get the authentication string which can be set in dns",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1380,10 +1278,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot selectDomainName from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1393,16 +1291,15 @@
         }
       }
     },
-    "/api/1.0/verifyUserDomainName": {
+    "/api/1.0/user/dns/verify": {
       "post": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "verify user domain name ",
-        "description": "verify user domain name ",
+        "tags": ["Profile"],
+        "summary": "Verify that the user has set the verification string into the DNS settings",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1473,10 +1370,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot get userDomainName from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1486,16 +1383,15 @@
         }
       }
     },
-    "/api/1.0/getAllUserDomainNameINfor": {
-      "post": {
+    "/api/1.0/user/dns": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "get all user domain name , setting string and status",
-        "description": "get all user domain name , setting string and status",
+        "tags": ["Profile"],
+        "summary": "Get the user's domain name, status and verification string",
         "parameters": [],
         "responses": {
           "200": {
@@ -1556,10 +1452,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot selectAllSuccessUserDomainName from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1569,16 +1465,15 @@
         }
       }
     },
-    "/api/1.0/deleteUserDomainName": {
-      "post": {
+    "/api/1.0/user/dns/domainname": {
+      "delete": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["profile"],
-        "summary": "let user to delete domain name",
-        "description": "let user to delete domain name",
+        "tags": ["Profile"],
+        "summary": "Delete the registered domain name specified by the user",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1655,10 +1550,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot selectUserSettingString from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1668,11 +1563,10 @@
         }
       }
     },
-    "/api/1.0/userSignUp": {
+    "/api/1.0/user/signup": {
       "post": {
-        "tags": ["sign in and sign up"],
+        "tags": ["Sign In And Sign Up"],
         "summary": "let user register to our website",
-        "description": "let user register to our website",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1743,10 +1637,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot checkUserEmailUsedOrNot from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1756,11 +1650,10 @@
         }
       }
     },
-    "/api/1.0/userSignIn": {
+    "/api/1.0/user/signin": {
       "post": {
-        "tags": ["sign in and sign up"],
+        "tags": ["Sign In And Sign Up"],
         "summary": "let user log in to our website",
-        "description": "let user log in to our website",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1831,10 +1724,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot checkUserEmailUsedOrNot from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1844,16 +1737,15 @@
         }
       }
     },
-    "/api/1.0/getusername": {
-      "post": {
+    "/api/1.0/user/name": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "tags": ["other"],
-        "summary": "get user name",
-        "description": "get user name ",
+        "tags": ["Other"],
+        "summary": "Get user name",
 
         "responses": {
           "200": {
@@ -1914,10 +1806,10 @@
                   }
                 },
                 "examples": {
-                  "selectDBError": {
+                  "internalServerError": {
                     "value": {
                       "status": "500",
-                      "message": "cannot getUserNameById from sql"
+                      "message": "Server error"
                     }
                   }
                 }
@@ -1929,9 +1821,8 @@
     },
     "/api/1.0/sns": {
       "post": {
-        "tags": ["other"],
-        "summary": "let SNS notify the mail-sending-info when get response from recipient mail server",
-        "description": "let SNS notify the mail-sending-info when get response from recipient mail server",
+        "tags": ["Other"],
+        "summary": "Let SNS return sending status (Delivery, Bounce)",
         "requestBody": {
           "required": true
         }
@@ -2154,6 +2045,19 @@
           }
         }
       },
+      "emails": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "example": "2023-05-22"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "2023-06-08"
+          }
+        }
+      },
       "UploadToS3": {
         "type": "object",
         "properties": {
@@ -2173,6 +2077,19 @@
                 "example": 789
               }
             }
+          }
+        }
+      },
+      "emailsdailycount": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "example": "2023-05-22"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "2023-06-08"
           }
         }
       },

@@ -1,4 +1,4 @@
-import connectionPool from "./mysql_config.js";
+import connectionPool from "../../util/mysql_config.js";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 export async function addTrackingMessage(
@@ -22,10 +22,7 @@ export async function addTrackingMessage(
       publicIp,
       refererUrl,
       triggerDt,
-    ],
-    function (err) {
-      if (err) throw err;
-    }
+    ]
   );
   return result;
 }
@@ -33,10 +30,7 @@ export async function addTrackingMessage(
 export async function checkTrackingMessage(id, type) {
   let [result] = await connectionPool.query(
     `SELECT id from tracking_email_list where send_email_list_id = ? AND tracking_type = ? `,
-    [id, type],
-    function (err) {
-      if (err) throw err;
-    }
+    [id, type]
   );
   return result;
 }
@@ -47,7 +41,7 @@ export function generateTimeNow() {
   let time = moment(now, "M/D/YYYY hh:mm:ss a").format("YYYY-MM-DD HH:mm:ss");
   return time;
 }
-export async function vertifyLink(link) {
+export async function verifyLink(link) {
   const SECRET = process.env.TRACK_LINK_SECRET;
   const check = jwt.verify(link, SECRET);
   return check;
