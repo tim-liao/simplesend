@@ -17,7 +17,7 @@ import {
   checkPassword,
   getUserNameById,
 } from "../model/user_model.js";
-import Error from "../error/indexError.js";
+import Error from "../error/index_error.js";
 export async function getUserProfile(req, res) {
   const { userId } = req.body.member;
   let userProfile = await selectUserProfile(userId);

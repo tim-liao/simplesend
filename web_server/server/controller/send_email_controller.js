@@ -15,7 +15,7 @@ import {
   checkHTMLIsIncludeTrackingLinkOrNot,
 } from "../model/send_email_model.js";
 dotenv.config();
-import Error from "../error/indexError.js";
+import Error from "../error/index_error.js";
 export async function sentEmail(req, res) {
   let {
     nameFrom,

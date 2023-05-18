@@ -9,7 +9,7 @@ import {
   getAllActiveApiKey,
   turnTimeZone,
 } from "../model/api_key_model.js";
-import Error from "../error/indexError.js";
+import Error from "../error/index_error.js";
 
 export async function generateNewApiKey(req, res) {
   const { userId } = req.body.member;

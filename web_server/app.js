@@ -6,7 +6,7 @@ process.env.TZ = "Asia/Taipei";
 const port = process.env.PORT;
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
-import Error from "./server/error/indexError.js";
+import Error from "./server/error/index_error.js";
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
