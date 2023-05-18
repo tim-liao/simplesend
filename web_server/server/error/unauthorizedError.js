@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import customError from "./customError.js";
-class unauthorizedError extends customError {
+import CustomError from "./customError.js";
+class UnauthorizedError extends CustomError {
   constructor(message) {
     super(message);
     this.status = StatusCodes.UNAUTHORIZED;
   }
 }
-export default unauthorizedError;
+export default UnauthorizedError;
