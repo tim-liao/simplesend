@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Error from "../server/error/indexError.js";
+import Error from "../server/error/index_error.js";
 dotenv.config();
 // reference: https://thecodebarbarian.com/80-20-guide-to-express-error-handling
 export function wrapAsync(fn) {
