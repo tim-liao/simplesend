@@ -1,9 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import CustomError from "./customError.js";
-class ForbiddenError extends CustomError {
+import customError from "./customError.js";
+class forbiddenError extends customError {
   constructor(message) {
     super(message);
     this.status = StatusCodes.FORBIDDEN;
   }
 }
-export default ForbiddenError;
+export default forbiddenError;
