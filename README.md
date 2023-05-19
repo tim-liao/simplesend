@@ -1,10 +1,10 @@
-# [simplesend](side-project2023.online)
+# [simplesend](https://side-project2023.online)
 
 Email sending service enables you to send, track and analyze friendly.
 
 - Highlighted Features: Email sending, email open tracking, link tracking within emails, data analysis.
 - Queue: Utilized Docker to deploy RabbitMQ and delegate user's email sending requests to workers for processing.
-  Simple Email Sending: Users can easily send emails on the Back-end using my dedicated [NPM](npmjs.com/package/simplesend) package.
+  Simple Email Sending: Users can easily send emails on the Back-end using my dedicated [NPM](https:npmjs.com/package/simplesend) package.
 - Email Data Analysis: Subscribed to the SNS topic through a specified HTTPS endpoint to record SES sending information.
 - User Authentication for Sending: Authenticated DNS settings using the built-in DNS module of Node.js.
 - Instant High Traffic Requests: Implemented Elastic Load Balancing and Auto Scaling to enable the website to handle a high volume of real-time requests at a rate of 200 requests per second.
@@ -14,7 +14,7 @@ Email sending service enables you to send, track and analyze friendly.
 
 Preparation: Have a ready-to-use domain name (as your sender name).
 
-1. Log in or register on my [website](side-project2023.online/).
+1. Log in or register on my [website](https:side-project2023.online/).
 2. Click on the image in the top right corner to access your personal page.
 3. Take note of the API Key and User ID on the page. Register your domain name and set up DNS settings on your domain hosting website. Once completed, return to perform the verification process. Once the verification is successful, you can proceed to the next step.
 4. Download the [NPM](https://www.npmjs.com/package/simplesend) package and use the example below to send email.
