@@ -2,21 +2,39 @@
 
 Email sending service enables you to send, track and analyze friendly.
 
-- Highlighted Features: Email sending, email open tracking, link tracking within emails, data analysis.
-- Queue: Utilized Docker to deploy RabbitMQ and delegate user's email sending requests to workers for processing.
+- **Highlighted Features**: Email sending, email open tracking, link tracking within emails, data analysis.
+- **Queue**: Utilized Docker to deploy RabbitMQ and delegate user's email sending requests to workers for processing.
   Simple Email Sending: Users can easily send emails on the Back-end using my dedicated [NPM](https:npmjs.com/package/simplesend) package.
-- Email Data Analysis: Subscribed to the SNS topic through a specified HTTPS endpoint to record SES sending information.
-- User Authentication for Sending: Authenticated DNS settings using the built-in DNS module of Node.js.
-- Instant High Traffic Requests: Implemented Elastic Load Balancing and Auto Scaling to enable the website to handle a high volume of real-time requests at a rate of 200 requests per second.
-- Monitoring: Managed SES sending status by SNS and Lambda to store results in CloudWatch Logs for auditing.
+- **Email Data Analysis**: Subscribed to the SNS topic through a specified HTTPS endpoint to record SES sending information.
+- **User Authentication for Sending**: Authenticated DNS settings using the built-in DNS module of Node.js.
+- **Instant High Traffic Requests**: Implemented Elastic Load Balancing and Auto Scaling to enable the website to handle a high volume of real-time requests at a rate of 200 requests per second.
+- **Monitoring**: Managed SES sending status by SNS and Lambda to store results in CloudWatch Logs for auditing.
 
-## How to use ?
+## Table of Contents
+
+- [Demo Account](#demo-account)
+- [How to use ?](#how-to-use)
+- [Architecture](#architecture)
+- [Stress Testing](#stress-testing)
+- [API Document](#api-document)
+- [Database Schema](#database-schema)
+
+## Demo Account
+
+- Account: test1@gmail.com
+- Password: test
+
+## How to use?
 
 Preparation: Have a ready-to-use domain name (as your sender name).
 
-1. Log in or register on my [website](https:side-project2023.online/).
+1. Log in or register on my [website](https://side-project2023.online/).
+
+   ![image](./readme_attachment/log_in.gif)
+
 2. Click on the image in the top right corner to access your personal page.
 3. Take note of the API Key and User ID on the page. Register your domain name and set up DNS settings on your domain hosting website. Once completed, return to perform the verification process. Once the verification is successful, you can proceed to the next step.
+   ![image](./readme_attachment/preparation_to_send.gif)
 4. Download the [NPM](https://www.npmjs.com/package/simplesend) package and use the example below to send email.
 
 ```js
@@ -47,9 +65,11 @@ sendOnlyEmail(body, apiKey);
 
 5. After sending the email, you can visit our website to view and analyze the sent message records.
 
+![image](./readme_attachment/analyze.gif)
+
 ## Architecture
 
-![image](./architecture.png)
+![image](./readme_attachment/architecture.png)
 
 ## Stress Testing
 
@@ -74,13 +94,21 @@ Test Duration: 90 seconds
 #### Before Auto Scaling: One EC2 Instance
 
 The actual processing capacity reached 27% of the estimated volume, with the longest response time being 40 seconds and a median response time of approximately 5 seconds. To achieve the estimated volume, auto scaling is required with at least 4 EC2 instances.
-![image](./stress_test_1.png)
+![image](./readme_attachment/stress_test_1.png)
 
 #### After Auto Scaling: One to Four EC2 Instances
 
 In this test, the auto scaling was configured with a default of one instance and a maximum of three instances (excluding the original instance). The results indicate that the actual processing capacity exceeded the expected number of requests to be handled within 90 seconds.
-![image](./stress_test_2.png)
+![image](./readme_attachment/stress_test_2.png)
 
 ### Review and Conclusion
 
 Considering the need to handle exceptionally high traffic in a short period, auto scaling might not be suitable due to the warm-up time required. Instead, it is advisable to determine the required number of instances beforehand, in anticipation of the expected traffic influx.
+
+## API Document
+
+[https://side-project2023.online/api-docs/](https://side-project2023.online/api-docs/)
+
+## Database Schema
+
+![image](./readme_attachment/db.png)
