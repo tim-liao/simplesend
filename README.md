@@ -50,3 +50,37 @@ sendOnlyEmail(body, apiKey);
 ## Architecture
 
 ![image](./architecture.png)
+
+## Stress Testing
+
+### Test Scenario
+
+The test scenario involves multiple users simultaneously using my mailing API. Assuming a busy shopping season, a large number of users on my platform will send purchase confirmation emails to their members. Let's assume there are 25 active users on the platform, and each user sends 8 emails per second for a duration of 90 seconds (resulting in a total of 18,000 requests within 90 seconds).
+
+### Test Objective
+
+The mailing API is a critical feature of the platform, primarily targeting backend systems of e-commerce websites. As the website has recently launched without any advertisements, we have gradually acquired 25 sets of active users, all of whom are interested in the shopping season. Among these 25 users, each has approximately 1,000 followers. Considering the high popularity of the shopping season, around 50% of the followers are expected to place orders, resulting in a minimum of 480 emails that need to be sent. With a rate of 8 emails per second, it would take approximately 63 seconds to complete the task. However, considering potential sporadic customers, we extend the duration to 90 seconds.
+
+### Testing Approach
+
+To perform the stress test, we will be using k6.
+
+Request Frequency: 2000 requests per second
+Concurrent Users: 25 users
+Test Duration: 90 seconds
+
+### Test Results
+
+#### Before Auto Scaling: One EC2 Instance
+
+The actual processing capacity reached 27% of the estimated volume, with the longest response time being 40 seconds and a median response time of approximately 5 seconds. To achieve the estimated volume, auto scaling is required with at least 4 EC2 instances.
+![image](./stress_test_1.png)
+
+#### After Auto Scaling: One to Four EC2 Instances
+
+In this test, the auto scaling was configured with a default of one instance and a maximum of three instances (excluding the original instance). The results indicate that the actual processing capacity exceeded the expected number of requests to be handled within 90 seconds.
+![image](./stress_test_2.png)
+
+### Review and Conclusion
+
+Considering the need to handle exceptionally high traffic in a short period, auto scaling might not be suitable due to the warm-up time required. Instead, it is advisable to determine the required number of instances beforehand, in anticipation of the expected traffic influx.
