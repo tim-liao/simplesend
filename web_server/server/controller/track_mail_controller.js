@@ -40,7 +40,7 @@ export async function trackMail(req, res, next) {
         }
         let publicIp = ip;
         let refererUrl = req.headers.referer;
-        if (refererUrl === null) {
+        if (refererUrl === undefined) {
           refererUrl = "undefined";
         }
         let triggerDt = generateTimeNow();
@@ -86,7 +86,7 @@ export async function trackMail(req, res, next) {
       let publicIp = ip;
       let refererUrl = req.headers.referer;
 
-      if (refererUrl === null) {
+      if (refererUrl === undefined) {
         refererUrl = "undefined";
       }
       let triggerDt = generateTimeNow();
