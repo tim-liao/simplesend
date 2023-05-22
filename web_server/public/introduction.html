@@ -219,7 +219,7 @@
                   <span>操作參考</span>
                 </div>
                 <pre class="code-content">
-import { sendemailwithattachment, sendonlyemail } from "simplesend";
+import { sendEmailWithAttachment, sendOnlyEmail } from "simplesend";
 
 const body = {
   user_id: 0, //your user ID //required
@@ -238,10 +238,10 @@ const body = {
 const apiKey = "your api key it will provide from our web service";
 const filePath = "your/file/path";
 //send email with attachment
-sendemailwithattachment(body, filePath, apiKey);
+sendEmailWithAttachment(body, filePath, apiKey);
 
 // without attachment
-sendonlyemail(body, apiKey);
+sendOnlyEmail(body, apiKey);
 </pre
                 >
               </div>
@@ -318,7 +318,7 @@ let header = {
   "Content-Type": "application/json",
   Accept: "application/json",
 };
-fetch("https://side-project2023.online/api/1.0/email/sent?APIKEY=YOUR_API_KEY", {
+fetch("https://side-project2023.online/api/1.0/email/send?APIKEY=YOUR_API_KEY", {
   method: "POST",
   headers: header,
   body: JSON.stringify(body),
