@@ -85,7 +85,7 @@ The mailing API is a critical feature of the platform, primarily targeting backe
 
 To perform the stress test, we will be using k6.
 
-Request Frequency: 2000 requests per second
+Request Frequency: 200 requests per second
 Concurrent Users: 25 users
 Test Duration: 90 seconds
 
