@@ -4,7 +4,7 @@ Email sending service enables you to send, track and analyze friendly.
 
 - **Highlighted Features**: Email sending, email open tracking, link tracking within emails, data analysis.
 - **Queue**: Utilized Docker to deploy RabbitMQ and delegate user's email sending requests to workers for processing.
-  Simple Email Sending: Users can easily send emails on the Back-end using my dedicated [NPM](https:npmjs.com/package/simplesend) package.
+- **Simple Email Sending**: Users can easily send emails on the Back-end using my dedicated [NPM](https:npmjs.com/package/simplesend) package.
 - **Email Data Analysis**: Subscribed to the SNS topic through a specified HTTPS endpoint to record SES sending information.
 - **User Authentication for Sending**: Authenticated DNS settings using the built-in DNS module of Node.js.
 - **Instant High Traffic Requests**: Implemented Elastic Load Balancing and Auto Scaling to enable the website to handle a high volume of real-time requests at a rate of 200 requests per second.
