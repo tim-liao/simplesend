@@ -15,6 +15,7 @@ Email sending service enables you to send, track and analyze friendly.
 - [Demo Account](#demo-account)
 - [How to use ?](#how-to-use)
 - [Architecture](#architecture)
+- [Tracking Algorithm](#tracking-algorithm)
 - [Stress Testing](#stress-testing)
 - [API Document](#api-document)
 - [Database Schema](#database-schema)
@@ -70,6 +71,16 @@ sendOnlyEmail(body, apiKey);
 ## Architecture
 
 ![image](./readme_attachment/architecture.png)
+
+## Tracking Algorithm
+
+### Open Tracking
+
+We employ a small tracking pixel as a method for open tracking. When the user opens the email, the tracking pixel is triggered, establishing a connection with our server. Parameters are added to the URL to differentiate it as an open tracking email and include the email's ID for tracking and recording purposes.
+
+### Click Tracking
+
+This feature is enabled only when the user inserts a link in the email. We replace the specified link in the sender's email content to redirect to our website. Parameters are appended to the URL to indicate it as a click tracking link. The parameters include a JWT token with a payload containing the original website's link and the email's ID. This approach eliminates the need to store the original website's link in our database, reducing database access frequency. After recording the necessary information, we redirect back to the original website.
 
 ## Stress Testing
 
