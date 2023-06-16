@@ -1,6 +1,6 @@
 {
   "name": "simplesend",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "simplesend",
   "main": "index.js",
   "type": "module",

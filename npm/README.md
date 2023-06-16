@@ -1,6 +1,6 @@
-# simplesend v1.0.10
+# simplesend v1.0.11
 
-user our [web site](https://side-project2023.online/) to send email simple!!
+use our [web site](https://side-project2023.online/) to send email simple!!
 
 ## Installation
 
