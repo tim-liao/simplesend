@@ -25,7 +25,7 @@ if (!token) {
         if (json.status) {
           if (json.status == 403) {
             localStorage.removeItem("userToken");
-            return window.location.replace(`sign_in.html`);
+            return window.location.replace(`introduction.html`);
           }
         }
         trackingemailcountrateBar.style = `width: ${json.data}`;
