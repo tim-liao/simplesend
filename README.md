@@ -102,14 +102,14 @@ Test Duration: 90 seconds
 
 ### Test Results
 
-#### Before Auto Scaling: One EC2 Instance
+#### Before Scaling: One EC2 Instance
 
 The actual processing capacity reached 27% of the estimated volume, with the longest response time being 40 seconds and a median response time of approximately 5 seconds. To achieve the estimated volume, auto scaling is required with at least 4 EC2 instances.
 ![image](./readme_attachment/stress_test_1.png)
 
-#### After Auto Scaling: One to Four EC2 Instances
+#### After Scaling: One to Four EC2 Instances
 
-In this test, the auto scaling was configured with a default of one instance and a maximum of three instances (excluding the original instance). The results indicate that the actual processing capacity exceeded the expected number of requests to be handled within 90 seconds.
+In this test, the scaling was configured with a default of one instance and a maximum of three instances (excluding the original instance). The results indicate that the actual processing capacity exceeded the expected number of requests to be handled within 90 seconds.
 ![image](./readme_attachment/stress_test_2.png)
 
 ### Review and Conclusion
